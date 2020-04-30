@@ -7,6 +7,7 @@ import pydeck as pdk
 from h3 import h3
 from sklearn.neighbors import BallTree
 from shapely.geometry import Point, Polygon
+import plotly.graph_objects as go
 from math import radians
 from numba import jit
 
@@ -539,6 +540,34 @@ class Urbanpy(object):
         json: dict
               GeoJSON with the corrected features
 
+        Example
+        -------
+
+        >> json = {
+            'type': 'FeatureCollection'
+            'features': [
+                {
+                    'id': 0,
+                    'geometry': {
+                        'coordinates' = (((-77, -12), (-77.1, -12.1)))
+                    }
+                }
+            ]
+        }
+
+        >> tuples_to_lists(json)
+
+        {
+            'type': 'FeatureCollection'
+            'features': [
+                {
+                    'id': 0,
+                    'geometry': {
+                        'coordinates' = [[[-77, -12], [-77.1, -12.1]]]
+                    }
+                }
+            ]
+        }
         '''
 
         for i in range(len(json['features'])):
@@ -616,3 +645,77 @@ class Urbanpy(object):
             return pdk.Layer("H3HexagonLayer", data, **kwargs)
         else:
             return pdk.Layer('PolygonLayer', data, **kwargs)
+
+    def choropleth_map(self, gdf, color_column, map_center, df_filter=None, scale=False):
+        '''
+        Produce a Choroplethmap using plotly by passing a GeoDataFrame.
+
+        Parameters
+        ----------
+        gdf: GeoDataFrame
+             Input data containing a geometry column and features
+
+        color_column: str
+                      Column from gdf to use as color
+
+        map_center: list
+                    Map center when plotting. [lat, lon] coordinates
+
+        df_filter: pd.Series, default to None
+                   Pandas Series containing true/false values that satisfy a
+                   condition (population > 100)
+
+        scale: bool
+               Display scale
+
+        Returns
+        -------
+
+        fig: plotly.graph_objects.Figure
+             Figure object containing the map
+
+        Example
+        -------
+
+        >> hex_lima = gen_hexagons(...)
+        >> hex_lima['pop_2020'] = population_2020
+        >> choropleth_map(hex_lima, 'pop_2020', [-12, -77])
+
+        '''
+        lat, lon = map_center
+
+        if df_filter is not None:
+            fig = go.Figure(
+            go.Choroplethmapbox(
+                geojson=gdf[['geometry']].__geo_interface__,
+                locations=gdf[filtro_pob_vulnerable].index.values.tolist(),
+                z=gdf[filtro_pob_vulnerable][color_column].values.tolist(),
+                showscale=scale,
+                marker_opacity=0.5,
+                marker_line_width=0,
+                )
+            )
+        else:
+            fig = go.Figure(
+            go.Choroplethmapbox(
+                geojson=gdf[['geometry']].__geo_interface__,
+                locations=gdf.index.values.tolist(),
+                z=gdf[color_column].values.tolist(),
+                showscale=False,
+                marker_opacity=0.5,
+                marker_line_width=0,
+                )
+            )
+
+        fig.update_layout(
+            mapbox_style="carto-positron",
+            mapbox_zoom=9,
+            mapbox_pitch=60,
+            mapbox_bearing=0,
+            mapbox_center = {"lat": lat,
+                             "lon": lon})
+
+        fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+        fig.show()
+
+        return fig
