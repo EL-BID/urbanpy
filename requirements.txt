@@ -6,3 +6,4 @@ requests
 h3
 numba
 matplotlib
+plotly
