@@ -1,0 +1,8 @@
+pandas
+geopandas
+shapely
+numpy
+requests
+h3
+numba
+matplotlib

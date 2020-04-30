@@ -1,3 +1,8 @@
+.DS_Store
+cache/
+mapboxkey.py
+outputs/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
