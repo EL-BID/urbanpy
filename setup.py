@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 setuptools.setup(
      name='urbanpy',
      version='0.2',
-     #scripts=['urbanpy'] ,
+     #scripts=['bin/pull_osrm.sh'] ,
      author="Andres Regal, Claudio Ortega",
      author_email="a.regalludowieg@up.edu.pe",
      description="A library to download, process and visualize high resolution urban data.",
