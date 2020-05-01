@@ -7,3 +7,9 @@ h3
 numba
 matplotlib
 plotly
+tqdm
+osmnx
+pydeck
+scikit-learn
+rtree
+descartes

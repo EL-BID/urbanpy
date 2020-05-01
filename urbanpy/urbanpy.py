@@ -5,15 +5,16 @@ import requests
 import matplotlib.pyplot as plt
 import pydeck as pdk
 import subprocess
-from h3 import h3
-from sklearn.neighbors import BallTree
-from shapely.geometry import Point, Polygon
+import osmnx as ox
 import plotly.graph_objects as go
+from tqdm import tqdm
+from h3 import h3
 from math import radians
 from numba import jit
+from sklearn.neighbors import BallTree
+from shapely.geometry import Point, Polygon
 
 # - Generar métricas de acceso
-# - Generar mapas y visualizaciones con los resultados
 
 class Urbanpy(object):
 
@@ -738,18 +739,101 @@ class Urbanpy(object):
         subprocess.Popen(['bash', '../bin/pull_osrm.sh', f'{country}-latest.osm.pbf'])
 
     def stop_osrm_server(self):
+        '''
+        Run docker stop on the server's container.
+        '''
+
         subprocess.run(['docker', 'stop', 'osrm_routing_server'])
 
     def osrm_routes(origin, destination, profile):
+        '''
+        Query an OSRM routing server for routes between an origin and a destination
+        using a specified profile.
+
+        Parameters
+        ----------
+
+        origin: DataFrame with columns x and y or Point geometry
+                Input origin in lat lon pairs (y, x) to pass into the routing engine
+
+        destination: DataFrame with columns x and y or Point geometry
+                     Input destination in lat lon pairs (y,x) to pass to the routing engine
+
+        profile: str. One of {'foot', 'car', 'bicycle'}
+                 Behavior to use when routing and estimating travel time.
+
+        Returns
+        -------
+
+        distance: float
+                  Total travel distance from origin to destination in meters
+        duration: float
+                  Total travel time in minutes
+
+        '''
+
         try:
             orig = f'{origin.x},{origin.y}'
             dest = f'{destination.x},{destination.y}'
             url = f'http://localhost:5000/route/v1/{profile}/{orig};{dest}' # Local osrm server
             response = requests.get(url, params={'overview': 'false'})
             data = response.json()['routes'][0]
-            return [data['distance'], data['duration']]
+            distance, duration = data['distance'], data['duration']
+            return distance, duration
         except Exception as err:
             print(err)
             print(response.reason)
             print(response.url)
             pass
+
+    def osmnx_graph_download(self, gdf, net_type, basic_stats, extended_stats, connectivity=False, anc=False, ecc=False, bc=False, cc=False):
+        '''
+        Apply osmnx's graph from polygon to query a city's street network within a geometry.
+
+        Parameters
+        ----------
+
+        gdf: GeoDataFrame
+             GeoDataFrame with geometries to download graphs contained within them.
+
+        basic_stats: list
+                     List of basic stats to compute from downloaded graph
+
+        extended_stats: list
+                        List of extended stats to compute from graph
+
+        connectivity: bool. Default False.
+                      Compute node and edge connectivity
+
+        anc: bool. Default False.
+             Compute avg node connectivity
+        ecc: bool. Default False.
+             Compute shortest paths, eccentricity and topological metric
+        bc: bool. Default False.
+             Compute node betweeness centrality
+        cc: bool. Default False.
+             Compute node closeness centrality
+
+        For more detail about these parameters, see https://osmnx.readthedocs.io/en/stable/osmnx.html#module-osmnx.stats
+
+        Returns
+        -------
+
+        gdf: Input GeoDataFrame with updated columns containing the selected metrics
+        '''
+
+        #May be a lengthy download depending on the amount of features
+        for index, row in tqdm(gdf.iterrows()):
+            try:
+                graph = ox.graph_from_polygon(row['geometry'], net_type)
+                b_stats = ox.basic_stats(graph)
+                ext_stats = ox.extended_stats(graph, connectivity, anc, ecc, bc, cc)
+
+                for stat in basic_stats:
+                    gdf.loc[index, stat] = b_stats.get(stat)
+                for stat in extended_stats:
+                    gdf.loc[index, stat] = ext_stats.get(stat)
+            except Exception as err:
+                    print(f'On record {index}: ', err)
+                    pass
+        return gdf
