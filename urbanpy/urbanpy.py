@@ -4,6 +4,7 @@ import pandas as pd
 import requests
 import matplotlib.pyplot as plt
 import pydeck as pdk
+import subprocess
 from h3 import h3
 from sklearn.neighbors import BallTree
 from shapely.geometry import Point, Polygon
@@ -154,7 +155,7 @@ class Urbanpy(object):
 
         Example
         -------
-
+        >> lima, callao = download_osm(...), download_osm(...)
         >> lima_ = merge_geom_downloads([lima, callao])
         >> pop = pop_lima = download_hdx_population_data("4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/317f1c39-8417-4bde-a076-99bd37feefce/download/population_per_2018-10-01.csv.zip")
         >> filter_population(pop, lima_)
@@ -719,3 +720,36 @@ class Urbanpy(object):
         fig.show()
 
         return fig
+
+    def setup_osrm_server(self, country):
+        '''
+        Download data for OSRM, process it and
+
+        Parameters
+        ----------
+
+        country: str
+                 Which country to download data from. Expected in lower case
+        dir: str
+             Directory in which to save the file. Defaults to ../data/osrm/
+
+        '''
+
+        subprocess.Popen(['bash', '../bin/pull_osrm.sh', f'{country}-latest.osm.pbf'])
+
+    def stop_osrm_server(self):
+        subprocess.run(['docker', 'stop', 'osrm_routing_server'])
+
+    def osrm_routes(origin, destination, profile):
+        try:
+            orig = f'{origin.x},{origin.y}'
+            dest = f'{destination.x},{destination.y}'
+            url = f'http://localhost:5000/route/v1/{profile}/{orig};{dest}' # Local osrm server
+            response = requests.get(url, params={'overview': 'false'})
+            data = response.json()['routes'][0]
+            return [data['distance'], data['duration']]
+        except Exception as err:
+            print(err)
+            print(response.reason)
+            print(response.url)
+            pass
