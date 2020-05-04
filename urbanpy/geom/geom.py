@@ -35,11 +35,11 @@ def merge_geom_downloads(gdfs):
     --------
 
     >>>> lima = download_osm(2, "Lima, Peru")
-    >>>> callao = download_osm(1, "Lima, Peru")
-    >>>> lima_ = merge_geom_downloads([lima, callao])
-    >>>> lima_.head()
+    >>>> callao = download_osm(1, "Callao, Peru")
+    >>>> lima = merge_geom_downloads([lima, callao])
+    >>>> lima.head()
     geometry
-    MULTIPOLYGON (((-76.80277 -12.47562, -76.80261...
+    MULTIPOLYGON (((-76.80277 -12.47562, -76.80261...)))
 
     '''
 
@@ -68,10 +68,11 @@ def filter_population(pop_df, polygon_gdf):
     Examples
     --------
 
-    >>>> lima, callao = download_osm(...), download_osm(...)
-    >>>> lima_ = merge_geom_downloads([lima, callao])
+    >>>> lima = download_osm(2, 'Lima, Peru')
+    >>>> callao = download_osm(1, 'Callao, Peru')
+    >>>> lima = merge_geom_downloads([lima, callao])
     >>>> pop = pop_lima = download_hdx_population_data("4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/317f1c39-8417-4bde-a076-99bd37feefce/download/population_per_2018-10-01.csv.zip")
-    >>>> filter_population(pop, lima_)
+    >>>> filter_population(pop, lima)
     latitude   | longitude  | population_2015 | population_2020 | geometry
     -12.519861 | -76.774583 | 2.633668        | 2.644757        | POINT (-76.77458 -12.51986)
     -12.519861 | -76.745972 | 2.633668        | 2.644757        | POINT (-76.74597 -12.51986)

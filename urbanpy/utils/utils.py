@@ -119,31 +119,11 @@ def tuples_to_lists(json):
     Examples
     --------
 
-    >> json = {
-        'type': 'FeatureCollection',
-        'features': [
-            {
-                'id': 0,
-                'geometry': {
-                    'coordinates' = (((-77, -12), (-77.1, -12.1)))
-                }
-            }
-        ]
-    }
+    >>>> json = { 'type': 'FeatureCollection', 'features': [{'id': 0, 'geometry': {'coordinates' = (((-77, -12), (-77.1, -12.1)))}}]}
 
-    >> tuples_to_lists(json)
+    >>>> tuples_to_lists(json)
 
-    {
-        'type': 'FeatureCollection',
-        'features': [
-            {
-                'id': 0,
-                'geometry': {
-                    'coordinates' = [[[-77, -12], [-77.1, -12.1]]]
-                }
-            }
-        ]
-    }
+    {'type': 'FeatureCollection', 'features': [{'id': 0, 'geometry': {'coordinates' = [[[-77, -12], [-77.1, -12.1]]]}}]}
 
     '''
 
