@@ -33,8 +33,8 @@ def download_osm(expected_position, query):
     Examples
     --------
 
-    >> lima = download_osm(2, "Lima, Peru")
-    >> lima.head()
+    >>> lima = download_osm(2, "Lima, Peru")
+    >>> lima.head()
     geometry	 | place_id	 | osm_type	| osm_id     | display_name	| place_rank  |  category | type	       | importance	| icon
     MULTIPOLYGON | 235480647 | relation	| 1944670.0  | Lima, Peru	| 12	      |  boundary |	administrative | 0.703484	| https://nominatim.openstreetmap.org/images/map...
 
@@ -67,7 +67,7 @@ def download_hdx(resource):
 
     Returns
     -------
-    
+
     population : DataFrame
                     DataFrame with lat, lon, and population columns. Coordinates
                     are in EPSG 4326.
@@ -76,9 +76,8 @@ def download_hdx(resource):
     Examples
     --------
 
-    >> pop_lima = download_hdx_population_data("4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/317f1c39-8417-4bde-a076-99bd37feefce/download/population_per_2018-10-01.csv.zip")
-    >> pop_lima.head()
-
+    >>> pop_lima = download_hdx_population_data("4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/317f1c39-8417-4bde-a076-99bd37feefce/download/population_per_2018-10-01.csv.zip")
+    >>> pop_lima.head()
     latitude   | longitude  | population_2015 |	population_2020
     -18.339306 | -70.382361 | 11.318147	      | 12.099885
     -18.335694 | -70.393750 | 11.318147	      | 12.099885

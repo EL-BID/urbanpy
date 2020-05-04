@@ -87,7 +87,7 @@ def choropleth_map(gdf, color_column, map_center, df_filter=None, scale=False):
 
     Parameters
     ----------
-    
+
     gdf : GeoDataFrame
              Input data containing a geometry column and features
 
@@ -113,9 +113,9 @@ def choropleth_map(gdf, color_column, map_center, df_filter=None, scale=False):
     Examples
     --------
 
-    >> hex_lima = gen_hexagons(...)
-    >> hex_lima['pop_2020'] = population_2020
-    >> choropleth_map(hex_lima, 'pop_2020', [-12, -77])
+    >>> hex_lima = gen_hexagons(...)
+    >>> hex_lima['pop_2020'] = population_2020
+    >>> choropleth_map(hex_lima, 'pop_2020', [-12, -77])
 
     '''
     lat, lon = map_center
