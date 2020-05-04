@@ -14,9 +14,9 @@ def setup_osrm_server(country):
     Parameters
     ----------
 
-    country: str
+    country : str
              Which country to download data from. Expected in lower case
-    dir: str
+    dir : str
          Directory in which to save the file. Defaults to ../data/osrm/
 
     '''
@@ -38,23 +38,23 @@ def osrm_routes(origin, destination, profile):
     Parameters
     ----------
 
-    origin: DataFrame with columns x and y or Point geometry
+    origin : DataFrame with columns x and y or Point geometry
                 Input origin in lat lon pairs (y, x) to pass into the routing engine
 
-    destination: DataFrame with columns x and y or Point geometry
+    destination : DataFrame with columns x and y or Point geometry
                      Input destination in lat lon pairs (y,x) to pass to the routing engine
 
-    profile: str. One of {'foot', 'car', 'bicycle'}
+    profile : str. One of {'foot', 'car', 'bicycle'}
                  Behavior to use when routing and estimating travel time.
 
     Returns
     -------
 
-    distance: float
+    distance : float
                   Total travel distance from origin to destination in meters
-    duration: float
+    duration : float
                   Total travel time in minutes
-
+    
     '''
 
     try:

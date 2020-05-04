@@ -17,22 +17,26 @@ def pydeck_df(gdf, features, cmap, bins, color_feature):
     Parameters
     ----------
 
-    gdf: GeoDataFrame with the geometries to plot
-    features: list
+    gdf : GeoDataFrame with the geometries to plot
+
+    features : list
                   List of features to add to the polygon df
 
-    cmap: str
+    cmap : str
               Matplotlib colormap to use for plotting
-    bins: list
+
+    bins : list
               Bins to aggregate data into
-    color_feature: str
+
+    color_feature : str
                        Column name for data to transform into bins and color features
 
     Returns
     -------
 
-    polygon_df: DataFrame
+    polygon_df : DataFrame
                     df with the coordinates in a list as a column and the selected features
+
     '''
 
     cmap = plt.get_cmap(name='magma')
@@ -83,30 +87,31 @@ def choropleth_map(gdf, color_column, map_center, df_filter=None, scale=False):
 
     Parameters
     ----------
-    gdf: GeoDataFrame
+    
+    gdf : GeoDataFrame
              Input data containing a geometry column and features
 
-    color_column: str
+    color_column : str
                       Column from gdf to use as color
 
-    map_center: list
+    map_center : list
                     Map center when plotting. [lat, lon] coordinates
 
-    df_filter: pd.Series, default to None
+    df_filter : pd.Series, default to None
                    Pandas Series containing true/false values that satisfy a
                    condition (population > 100)
 
-    scale: bool
+    scale : bool
                Display scale
 
     Returns
     -------
 
-    fig: plotly.graph_objects.Figure
+    fig : plotly.graph_objects.Figure
              Figure object containing the map
 
-    Example
-    -------
+    Examples
+    --------
 
     >> hex_lima = gen_hexagons(...)
     >> hex_lima['pop_2020'] = population_2020

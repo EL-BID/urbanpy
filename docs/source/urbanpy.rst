@@ -1,17 +1,16 @@
 urbanpy package
 ===============
 
-Submodules
-----------
+Subpackages
+-----------
 
-urbanpy.urbanpy module
-----------------------
+.. toctree::
 
-.. automodule:: urbanpy.urbanpy
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   urbanpy.download
+   urbanpy.geom
+   urbanpy.plotting
+   urbanpy.routing
+   urbanpy.utils
 
 Module contents
 ---------------
