@@ -3,6 +3,7 @@ import geopandas as gpd
 import osmnx as ox
 from h3 import h3
 from tqdm import tqdm
+from shapely.geometry import Point, Polygon
 
 __all__ = [
     'merge_geom_downloads',
@@ -20,23 +21,23 @@ def merge_geom_downloads(gdfs):
     Parameters
     ----------
 
-    dfs: array_like
+    dfs : array_like
              Array of GeoDataFrames to merge
 
     Returns
     -------
 
-    concat: GeoDataFrame
+    concat : GeoDataFrame
                 Output from concatenation and unary union of geometries, providing
                 a single geometry database for the city
 
-    Example
-    -------
+    Examples
+    --------
 
-    >> lima = download_osm(2, "Lima, Peru")
-    >> callao = download_osm(1, "Lima, Peru")
-    >> lima_ = merge_geom_downloads([lima, callao])
-    >> lima_.head()
+    >>>> lima = download_osm(2, "Lima, Peru")
+    >>>> callao = download_osm(1, "Lima, Peru")
+    >>>> lima_ = merge_geom_downloads([lima, callao])
+    >>>> lima_.head()
     geometry
     MULTIPOLYGON (((-76.80277 -12.47562, -76.80261...
 
@@ -52,30 +53,31 @@ def filter_population(pop_df, polygon_gdf):
     Parameters
     ----------
 
-    pop_df: DataFrame
+    pop_df : DataFrame
                 Result from download_hdx
 
-    polygon_gdf: GeoDataFrame
+    polygon_gdf : GeoDataFrame
                      Result from download_osm or merge_geom_downloads
 
     Returns
     -------
 
-    filtered_points_gdf: GeoDataFrame
+    filtered_points_gdf : GeoDataFrame
                          Population DataFrame filtered to polygon bounds
 
-    Example
-    -------
-    >> lima, callao = download_osm(...), download_osm(...)
-    >> lima_ = merge_geom_downloads([lima, callao])
-    >> pop = pop_lima = download_hdx_population_data("4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/317f1c39-8417-4bde-a076-99bd37feefce/download/population_per_2018-10-01.csv.zip")
-    >> filter_population(pop, lima_)
-        latitude   | longitude  | population_2015 | population_2020 | geometry
-        -12.519861 | -76.774583 | 2.633668        | 2.644757        | POINT (-76.77458 -12.51986)
-        -12.519861 | -76.745972 | 2.633668        | 2.644757        | POINT (-76.74597 -12.51986)
-        -12.519861 | -76.745694 | 2.633668        | 2.644757        | POINT (-76.74569 -12.51986)
-        -12.519861 | -76.742639 | 2.633668        | 2.644757        | POINT (-76.74264 -12.51986)
-        -12.519861 | -76.741250 | 2.633668        | 2.644757        | POINT (-76.74125 -12.51986)
+    Examples
+    --------
+
+    >>>> lima, callao = download_osm(...), download_osm(...)
+    >>>> lima_ = merge_geom_downloads([lima, callao])
+    >>>> pop = pop_lima = download_hdx_population_data("4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/317f1c39-8417-4bde-a076-99bd37feefce/download/population_per_2018-10-01.csv.zip")
+    >>>> filter_population(pop, lima_)
+    latitude   | longitude  | population_2015 | population_2020 | geometry
+    -12.519861 | -76.774583 | 2.633668        | 2.644757        | POINT (-76.77458 -12.51986)
+    -12.519861 | -76.745972 | 2.633668        | 2.644757        | POINT (-76.74597 -12.51986)
+    -12.519861 | -76.745694 | 2.633668        | 2.644757        | POINT (-76.74569 -12.51986)
+    -12.519861 | -76.742639 | 2.633668        | 2.644757        | POINT (-76.74264 -12.51986)
+    -12.519861 | -76.741250 | 2.633668        | 2.644757        | POINT (-76.74125 -12.51986)
 
     '''
 
@@ -95,25 +97,27 @@ def remove_features(gdf, bounds):
     Parameters
     ----------
 
-    gdf: GeoDataFrame
+    gdf : GeoDataFrame
              Input GeoDataFrame containing the point features filtered with filter_population
 
-    bounds: array_like
+    bounds : array_like
                 Array input following [miny, maxy, minx, maxx] for filtering
 
 
     Returns
     -------
-    gdf: GeoDataFrame
+
+    gdf : GeoDataFrame
              Input DataFrame but without the desired features
 
-    Example
-    -------
+    Examples
+    --------
 
-    >> lima = filter_population(pop_lima, poly_lima)
-    >> removed = remove_features(lima, [-12.2,-12, -77.2,-77.17]) #Remove San Lorenzo Island
-    >> print(lima.shape, removed.shape)
+    >>>> lima = filter_population(pop_lima, poly_lima)
+    >>>> removed = remove_features(lima, [-12.2,-12, -77.2,-77.17]) #Remove San Lorenzo Island
+    >>>> print(lima.shape, removed.shape)
     (348434, 4) (348427, 4)
+
     '''
     miny, maxy, minx, maxx = bounds
     filter = gdf['latitude'].between(miny,maxy) & gdf['longitude'].between(minx,maxx)
@@ -128,26 +132,26 @@ def gen_hexagons(resolution, city):
     Parameters
     ----------
 
-    resolution: int, 0:15
+    resolution : int, 0:15
                     Hexagon resolution, higher values create smaller hexagons.
 
-    city: GeoDataFrame
+    city : GeoDataFrame
               Input city polygons to transform into hexagons.
 
     Returns
     -------
 
-    city_hexagons: GeoDataFrame
+    city_hexagons : GeoDataFrame
                        Hexagon geometry GeoDataFrame (hex_id, geom).
 
-    city_centroids: GeoDataFrame
+    city_centroids : GeoDataFrame
                         Hexagon centroids for the specified city (hex_id, geom).
 
-    Example
-    -------
+    Examples
+    --------
 
-    >> lima = filter_population(pop_lima, poly_lima)
-    >> lima_hex = gen_hexagons(8, lima)
+    >>>> lima = filter_population(pop_lima, poly_lima)
+    >>>> lima_hex = gen_hexagons(8, lima)
 
         0	            | geometry
 	       888e620e41fffff | POLYGON ((-76.80007 -12.46917, -76.80439 -12.4...
@@ -201,38 +205,39 @@ def merge_shape_hex(hex, shape, how, op, agg):
 
     Parameters
     ----------
-    hex: GeoDataFrame
+
+    hex : GeoDataFrame
              Input GeoDataFrame containing hexagon geometries
 
-    shape: GeoDataFrame
+    shape : GeoDataFrame
                 Input GeoDataFrame containing points and features to be aggregated
 
-    how: str. One of {'inner', 'left', 'right'}. Determines how to merge data.
+    how : str. One of {'inner', 'left', 'right'}. Determines how to merge data.
              'left' uses keys from left and only retains geometry from left
              'right' uses keys from right and only retains geometry from right
              'inner': use intersection of keys from both dfs; retain only left geometry column
 
-    op: str. One of {'intersects', 'contains', 'within'}. Determines how
+    op : str. One of {'intersects', 'contains', 'within'}. Determines how
                  geometries are queried for merging.
 
-    agg: dict. A dictionary with column names as keys and values as aggregation
+    agg : dict. A dictionary with column names as keys and values as aggregation
              operations. The aggregation must be one of {'sum', 'min', 'max'}.
 
     Returns
     -------
 
-    hex: GeoDataFrame
+    hex : GeoDataFrame
                    Result of a spatial join within hex and points. All features are aggregated
                    based on the input parameters
 
-    Example
-    -------
+    Examples
+    --------
 
-    >> lima = download_osm(2, 'Lima, Peru')
-    >> pop_lima = download_hdx(...)
-    >> pop_df = filter_population(pop_lima, lima)
-    >> hex = gen_hexagons(8, lima)
-    >> merge_point_hex(hex, pop_df, 'inner', 'within', {'population_2020':'sum'})
+    >>>> lima = download_osm(2, 'Lima, Peru')
+    >>>> pop_lima = download_hdx(...)
+    >>>> pop_df = filter_population(pop_lima, lima)
+    >>>> hex = gen_hexagons(8, lima)
+    >>>> merge_point_hex(hex, pop_df, 'inner', 'within', {'population_2020':'sum'})
 
     0               | geometry                                          | population_2020
     888e628d8bfffff | POLYGON ((-76.66002 -12.20371, -76.66433 -12.2... | NaN
@@ -240,6 +245,7 @@ def merge_shape_hex(hex, shape, how, op, agg):
     888e62132bfffff | POLYGON ((-76.84736 -12.17523, -76.85167 -12.1... | 608.312696
     888e628debfffff | POLYGON ((-76.67982 -12.18998, -76.68413 -12.1... | NaN
     888e6299b3fffff | POLYGON ((-76.78876 -11.97286, -76.79307 -11.9... | 3225.658803
+
     '''
     joined = gpd.sjoin(shape, hex, how=how, op=op)
 
@@ -261,25 +267,25 @@ def osmnx_graph_download(gdf, net_type, basic_stats, extended_stats, connectivit
     Parameters
     ----------
 
-    gdf: GeoDataFrame
+    gdf : GeoDataFrame
              GeoDataFrame with geometries to download graphs contained within them.
 
-    basic_stats: list
+    basic_stats : list
                      List of basic stats to compute from downloaded graph
 
-    extended_stats: list
+    extended_stats : list
                         List of extended stats to compute from graph
 
-    connectivity: bool. Default False.
+    connectivity : bool. Default False.
                       Compute node and edge connectivity
 
-    anc: bool. Default False.
+    anc : bool. Default False.
              Compute avg node connectivity
-    ecc: bool. Default False.
+    ecc : bool. Default False.
              Compute shortest paths, eccentricity and topological metric
-    bc: bool. Default False.
+    bc : bool. Default False.
              Compute node betweeness centrality
-    cc: bool. Default False.
+    cc : bool. Default False.
              Compute node closeness centrality
 
     For more detail about these parameters, see https://osmnx.readthedocs.io/en/stable/osmnx.html#module-osmnx.stats
@@ -287,7 +293,8 @@ def osmnx_graph_download(gdf, net_type, basic_stats, extended_stats, connectivit
     Returns
     -------
 
-    gdf: Input GeoDataFrame with updated columns containing the selected metrics
+    gdf : Input GeoDataFrame with updated columns containing the selected metrics
+
     '''
 
     #May be a lengthy download depending on the amount of features

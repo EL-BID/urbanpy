@@ -17,18 +17,19 @@ def swap_xy(geom):
     Parameters
     ----------
 
-    geom: GeoSeries
+    geom : GeoSeries
               Input series containing the geometries needing a coordinate swap
 
     Returns
     -------
 
-    shell: list
+    shell : list
                List containing the exterior borders of the geometry
-    holes: list
+    holes : list
                Array of all holes within a geometry. Only for Polygon and Multipolygon
-    coords: list
+    coords : list
                 List of geomerty type with the swapped x,y coordinates
+
     '''
     if geom.is_empty:
         return geom
@@ -65,24 +66,24 @@ def nn_search(tree_features, query_features, metric='haversine', convert_radians
     Parameters
     ----------
 
-    tree_features: array_like
+    tree_features : array_like
                        Input features to create the search tree. Features are in
                        lat, lon format, in radians
 
-    query_features: array_like
+    query_features : array_like
                         Points to which calculate the nearest neighbor within the tree.
                         latlon coordinates expected in radians for distance calculation
 
-    metric: str
+    metric : str
                 Distance metric for neighorhood search. Default haversine for latlon coordinates.
 
-    convert_radians: bool
+    convert_radians : bool
                          Flag in case features are not in radians and need to be converted
 
     Returns
     -------
 
-    distances: array_like
+    distances : array_like
                    Array with the corresponding distance in km (haversine distance * earth radius)
 
     '''
@@ -106,20 +107,20 @@ def tuples_to_lists(json):
     Parameters
     ----------
 
-    json: GeoJSON from a GeoDataFrame.__geo_interface__
+    json : GeoJSON from a GeoDataFrame.__geo_interface__
 
 
     Returns
     -------
 
-    json: dict
+    json : dict
               GeoJSON with the corrected features
 
-    Example
-    -------
+    Examples
+    --------
 
     >> json = {
-        'type': 'FeatureCollection'
+        'type': 'FeatureCollection',
         'features': [
             {
                 'id': 0,
@@ -133,7 +134,7 @@ def tuples_to_lists(json):
     >> tuples_to_lists(json)
 
     {
-        'type': 'FeatureCollection'
+        'type': 'FeatureCollection',
         'features': [
             {
                 'id': 0,
@@ -143,6 +144,7 @@ def tuples_to_lists(json):
             }
         ]
     }
+
     '''
 
     for i in range(len(json['features'])):

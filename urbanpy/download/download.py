@@ -30,13 +30,14 @@ def download_osm(expected_position, query):
           GeoDataFrame with the city's polygon as its geometry column
 
 
-    Example
-    -------
+    Examples
+    --------
 
     >> lima = download_osm(2, "Lima, Peru")
     >> lima.head()
     geometry	 | place_id	 | osm_type	| osm_id     | display_name	| place_rank  |  category | type	       | importance	| icon
     MULTIPOLYGON | 235480647 | relation	| 1944670.0  | Lima, Peru	| 12	      |  boundary |	administrative | 0.703484	| https://nominatim.openstreetmap.org/images/map...
+
     '''
     osm_url = 'https://nominatim.openstreetmap.org/search.php'
     osm_parameters = {
@@ -59,20 +60,21 @@ def download_hdx(resource):
     Parameters
     ----------
 
-    resource: str
+    resource : str
                   Specific address to the resource for each city. Since every dataset
                   is referenced to a diferent resource id, only the base url can be provided
                   by the library
 
     Returns
     -------
-    population: DataFrame
+    
+    population : DataFrame
                     DataFrame with lat, lon, and population columns. Coordinates
                     are in EPSG 4326.
 
 
-    Example
-    -------
+    Examples
+    --------
 
     >> pop_lima = download_hdx_population_data("4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/317f1c39-8417-4bde-a076-99bd37feefce/download/population_per_2018-10-01.csv.zip")
     >> pop_lima.head()
@@ -111,8 +113,8 @@ def download_overpass_poi(bounds, est_type):
     gdf_nodes: Only if 'parks_pitches' selected. Returns point geometry POI GeoDataFrame
     gdf_ways: Only if 'parks_pitches' selected. Returns polygon geometry POI GeoDataFrame
 
-    Example
-    -------
+    Examples
+    --------
 
     '''
     minx, miny, maxx, maxy = bounds
