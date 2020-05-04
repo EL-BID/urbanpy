@@ -1,3 +1,1 @@
-from .urbanpy import Urbanpy
-
-up = Urbanpy()
+from .urbanpy import *
