@@ -34,10 +34,10 @@ def merge_geom_downloads(gdfs):
     Examples
     --------
 
-    >>>> lima = download_osm(2, "Lima, Peru")
-    >>>> callao = download_osm(1, "Callao, Peru")
-    >>>> lima = merge_geom_downloads([lima, callao])
-    >>>> lima.head()
+    >>> lima = download_osm(2, "Lima, Peru")
+    >>> callao = download_osm(1, "Callao, Peru")
+    >>> lima = merge_geom_downloads([lima, callao])
+    >>> lima.head()
     geometry
     MULTIPOLYGON (((-76.80277 -12.47562, -76.80261...)))
 
@@ -68,11 +68,11 @@ def filter_population(pop_df, polygon_gdf):
     Examples
     --------
 
-    >>>> lima = download_osm(2, 'Lima, Peru')
-    >>>> callao = download_osm(1, 'Callao, Peru')
-    >>>> lima = merge_geom_downloads([lima, callao])
-    >>>> pop = pop_lima = download_hdx_population_data("4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/317f1c39-8417-4bde-a076-99bd37feefce/download/population_per_2018-10-01.csv.zip")
-    >>>> filter_population(pop, lima)
+    >>> lima = download_osm(2, 'Lima, Peru')
+    >>> callao = download_osm(1, 'Callao, Peru')
+    >>> lima = merge_geom_downloads([lima, callao])
+    >>> pop = pop_lima = download_hdx_population_data("4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/317f1c39-8417-4bde-a076-99bd37feefce/download/population_per_2018-10-01.csv.zip")
+    >>> filter_population(pop, lima)
     latitude   | longitude  | population_2015 | population_2020 | geometry
     -12.519861 | -76.774583 | 2.633668        | 2.644757        | POINT (-76.77458 -12.51986)
     -12.519861 | -76.745972 | 2.633668        | 2.644757        | POINT (-76.74597 -12.51986)
@@ -114,9 +114,9 @@ def remove_features(gdf, bounds):
     Examples
     --------
 
-    >>>> lima = filter_population(pop_lima, poly_lima)
-    >>>> removed = remove_features(lima, [-12.2,-12, -77.2,-77.17]) #Remove San Lorenzo Island
-    >>>> print(lima.shape, removed.shape)
+    >>> lima = filter_population(pop_lima, poly_lima)
+    >>> removed = remove_features(lima, [-12.2,-12, -77.2,-77.17]) #Remove San Lorenzo Island
+    >>> print(lima.shape, removed.shape)
     (348434, 4) (348427, 4)
 
     '''
@@ -151,22 +151,20 @@ def gen_hexagons(resolution, city):
     Examples
     --------
 
-    >>>> lima = filter_population(pop_lima, poly_lima)
-    >>>> lima_hex = gen_hexagons(8, lima)
-
-        0	            | geometry
-	       888e620e41fffff | POLYGON ((-76.80007 -12.46917, -76.80439 -12.4...
-	       888e62c809fffff | POLYGON ((-77.22539 -12.08663, -77.22971 -12.0...
-	       888e62c851fffff | POLYGON ((-77.20708 -12.08484, -77.21140 -12.0...
-	       888e62c841fffff | POLYGON ((-77.22689 -12.07104, -77.23122 -12.0...
-	       888e62c847fffff | POLYGON ((-77.23072 -12.07929, -77.23504 -12.0...
-
-        0	            | geometry
-        888e620e41fffff | POINT (-76.79956 -12.47436)
-        888e62c809fffff | POINT (-77.22488 -12.09183)
-        888e62c851fffff | POINT (-77.20658 -12.09004)
-        888e62c841fffff | POINT (-77.22639 -12.07624)
-        888e62c847fffff | POINT (-77.23021 -12.08448)
+    >>> lima = filter_population(pop_lima, poly_lima)
+    >>> lima_hex = gen_hexagons(8, lima)
+    0	            | geometry
+    888e620e41fffff | POLYGON ((-76.80007 -12.46917, -76.80439 -12.4...))
+    888e62c809fffff | POLYGON ((-77.22539 -12.08663, -77.22971 -12.0...))
+    888e62c851fffff | POLYGON ((-77.20708 -12.08484, -77.21140 -12.0...))
+    888e62c841fffff | POLYGON ((-77.22689 -12.07104, -77.23122 -12.0...))
+    888e62c847fffff | POLYGON ((-77.23072 -12.07929, -77.23504 -12.0...))
+    0	            | geometry
+    888e620e41fffff | POINT (-76.79956 -12.47436)
+    888e62c809fffff | POINT (-77.22488 -12.09183)
+    888e62c851fffff | POINT (-77.20658 -12.09004)
+    888e62c841fffff | POINT (-77.22639 -12.07624)
+    888e62c847fffff | POINT (-77.23021 -12.08448)
 
     '''
 
@@ -234,12 +232,11 @@ def merge_shape_hex(hex, shape, how, op, agg):
     Examples
     --------
 
-    >>>> lima = download_osm(2, 'Lima, Peru')
-    >>>> pop_lima = download_hdx(...)
-    >>>> pop_df = filter_population(pop_lima, lima)
-    >>>> hex = gen_hexagons(8, lima)
-    >>>> merge_point_hex(hex, pop_df, 'inner', 'within', {'population_2020':'sum'})
-
+    >>> lima = download_osm(2, 'Lima, Peru')
+    >>> pop_lima = download_hdx(...)
+    >>> pop_df = filter_population(pop_lima, lima)
+    >>> hex = gen_hexagons(8, lima)
+    >>> merge_point_hex(hex, pop_df, 'inner', 'within', {'population_2020':'sum'})
     0               | geometry                                          | population_2020
     888e628d8bfffff | POLYGON ((-76.66002 -12.20371, -76.66433 -12.2... | NaN
     888e62c5ddfffff | POLYGON ((-76.94564 -12.16138, -76.94996 -12.1... | 14528.039097
