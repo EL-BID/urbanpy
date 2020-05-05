@@ -13,3 +13,4 @@ pydeck
 scikit-learn
 rtree
 descartes
+googlemaps
