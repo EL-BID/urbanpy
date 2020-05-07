@@ -4,13 +4,15 @@ import googlemaps
 import sys
 import numpy as np
 from tqdm import tqdm
+from numba import jit
 
 __all__ = [
     'setup_osrm_server',
     'stop_osrm_server',
-    'osrm_routes',
+    'osrm_route',
     'google_maps_dist_matrix',
-    'ors_api'
+    'ors_api',
+    'compute_osrm_dist_matrix'
 ]
 
 def setup_osrm_server(country, downloaded=False):
@@ -281,7 +283,7 @@ def compute_osrm_dist_matrix(origins, destinations, profile):
        [19253.1, 17320.2, 14377.9, 28023.2, 16628.4]])
 
     '''
-    
+
     dist_matrix = []
     dur_matrix = []
 
