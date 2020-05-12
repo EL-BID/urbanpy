@@ -101,12 +101,12 @@ def osrm_route(origin, destination, profile):
                   Total travel time in minutes
 
     '''
+    orig = f'{origin.x},{origin.y}'
+    dest = f'{destination.x},{destination.y}'
+    url = f'http://localhost:5000/route/v1/{profile}/{orig};{dest}' # Local osrm server
+    response = requests.get(url, params={'overview': 'false'})
 
-    try:
-        orig = f'{origin.x},{origin.y}'
-        dest = f'{destination.x},{destination.y}'
-        url = f'http://localhost:5000/route/v1/{profile}/{orig};{dest}' # Local osrm server
-        response = requests.get(url, params={'overview': 'false'})
+    try:    
         data = response.json()['routes'][0]
         distance, duration = data['distance'], data['duration']
         return distance, duration
@@ -298,3 +298,62 @@ def compute_osrm_dist_matrix(origins, destinations, profile):
         dur_matrix.append(dur_row)
 
     return np.array(dist_matrix), np.array(dur_matrix)
+
+def google_maps_dir_matrix(origin, destination, mode, api_key, **kwargs):
+    '''
+    Google Maps distance matrix support.
+
+    Parameters
+    ----------
+
+    origin : tuple, list or str
+            Origin for distance calculation. If tuple or list, a matrix for all
+            lat-lon pairs will be computed (origin as rows). If str, google_maps
+            will georeference and then compute.
+
+    destination : tuple, list or str
+                 Origin for distance calculation. If tuple or list, a matrix for all
+                 lat-lon pairs will be computed (origin as rows). If str, google_maps
+                 will georeference and then compute.
+
+    mode : str. One of {"driving", "walking", "transit", "bicycling"}
+          Mode for travel time calculation
+
+    api_key : str
+              Google Maps API key
+
+    **kwargs
+        Additional keyword arguments for the distance matrix API. See
+        https://github.com/googlemaps/google-maps-services-python/blob/master/googlemaps/directions.py
+
+    Returns
+    -------
+
+    dist : int
+           Distance for the o/d pair. Depends on metric parameter
+
+    time : int
+           Travel time duration, depends on units kwargs
+
+    Examples
+    --------
+
+    See also
+    --------
+
+
+
+    '''
+
+    client = googlemaps.Client(key=api_key)
+
+    try:
+        r = client.directions(origin, destination, mode=mode, **kwargs)
+        dist = r['routes'][0]['steps']['distance']['value']
+        time = r['routes'][0]['steps']['duration']['value']
+    except Exception as err:
+        print('')
+        dist = None
+        time = None
+
+    return dist, time

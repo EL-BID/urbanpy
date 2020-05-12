@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
      name='urbanpy',
-     version='0.2',
+     version='0.4',
      #scripts=['bin/pull_osrm.sh'] ,
      author="Andres Regal, Claudio Ortega",
      author_email="a.regalludowieg@up.edu.pe",
