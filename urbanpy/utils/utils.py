@@ -90,8 +90,7 @@ def nn_search(tree_features, query_features, metric='haversine', convert_radians
 
     if convert_radians:
         tf = pd.DataFrame(tree_features)
-        tf[0] = tf[0].apply(radians)
-        tf[1] = tf[1].apply(radians)
+        tf = tf.applymap(radians)
         tree = BallTree(tf, metric=metric)
     else:
         tree = BallTree(tree_features, metric=metric)
