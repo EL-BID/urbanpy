@@ -12,7 +12,8 @@ __all__ = [
     'osrm_route',
     'google_maps_dist_matrix',
     'ors_api',
-    'compute_osrm_dist_matrix'
+    'compute_osrm_dist_matrix',
+    'google_maps_dir_matrix'
 ]
 
 def setup_osrm_server(country, downloaded=False):
@@ -106,7 +107,7 @@ def osrm_route(origin, destination, profile):
     url = f'http://localhost:5000/route/v1/{profile}/{orig};{dest}' # Local osrm server
     response = requests.get(url, params={'overview': 'false'})
 
-    try:    
+    try:
         data = response.json()['routes'][0]
         distance, duration = data['distance'], data['duration']
         return distance, duration
@@ -155,6 +156,14 @@ def google_maps_dist_matrix(origin, destination, mode, api_key, **kwargs):
     Examples
     --------
 
+    >>> API_KEY = 'example-key'
+    >>> up.routing.google_maps_dist_matrix('San Juan de Lurigancho', 'Miraflores', 'walking', API_KEY)
+        (18477, 13494)
+    >>> up.routing.google_maps_dist_matrix((-12,-77), (-12.01,-77.01), 'walking', API_KEY)
+        (2428, 1838)
+    >>> up.routing.google_maps_dist_matrix([(-12,-77),(-12.11,-77.01)], [(-12.11,-77.01),(-12,-77)], 'walking', API_KEY)
+        ([[13743, 0], [0, 13720]], [[10232, 0], [0, 10674]])
+
     See also
     --------
 
@@ -166,10 +175,20 @@ def google_maps_dist_matrix(origin, destination, mode, api_key, **kwargs):
 
     try:
         r = client.distance_matrix(origin, destination, mode=mode, **kwargs)
-        dist = r["rows"][0]["elements"][0]["distance"]["value"]
-        time = r["rows"][0]["elements"][0]["duration"]["value"]
+
+        rows = r['rows']
+
+        dist, time = [], []
+
+        if len(rows) > 1:
+            for row in rows:
+                dist.append([element['distance']['value'] for element in row['elements']])
+                time.append([element['duration']['value'] for element in row['elements']])
+        else:
+            dist = r["rows"][0]["elements"][0]["distance"]["value"]
+            time = r["rows"][0]["elements"][0]["duration"]["value"]
     except Exception as err:
-        print('')
+        print(err)
         dist = None
         time = None
 
@@ -338,6 +357,10 @@ def google_maps_dir_matrix(origin, destination, mode, api_key, **kwargs):
     Examples
     --------
 
+    >>> API_KEY = 'example-key'
+    >>> up.routing.google_maps_dir_matrix('San Juan de Lurigancho', 'Miraflores', 'walking', API_KEY)
+        (18477, 13494)
+
     See also
     --------
 
@@ -349,10 +372,21 @@ def google_maps_dir_matrix(origin, destination, mode, api_key, **kwargs):
 
     try:
         r = client.directions(origin, destination, mode=mode, **kwargs)
-        dist = r['routes'][0]['steps']['distance']['value']
-        time = r['routes'][0]['steps']['duration']['value']
+
+        legs = r[0]['legs']
+
+        dist, time = 0, 0
+
+        if len(legs) > 1:
+            for leg in legs:
+                dist += leg['distance']['value']
+                time += leg['duration']['value']
+        else:
+            dist = legs[0]['distance']['value']
+            time = legs[0]['duration']['value']
+
     except Exception as err:
-        print('')
+        print(err)
         dist = None
         time = None
 
