@@ -101,12 +101,6 @@ def choropleth_map(gdf, color_column, df_filter=None, **kwargs):
 
     **kargs : Any parameter of plotly.px.choroplethmapbox.
 
-    Returns
-    -------
-
-    fig : plotly.graph_objects.Figure
-             Figure object containing the map
-
     Examples
     --------
 
@@ -122,7 +116,6 @@ def choropleth_map(gdf, color_column, df_filter=None, **kwargs):
     else:
         gdff = gdf.copy()
 
-
     gdff = gdff.reset_index()[['index', color_column, 'geometry']].dropna()
     lon, lat = gdff.geometry.unary_union.centroid.xy
 
@@ -131,3 +124,42 @@ def choropleth_map(gdf, color_column, df_filter=None, **kwargs):
                                center={"lat": lat[0], "lon": lon[0]},
                                mapbox_style="carto-positron", **kwargs)
     fig.show()
+
+def scatterplot(df, x, y, engine, save, filename=None, **kwargs):
+    '''
+    Simple function of scatterplots using either matplotlib of plotly to generate
+    scatterplot visualization of data.
+
+    Parameters
+    ----------
+
+    df: DataFrame or GeoDataFrame
+        Input data to plot
+    x: str
+       Input column to use in the x-axis
+    y: str
+       Input column to use in the y-axis
+
+    engine: str. One of {'matplotlib', 'plotly'}
+            Plotting library to use
+
+    save: bool
+          Flag to determine if the figure should be saved
+
+    filename: str
+              Path to save figure to
+
+    Returns
+    -------
+
+    Examples
+    --------
+
+    '''
+
+    if engine == 'matplotlib':
+        fig = plt.figure()
+        scatter = plt.scatter(df[x], df[y])
+
+    else:
+        pass
