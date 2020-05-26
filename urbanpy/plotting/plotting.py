@@ -1,6 +1,6 @@
 import pydeck as pdk
 import pandas as pd
-import plotly.graph_objects as go
+import plotly.express as px
 import matplotlib.pyplot as plt
 from urbanpy.utils import tuples_to_lists
 
@@ -81,7 +81,7 @@ def gen_pydeck_layer(layer_type, data, **kwargs):
     else:
         return pdk.Layer('PolygonLayer', data, **kwargs)
 
-def choropleth_map(gdf, color_column, map_center, df_filter=None, scale=False):
+def choropleth_map(gdf, color_column, df_filter=None, **kwargs):
     '''
     Produce a Choroplethmap using plotly by passing a GeoDataFrame.
 
@@ -94,15 +94,12 @@ def choropleth_map(gdf, color_column, map_center, df_filter=None, scale=False):
     color_column : str
                       Column from gdf to use as color
 
-    map_center : list
-                    Map center when plotting. [lat, lon] coordinates
 
     df_filter : pd.Series, default to None
                    Pandas Series containing true/false values that satisfy a
-                   condition (population > 100)
+                   condition (e.g. (df['population'] > 100))
 
-    scale : bool
-               Display scale
+    **kargs : Any parameter of plotly.px.choroplethmapbox.
 
     Returns
     -------
@@ -118,40 +115,19 @@ def choropleth_map(gdf, color_column, map_center, df_filter=None, scale=False):
     >>> choropleth_map(hex_lima, 'pop_2020', [-12, -77])
 
     '''
-    lat, lon = map_center
+
 
     if df_filter is not None:
-        fig = go.Figure(
-        go.Choroplethmapbox(
-            geojson=gdf[['geometry']].__geo_interface__,
-            locations=gdf[filtro_pob_vulnerable].index.values.tolist(),
-            z=gdf[filtro_pob_vulnerable][color_column].values.tolist(),
-            showscale=scale,
-            marker_opacity=0.5,
-            marker_line_width=0,
-            )
-        )
+        gdff = gdf[df_filter].copy()
     else:
-        fig = go.Figure(
-        go.Choroplethmapbox(
-            geojson=gdf[['geometry']].__geo_interface__,
-            locations=gdf.index.values.tolist(),
-            z=gdf[color_column].values.tolist(),
-            showscale=False,
-            marker_opacity=0.5,
-            marker_line_width=0,
-            )
-        )
+        gdff = gdf.copy()
 
-    fig.update_layout(
-        mapbox_style="carto-positron",
-        mapbox_zoom=9,
-        mapbox_pitch=60,
-        mapbox_bearing=0,
-        mapbox_center = {"lat": lat,
-                         "lon": lon})
 
-    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+    gdff = gdff.reset_index()[['index', color_column, 'geometry']].dropna()
+    lon, lat = gdff.geometry.unary_union.centroid.xy
+
+    fig = px.choropleth_mapbox(gdff, geojson=gdff[['geometry']].__geo_interface__,
+                               color=color_column, locations="index",
+                               center={"lat": lat[0], "lon": lon[0]},
+                               mapbox_style="carto-positron", **kwargs)
     fig.show()
-
-    return fig
