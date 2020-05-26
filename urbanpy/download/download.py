@@ -1,13 +1,14 @@
 import requests
 import geopandas as gpd
 import pandas as pd
+import numpy as np
 from shapely.geometry import Point, Polygon
 from urbanpy.utils import shell_from_geometry
 
 __all__ = [
-    'download_overpass_poi',
     'nominatim_osm',
     'hdx_dataset',
+    'overpass_pois',
 ]
 
 def nominatim_osm(query, expected_position=0):
@@ -90,7 +91,7 @@ def hdx_dataset(resource):
     population = pd.read_csv(hdx_url)
     return population
 
-def download_overpass_poi(bounds, est_type):
+def overpass_pois(bounds, facilities=None, custom_query=None):
     '''
     Download POIs using Overpass API
 
@@ -100,17 +101,19 @@ def download_overpass_poi(bounds, est_type):
     bounds: array_like
                 Input bounds for query. Follows [minx,miny,maxx,maxy] pattern.
 
-    est_type: {'food_supply', 'healthcare_facilities', 'parks_pitches'}
-                  Type of establishment to download. Based on this a different type of query
-                  is constructed.
+    facilities: {'food', 'health', 'education', 'financial'}
+                Type of facilities to download according to HOTOSM types. Based on this a different type of query is constructed.
+
+    custom_query: str (Optional)
+                String with custom Overpass QL query (See https://wiki.openstreetmap.org/wiki/Overpass_API/Language_Guide). If this parameter is diferent than None, bounds and facilities values are ignored. Defaults to None.
+
 
     Returns
     -------
 
-    gdf: GeoDataFrame containing all de POIs from the desired query
+    gdf: GeoDataFrame containing all the POIs from the selected type of facility
 
-    gdf_nodes: Only if 'parks_pitches' selected. Returns point geometry POI GeoDataFrame
-    gdf_ways: Only if 'parks_pitches' selected. Returns polygon geometry POI GeoDataFrame
+    response: Only if 'custom_query' is given. Returns an HTTP response from the Overpass Server
 
     Examples
     --------
@@ -123,57 +126,38 @@ def download_overpass_poi(bounds, est_type):
         # Definir consulta para instalaciones de oferta de alimentos en Lima
     overpass_url = "http://overpass-api.de/api/interpreter"
 
-    if est_type == 'food_supply':
-        overpass_query = f"""
-            [timeout:120][out:json][bbox];
-            (
-                 node["amenity"="market_place"];
-                 node["shop"~"supermarket|kiosk|mall|convenience|butcher|greengrocer"];
-            );
-            out body geom;
-            """
-    elif est_type == 'healthcare_facilities':
-        overpass_query = f"""
-            [timeout:120][out:json][bbox];
-            (
-                 node["amenity"~"clinic|hospital"];
-            );
-            out body geom;
-            """
-    else:
-        overpass_query = f"""
-            [timeout:120][out:json][bbox];
-            (
-                 way["leisure"~"park|pitch"];
-                 node["leisure"="pitch"];
-            );
-            out body geom;
-            """
+    facilities_opt = {
+        'food': 'node["amenity"="marketplace"];\nnode["shop"~"supermarket|kiosk|mall|convenience|butcher|greengrocer"];',
+        'health': 'node["amenity"~"doctors|dentist|clinic|hospital|pharmacy"];',
+        'education': 'node["amenity"~"kindergarten|school|college|university"];',
+        'finance': 'node["amenity"~"mobile_money_agent|bureau_de_change|bank|microfinance|atm|sacco|money_transfer|post_office"];',
+    }
 
-        # Request data
-    response = requests.get(overpass_url, params={'data': overpass_query,
+    if custom_query == None:
+        overpass_query = f"""
+            [timeout:120][out:json][bbox];
+            (
+                 {facilities_opt[facilities]}
+            );
+            out body geom;
+            """
+        # Request data
+        response = requests.get(overpass_url, params={'data': overpass_query,
                                                       'bbox': bbox_string})
-    data = response.json()
-
-    if est_type != 'parks_pitches':
+        data = response.json()
         df = pd.DataFrame.from_dict(data['elements'])
         df_geom = gpd.points_from_xy(df['lon'], df['lat'])
         gdf = gpd.GeoDataFrame(df, geometry=df_geom)
 
+        gdf['poi_type'] = gdf['tags'].apply(lambda tag: tag['amenity'] if 'amenity' in tag.keys() else np.NaN)
+
+        if facilities == 'food':
+            # Food facilities also have its POI type wthin the shop tag (See query)
+            also_poi_type = gdf['tags'].apply(lambda tag: tag['shop'] if 'shop' in tag.keys() else np.NaN)
+            gdf['poi_type'] = gdf['poi_type'].fillna(also_poi_type)
+
         return gdf
 
     else:
-        df = pd.DataFrame.from_dict(data['elements'])
-
-        #Process nodes
-        nodes = df[df['type'] == 'node'].drop(['bounds', 'nodes', 'geometry'], axis=1)
-        node_geom = gpd.points_from_xy(nodes['lon'], nodes['lat'])
-        node_gdf = gpd.GeoDataFrame(nodes, geometry=node_geom)
-
-        #Process ways
-        ways = df[df['type'] == 'way'].drop(['lat', 'lon'], axis=1)
-        ways['shell'] = ways['geometry'].apply(shell_from_geometry)
-        way_geom = ways['shell'].apply(Polygon)
-        way_gdf = gpd.GeoDataFrame(ways, geometry=way_geom)
-
-        return node_gdf, way_gdf
+        response = requests.get(overpass_url, params={'data': custom_query, 'bbox': bbox_string})
+        return response
