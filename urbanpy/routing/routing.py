@@ -42,7 +42,7 @@ def check_container_is_running(container_name):
 
     return container_running
 
-def start_osrm_server(country):
+def start_osrm_server(country, continent):
     '''
     Download data for OSRM, process it and start local osrm server
 
@@ -50,13 +50,16 @@ def start_osrm_server(country):
     ----------
 
     country : str
-             Which country to download data from. Expected in lower case
+             Which country to download data from. Expected in lower case & dashes replace spaces.
+    continent : str
+             Which continent of the given country. Expected in lower case & dashes replace spaces.
 
     Examples
     --------
 
-    >>> up.routing.setup_osrm_server('peru', 'south-america')
-    listening on localhost:5000
+    >>> up.routing.start_osrm_server('peru', 'south-america')
+    Starting server ...
+    Server was started succesfully.
 
     See also
     --------
