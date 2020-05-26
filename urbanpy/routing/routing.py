@@ -52,6 +52,17 @@ def start_osrm_server(country):
     country : str
              Which country to download data from. Expected in lower case
 
+    Examples
+    --------
+
+    >>> up.routing.setup_osrm_server('peru', 'south-america')
+    listening on localhost:5000
+
+    See also
+    --------
+
+    http://project-osrm.org/docs/v5.5.1/api/#general-options
+
     '''
 
     # Download, process and run server command sequence
@@ -59,7 +70,7 @@ def start_osrm_server(country):
     docker pull osrm/osrm-backend;
     mkdir -p ~/data/osrm/;
     cd ~/data/osrm/;
-    wget https://download.geofabrik.de/south-america/{country}-latest.osm.pbf;
+    wget https://download.geofabrik.de/{continent}/{country}-latest.osm.pbf;
     docker run -t --name osrm_extract -v $(pwd):/data osrm/osrm-backend osrm-extract -p /opt/foot.lua /data/{country}-latest.osm.pbf;
     docker run -t --name osrm_partition -v $(pwd):/data osrm/osrm-backend osrm-partition /data/{country}-latest.osm.pbf;
     docker run -t --name osrm_customize -v $(pwd):/data osrm/osrm-backend osrm-customize /data/{country}-latest.osm.pbf;
