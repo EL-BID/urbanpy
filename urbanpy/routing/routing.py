@@ -3,8 +3,8 @@ import sys
 import requests
 import googlemaps
 import numpy as np
-from tqdm import tqdm
 import time
+from tqdm.auto import tqdm
 from numba import jit
 
 __all__ = [
@@ -368,10 +368,10 @@ def compute_osrm_dist_matrix(origins, destinations, profile):
     dist_matrix = []
     dur_matrix = []
 
-    for ix, row in tqdm(origins.iterrows()):
+    for ix, row in tqdm(origins.iterrows(), total=origins.shape[0]):
         dist_row = []
         dur_row = []
-        for i, r in destinations.iterrows():
+        for i, r in tqdm(destinations.iterrows(), total=destinations.shape[0]):
             dist, dur = osrm_route(row.geometry, r.geometry, profile)
             dist_row.append(dist)
             dur_row.append(dur)
