@@ -1,13 +1,14 @@
 import subprocess
+import sys
 import requests
 import googlemaps
-import sys
 import numpy as np
 from tqdm import tqdm
+import time
 from numba import jit
 
 __all__ = [
-    'setup_osrm_server',
+    'start_osrm_server',
     'stop_osrm_server',
     'osrm_route',
     'google_maps_dist_matrix',
@@ -16,22 +17,44 @@ __all__ = [
     'google_maps_dir_matrix'
 ]
 
-def setup_osrm_server(country, downloaded=False):
+CONTAINER_NAME = 'osrm_routing_server'
+
+def check_container_is_running(container_name):
     '''
-    Download data for OSRM, process it and
+    Checks if a container is running
+
+    Parameters
+    ----------
+
+    container_name : str
+        Name of container to check
+
+    Returns
+    -------
+
+    container_running : bool
+        True if container is running, False otherwise.
+
+    '''
+    completed_process = subprocess.run(['docker', 'ps'], check=True, capture_output=True)
+    stdout_str = completed_process.stdout.decode('utf-8')
+    container_running = container_name in stdout_str
+
+    return container_running
+
+def start_osrm_server(country):
+    '''
+    Download data for OSRM, process it and start local osrm server
 
     Parameters
     ----------
 
     country : str
              Which country to download data from. Expected in lower case
-    downloaded : bool
-                 Boolean to decide if data needs to be downloaded and processed,
-                 or just a container run is needed.
 
     '''
 
-    #Download, process and run server command sequence
+    # Download, process and run server command sequence
     dwn_str = f'''
     docker pull osrm/osrm-backend;
     mkdir -p ~/data/osrm/;
@@ -41,7 +64,7 @@ def setup_osrm_server(country, downloaded=False):
     docker run -t --name osrm_partition -v $(pwd):/data osrm/osrm-backend osrm-partition /data/{country}-latest.osm.pbf;
     docker run -t --name osrm_customize -v $(pwd):/data osrm/osrm-backend osrm-customize /data/{country}-latest.osm.pbf;
     docker container rm osrm_extract osrm_partition osrm_customize;
-    docker run -t --name osrm_routing_server -p 5000:5000 -v $(pwd):/data osrm/osrm-backend osrm-routed --algorithm mld /data/{country}-latest.osm.pbf;
+    docker run -t --name {CONTAINER_NAME} -p 5000:5000 -v $(pwd):/data osrm/osrm-backend osrm-routed --algorithm mld /data/{country}-latest.osm.pbf;
     '''
 
     non_dwn_str = f'''
@@ -49,32 +72,71 @@ def setup_osrm_server(country, downloaded=False):
     docker run -t --name osrm_routing_server -p 5000:5000 -v $(pwd):/data osrm/osrm-backend osrm-routed --algorithm mld /data/{country}-latest.osm.pbf;
     '''
 
+    container_running = check_container_is_running(CONTAINER_NAME)
 
-    if not downloaded:
-        if sys.platform in ['darwin', 'linux']:
-            subprocess.Popen(dwn_str, shell=True)
-        elif sys.platform == 'win32':
-            print('Still working on windows support')
-            #subprocess.Popen(dwn_str.replace(';', '&'))
+    # Check platform
+    if sys.platform in ['darwin', 'linux']:
+        # Check if container exists:
+        if subprocess.run(['docker', 'inspect', CONTAINER_NAME]).returncode == 0:
+            if container_running:
+                print('Server is already running.')
+            else:
+                try:
+                    print('Starting server ...')
+                    subprocess.run(['docker', 'start', CONTAINER_NAME], check=True)
+                    time.sleep(5)
+                    print('Server was started succesfully')
+                except subprocess.CalledProcessError as error:
+                    print(f'Something went wrong. Please check your docker installation.\nError: {error}')
+
         else:
-            print('Platform not supported')
-    else:
-      if sys.platform in ['darwin', 'linux']:
-          subprocess.Popen(non_dwn_str, shell=True)
-      elif sys.platform == 'win32':
-          print('Still working on windows support')
-          #subprocess.Popen(non_dwn_str.replace(';', '&'))
-      else:
-          print('Platform not supported')
+            try:
+                print('This is the first time you used this function.\nInitializing server setup. This may take several minutes...')
+                subprocess.Popen(dwn_str, shell=True)
 
+                # Verify container is running
+                while container_running == False:
+                    container_running = check_container_is_running(CONTAINER_NAME)
+
+                print('Server was started succesfully')
+            except subprocess.CalledProcessError as error:
+                print(f'Something went wrong. Please check your docker installation.\nError: {error}')
+
+    elif sys.platform == 'win32':
+        print('Still working on windows support')
+        #subprocess.Popen(dwn_str.replace(';', '&'))
+
+    else:
+        print('Platform not supported')
 
 def stop_osrm_server():
     '''
     Run docker stop on the server's container.
     '''
 
-    subprocess.run(['docker', 'stop', 'osrm_routing_server'])
-    subprocess.run(['docker', 'container', 'rm', 'osrm_routing_server'])
+    # Check platform
+    if sys.platform in ['darwin', 'linux']:
+        # Check if container exists:
+        if subprocess.run(['docker', 'top', CONTAINER_NAME]).returncode == 0:
+            if check_container_is_running(CONTAINER_NAME) == True:
+                try:
+                    subprocess.run(['docker', 'stop', CONTAINER_NAME], check=True)
+                    #subprocess.run(['docker', 'container', 'rm', 'osrm_routing_server'])
+                    print('Server was stoped succesfully')
+                except subprocess.CalledProcessError as error:
+                    print(f'Something went wrong. Please check your docker installation.\nError: {error}')
+            else:
+                print('Server is not running.')
+
+        else:
+            print('Server does not exists.')
+
+    elif sys.platform == 'win32':
+        print('Still working on windows support')
+        #subprocess.Popen(dwn_str.replace(';', '&'))
+
+    else:
+        print('Platform not supported')
 
 def osrm_route(origin, destination, profile):
     '''
