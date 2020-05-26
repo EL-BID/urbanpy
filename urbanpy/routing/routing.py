@@ -16,7 +16,7 @@ __all__ = [
     'google_maps_dir_matrix'
 ]
 
-def setup_osrm_server(country, downloaded=False):
+def setup_osrm_server(country, continent, downloaded=False):
     '''
     Download data for OSRM, process it and
 
@@ -29,6 +29,17 @@ def setup_osrm_server(country, downloaded=False):
                  Boolean to decide if data needs to be downloaded and processed,
                  or just a container run is needed.
 
+    Examples
+    --------
+
+    >>> up.routing.setup_osrm_server('peru', 'south-america')
+    listening on localhost:5000
+
+    See also
+    --------
+
+    http://project-osrm.org/docs/v5.5.1/api/#general-options
+
     '''
 
     #Download, process and run server command sequence
@@ -36,7 +47,7 @@ def setup_osrm_server(country, downloaded=False):
     docker pull osrm/osrm-backend;
     mkdir -p ~/data/osrm/;
     cd ~/data/osrm/;
-    wget https://download.geofabrik.de/south-america/{country}-latest.osm.pbf;
+    wget https://download.geofabrik.de/{continent}/{country}-latest.osm.pbf;
     docker run -t --name osrm_extract -v $(pwd):/data osrm/osrm-backend osrm-extract -p /opt/foot.lua /data/{country}-latest.osm.pbf;
     docker run -t --name osrm_partition -v $(pwd):/data osrm/osrm-backend osrm-partition /data/{country}-latest.osm.pbf;
     docker run -t --name osrm_customize -v $(pwd):/data osrm/osrm-backend osrm-customize /data/{country}-latest.osm.pbf;
