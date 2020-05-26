@@ -11,6 +11,7 @@ __all__ = [
     'remove_features',
     'gen_hexagons',
     'merge_shape_hex',
+    'overlay_polygons_hexs',
     'osmnx_graph_download',
 ]
 
@@ -257,6 +258,60 @@ def merge_shape_hex(hex, shape, how, op, agg):
         ret_hex.loc[hex_merge.index, key] = hex_merge[key].values
 
     return ret_hex
+
+def overlay_polygons_hexs(polygons, hexs, hex_col, columns):
+    '''
+    Overlays a Polygon GeoDataFrame with a H3 hexagon GeoDataFrame and divide the 'columns' the values proportionally to the overlayed area.
+
+    Parameters
+    ----------
+    polygons : GeoDataFrame
+                Input GeoDataFrame containing polygons and columns recalculated
+                
+    hex : GeoDataFrame
+             Input GeoDataFrame containing hexagon geometries
+
+    hex_col : str
+            Determines the column with the hex id.
+            
+    columns : list. A list with column names of the columns that are going to be proportionally adjusted
+
+    Returns
+    -------
+
+    hex : GeoDataFrame
+                   Result of a spatial join within hex and points. All columns are adjusted
+                   based on the overlayed area.
+                   
+    Examples
+    --------
+
+    >>> overlay_polygons_hexs(zonas_pob, hex_lima, 'hex', pob_vulnerable)
+                   hex   POB_TOTAL   geometry  
+    0  898e6200493ffff  193.705376   POLYGON ((-76.80695 -12.35199, -76.80812 -12.3...
+    1  898e6200497ffff  175.749780   POLYGON ((-76.80412 -12.35395, -76.80528 -12.3...  
+    2  898e620049bffff   32.231078   POLYGON ((-76.81011 -12.35342, -76.81127 -12.3...  
+    3  898e62004a7ffff   74.154973   POLYGON ((-76.79911 -12.36468, -76.80027 -12.3...  
+    4  898e62004b7ffff   46.989828   POLYGON ((-76.79879 -12.36128, -76.79995 -12.3...  
+    '''
+    polygons_ = polygons.copy() # Preserve data state
+    polygons_['poly_area'] = polygons_.geometry.area # Calc polygon area
+    
+    # Overlay intersection
+    overlayed = gpd.overlay(polygons_, hexs, how='intersection')
+    
+    # Downsample indicators using proporional overlayed area w.r.t polygon area
+    area_prop = overlayed.geometry.area / overlayed['poly_area']
+    overlayed[columns] = overlayed[columns].apply(lambda col: col * area_prop)
+    
+    # Aggregate over Hex ID
+    per_hexagon_data = overlayed.groupby(hex_col)[columns].sum()
+    
+    # Preserve data as GeoDataFrame
+    hex_df = pd.merge(left=per_hexagon_data, right=hexs[[hex_col,'geometry']], on=hex_col)
+    hex_gdf = gpd.GeoDataFrame(hex_df[[hex_col]+columns], geometry=hex_df['geometry'], crs=hexs.crs)
+    
+    return hex_gdf
 
 def osmnx_graph_download(gdf, net_type, basic_stats, extended_stats, connectivity=False, anc=False, ecc=False, bc=False, cc=False):
     '''
