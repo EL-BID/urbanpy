@@ -1,5 +1,6 @@
 import pandas as pd
 from math import radians
+from math import ceil
 from sklearn.neighbors import BallTree
 from numba import jit
 
@@ -8,6 +9,7 @@ __all__ = [
     'nn_search',
     'tuples_to_lists',
     'shell_from_geometry',
+    'create_duration_labels'
 ]
 
 def swap_xy(geom):
@@ -143,3 +145,44 @@ def shell_from_geometry(geometry):
     for record in geometry:
         shell.append([record['lon'], record['lat']])
     return shell
+
+def create_duration_labels(durations):
+    '''
+    Creates inputs for pd.cut function (bins and labels) especifically for the trip durations columns.
+
+    Parameters
+    ----------
+
+    durations : Pandas Series
+        Series containing trip durations in minutes.
+
+    Returns
+    -------
+
+    custom_bins : list
+        List of numbers with the inputs for the bins parameter of pd.cut function
+
+    custom_labels : list
+        List of numbers with the inputs for the labels parameter of pd.cut function
+
+    '''
+    default_bins = [0, 15, 30, 45, 60, 90, 120]
+    default_labels = ["De 0 a 15", "De 15 a 30", "De 30 a 45", "De 45 a 60",
+                      "De 60 a 90", "De 90 a 120", "Más de 120"]
+
+    bins_ = default_bins.copy()
+
+    max_duration_raw = durations.max()
+    max_duration_asint = ceil(max_duration_raw)
+
+    bins_.insert(0, max_duration_asint)
+    bins_ = sorted(set(bins_))
+    ix = bins_.index(max_duration_asint)
+
+    if (ix + 1) >= len(default_bins) and max_duration_asint != default_bins[-1]:
+        default_bins.append(max_duration_asint)
+
+    custom_bins = default_bins[:ix + 1]
+    custom_labels = default_labels[:ix]
+
+    return custom_bins, custom_labels
