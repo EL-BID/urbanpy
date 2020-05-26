@@ -5,9 +5,9 @@ from shapely.geometry import Point, Polygon
 from urbanpy.utils import shell_from_geometry
 
 __all__ = [
-    'download_hdx',
     'download_overpass_poi',
     'nominatim_osm',
+    'hdx_dataset',
 ]
 
 def nominatim_osm(query, expected_position=0):
@@ -53,7 +53,7 @@ def nominatim_osm(query, expected_position=0):
 
     return city
 
-def download_hdx(resource):
+def hdx_dataset(resource):
     '''
     Download the High Resolution Population Density maps from HDX.
 
