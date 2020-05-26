@@ -66,7 +66,7 @@ UrbanPy lets you download and visualize city boundaries extremely easy:
 ```python
 import urbanpy as up
 
-boundaries = up.download.download_osm(2, 'Lima, Peru')
+boundaries = up.download.nominatim_osm('Lima, Peru', expected_position=2)
 boundaries.plot()
 ```
 
