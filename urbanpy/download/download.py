@@ -5,35 +5,35 @@ from shapely.geometry import Point, Polygon
 from urbanpy.utils import shell_from_geometry
 
 __all__ = [
-    'download_osm',
     'download_hdx',
     'download_overpass_poi',
+    'nominatim_osm',
 ]
 
-def download_osm(expected_position, query):
+def nominatim_osm(query, expected_position=0):
     '''
     Download OpenStreetMaps data for a specific city
 
     Parameters
     ----------
 
-    expected_position: int
-                       Expected position of the polygon data within the Nominatim results
-
     query: str
-           Query for city polygon data to be downloaded
+        Query for city polygon data to be downloaded
+
+    expected_position: int 0:n
+        Expected position of the polygon data within the Nominatim results. Default 0 (first result).
 
     Returns
     -------
 
     city: GeoDataFrame
-          GeoDataFrame with the city's polygon as its geometry column
+        GeoDataFrame with the city's polygon as its geometry column
 
 
     Examples
     --------
 
-    >>> lima = download_osm(2, "Lima, Peru")
+    >>> lima = download_osm("Lima, Peru", 2)
     >>> lima.head()
     geometry	 | place_id	 | osm_type	| osm_id     | display_name	| place_rank  |  category | type	       | importance	| icon
     MULTIPOLYGON | 235480647 | relation	| 1944670.0  | Lima, Peru	| 12	      |  boundary |	administrative | 0.703484	| https://nominatim.openstreetmap.org/images/map...
