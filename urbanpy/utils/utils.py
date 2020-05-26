@@ -1,5 +1,5 @@
 import pandas as pd
-from math import radians
+import numpy as np
 from math import ceil
 from sklearn.neighbors import BallTree
 from numba import jit
@@ -61,44 +61,48 @@ def swap_xy(geom):
     else:
         raise ValueError('Type %r not recognized' % geom.type)
 
-def nn_search(tree_features, query_features, metric='haversine', convert_radians=False):
+def nn_search(tree_features, query_features, metric='haversine'):
     '''
-    Build a BallTree for nearest neighbor search based on haversine distance.
+    Build a BallTree for nearest neighbor search based on selected distance.
 
     Parameters
     ----------
 
     tree_features : array_like
                        Input features to create the search tree. Features are in
-                       lat, lon format, in radians
+                       lat, lon format.
 
     query_features : array_like
                         Points to which calculate the nearest neighbor within the tree.
-                        latlon coordinates expected in radians for distance calculation
+                        lat, lon coordinates expected.
 
     metric : str
-                Distance metric for neighorhood search. Default haversine for latlon coordinates.
-
-    convert_radians : bool
-                         Flag in case features are not in radians and need to be converted
+                Distance metric for neighorhood search. Default haversine for latlon coordinates. If haversine is selected lat, lon coordinates are converted to radians.
 
     Returns
     -------
 
-    distances : array_like
-                   Array with the corresponding distance in km (haversine distance * earth radius)
+    dist : array_like
+                   Array with the corresponding distance in km (if haversine then distance * earth radius)
+
+    ind : array_like
+                   Array with the corresponding index of the tree_feaures values.
 
     '''
 
-    if convert_radians:
-        tf = pd.DataFrame(tree_features)
-        tf = tf.applymap(radians)
+    if metric == 'haversine':
+
+        tf = np.radians(tree_features)
         tree = BallTree(tf, metric=metric)
+
+        qf = np.radians(query_features)
+
+        dist, ind = tree.query(qf)
+        return dist * 6371000/1000, ind
     else:
         tree = BallTree(tree_features, metric=metric)
-
-
-    return tree.query(query_features)[0] * 6371000/1000
+        dist, ind = tree.query(query_features)
+        return dist, ind
 
 @jit
 def tuples_to_lists(json):
