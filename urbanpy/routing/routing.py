@@ -189,9 +189,7 @@ def osrm_route(origin, destination, profile):
         return distance, duration
     except Exception as err:
         print(err)
-        print(response.reason)
-        print(response.url)
-        pass
+        return None, None
 
 def google_maps_dist_matrix(origin, destination, mode, api_key, **kwargs):
     '''
