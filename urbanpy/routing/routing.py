@@ -336,7 +336,7 @@ def ors_api(locations, origin, destination, profile, metrics, api_key):
     else:
         return -1, -1
 
-@jit
+@jit(forceobj=True)
 def compute_osrm_dist_matrix(origins, destinations, profile):
     '''
     Compute distance and travel time origin-destination matrices
