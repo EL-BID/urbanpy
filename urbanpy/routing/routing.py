@@ -4,6 +4,7 @@ import requests
 import googlemaps
 import numpy as np
 import time
+import networkx as nx
 from tqdm.auto import tqdm
 from numba import jit
 
@@ -14,7 +15,8 @@ __all__ = [
     'google_maps_dist_matrix',
     'ors_api',
     'compute_osrm_dist_matrix',
-    'google_maps_dir_matrix'
+    'google_maps_dir_matrix',
+    'nx_route'
 ]
 
 CONTAINER_NAME = 'osrm_routing_server'
@@ -465,3 +467,62 @@ def google_maps_dir_matrix(origin, destination, mode, api_key, **kwargs):
         time = None
 
     return dist, time
+
+def nx_route(graph, source, target, weight, length=True):
+    '''
+    Compute shortest path from a source and target node.
+
+    Parameters
+    ----------
+
+    graph: NetworkX Graph
+           Input graph from which to calculate paths
+
+    source: str or int
+            ID of the source node from which to calculate path. Depending on the graph,
+            this may be a string or integer or a combination of both as tuples.
+
+    target: str or int
+            ID of the target node. Type corresponds to node id types in the input graph.
+
+    weight: str
+            Attribute to be used as weights in the path. If None returns the sequence of nodes
+            or the number of nodes to travel as length.
+
+    length: bool
+            Flag for whether to calculate the path lenght or the sequence of nodes to follow.
+            If weight is none and length is true, the number of nodes in the path will be returned.
+
+    Returns
+    -------
+
+    path: list
+          Sequence of node ids in a list.
+
+    path_length: float or int
+                 Length of the path according to the weight attribute.
+
+    Examples
+    --------
+
+    '''
+    if length:
+        try:
+            path_length = nx.shortest_path_length(graph,
+                         source,
+                         target,
+                         weight=weight)
+            return path_length
+        except:
+            #If there is no path within the graph
+            return -1
+    else:
+        try:
+            path = nx.shortest_path(graph,
+                         source,
+                         target,
+                         weight=weight)
+            return path
+        except:
+            #If there is no path within the graph
+            return -1

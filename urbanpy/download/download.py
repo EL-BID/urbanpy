@@ -2,6 +2,7 @@ import requests
 import geopandas as gpd
 import pandas as pd
 import numpy as np
+import osmnx as ox
 from shapely.geometry import Point, Polygon
 from urbanpy.utils import shell_from_geometry
 
@@ -9,6 +10,7 @@ __all__ = [
     'nominatim_osm',
     'hdx_dataset',
     'overpass_pois',
+    'osmnx_graph'
 ]
 
 def nominatim_osm(query, expected_position=0):
@@ -161,3 +163,67 @@ def overpass_pois(bounds, facilities=None, custom_query=None):
     else:
         response = requests.get(overpass_url, params={'data': custom_query, 'bbox': bbox_string})
         return response
+
+def osmnx_graph(download_type, network_type='drive', query_str=None,
+                geom=None, distance=None, **kwargs):
+    '''
+    Download a graph from OSM using osmnx.
+
+    Parameters
+    ----------
+
+    download_type: str. One of {'polygon', 'place', 'point'}
+                   Input download type. If polygon, the polygon parameter must be
+                   provided as a Shapely Polygon.
+    network_type: str. One of {'drive', 'drive_service', 'walk', 'bike', 'all', 'all_private'}
+                  Network type to download. Defaults to drive.
+
+    query_str: str
+               Optional. Only requiered for place type downloads. Query string to download a network.
+
+    polygon: Shapely Polygon or Point
+             Optional. Polygon requiered for polygon type downloads, Point for place downloads.
+             Polygons are used as bounds for network download, points as the center with a distance buffer.
+
+    distance: int
+              Distance in meters to use as buffer from a point to download the network.
+
+    Returns
+    -------
+
+    G: networkx MultiDiGraph
+       Requested graph with simplyfied geometries
+
+    Examples
+    --------
+
+    >>> poly = urbanpy.download.nominatim_osm('San Isidro, Peru')
+    >>> G = urbanpy.download.osmnx_graph('polygon', geom=lima.loc[0,'geometry'])
+    <networkx.classes.multidigraph.MultiDiGraph at 0x1a2ba08150>
+
+    '''
+
+    if (download_type == 'polygon') and (geom is not None) and (type(geom) == Polygon):
+        G = ox.graph_from_polygon(geom)
+        return G
+
+    elif (download_type == 'point') and (geom is not None) and (type(geom) == Point) and (distance is not None):
+            G = ox.graph_from_point(geom, distance=distance)
+            return G
+
+    elif download_type == 'place' and query_str is not None:
+        G = ox.graph_from_place(query_str)
+        return G
+
+    elif download_type == 'polygon' and geom is None:
+        print('Please provide a polygon to download a network from.')
+
+    elif download_type == 'place' and query_str is None:
+        print('Please provide a query string to download a network from.')
+
+    else:
+        if distance is None and download_type == 'point':
+            print('Please provide a distance buffer for the point download')
+
+        if geom is None and distance is not None:
+            print('Please provide a Point geometry.')
