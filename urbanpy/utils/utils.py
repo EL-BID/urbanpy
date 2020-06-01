@@ -86,7 +86,7 @@ def nn_search(tree_features, query_features, metric='haversine'):
                    Array with the corresponding distance in km (if haversine then distance * earth radius)
 
     ind : array_like
-                   Array with the corresponding index of the tree_feaures values.
+                   Array with the corresponding index of the tree_features values.
 
     '''
 
@@ -104,7 +104,7 @@ def nn_search(tree_features, query_features, metric='haversine'):
         dist, ind = tree.query(query_features)
         return dist, ind
 
-@jit
+@jit(forceobj=True)
 def tuples_to_lists(json):
     '''
     Util function to convert the geo interface of a GeoDataFrame to PyDeck GeoJSON format.
@@ -124,11 +124,11 @@ def tuples_to_lists(json):
     Examples
     --------
 
-    >>> json = { 'type': 'FeatureCollection', 'features': [{'id': 0, 'geometry': {'coordinates' = (((-77, -12), (-77.1, -12.1)))}}]}
+    >>> json = { 'type': 'FeatureCollection', 'features': [{'id': 0, 'geometry': {'coordinates': (((-77, -12), (-77.1, -12.1)))}}]}
 
     >>> tuples_to_lists(json)
 
-    {'type': 'FeatureCollection', 'features': [{'id': 0, 'geometry': {'coordinates' = [[[-77, -12], [-77.1, -12.1]]]}}]}
+    {'type': 'FeatureCollection', 'features': [{'id': 0, 'geometry': {'coordinates': [[[-77, -12], [-77.1, -12.1]]]}}]}
 
     '''
 

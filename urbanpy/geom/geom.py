@@ -12,7 +12,7 @@ __all__ = [
     'gen_hexagons',
     'merge_shape_hex',
     'overlay_polygons_hexs',
-    'osmnx_graph_download',
+    'osmnx_coefficient_computation',
 ]
 
 def merge_geom_downloads(gdfs):
@@ -300,7 +300,7 @@ def overlay_polygons_hexs(polygons, hexs, hex_col, columns):
 
     return hex_gdf
 
-def osmnx_graph_download(gdf, net_type, basic_stats, extended_stats, connectivity=False, anc=False, ecc=False, bc=False, cc=False):
+def osmnx_coefficient_computation(gdf, net_type, basic_stats, extended_stats, connectivity=False, anc=False, ecc=False, bc=False, cc=False):
     '''
     Apply osmnx's graph from polygon to query a city's street network within a geometry.
 

@@ -5,6 +5,7 @@ import googlemaps
 import numpy as np
 import time
 import networkx as nx
+import geopandas as gpd
 from tqdm.auto import tqdm
 from numba import jit
 
@@ -145,7 +146,7 @@ def stop_osrm_server():
                 print('Server is not running.')
 
         else:
-            print('Server does not exists.')
+            print('Server does not exist.')
 
     elif sys.platform == 'win32':
         print('Still working on windows support')
@@ -190,8 +191,8 @@ def osrm_route(origin, destination, profile):
         distance, duration = data['distance'], data['duration']
         return distance, duration
     except Exception as err:
-        print(err)
-        return None, None
+        #print(err)
+        return np.nan, np.nan
 
 def google_maps_dist_matrix(origin, destination, mode, api_key, **kwargs):
     '''
@@ -344,10 +345,10 @@ def compute_osrm_dist_matrix(origins, destinations, profile):
     Parameters
     ----------
 
-    origins : GeoDataFrame
+    origins : GeoDataFrame or GeoSeries
               Input Point geometries corresponding to the starting points of a route.
 
-    destinations : GeoDataFrame
+    destinations : GeoDataFrame or GeoSeries
                    Point geometries corresponding to the end points of a route.
 
     Returns
@@ -379,20 +380,22 @@ def compute_osrm_dist_matrix(origins, destinations, profile):
 
     '''
 
-    dist_matrix = []
-    dur_matrix = []
+    dist_matrix = np.zeros_like([], shape=(origins.shape[0], destinations.shape[0]))
+    dur_matrix = np.zeros_like([], shape=(origins.shape[0], destinations.shape[0]))
+
+    if type(origins) == gpd.GeoSeries:
+        origins = origins.to_frame()
+
+    if type(destinations) == gpd.GeoSeries:
+        destinations = destinations.to_frame()
 
     for ix, row in tqdm(origins.iterrows(), total=origins.shape[0]):
-        dist_row = []
-        dur_row = []
         for i, r in tqdm(destinations.iterrows(), total=destinations.shape[0]):
             dist, dur = osrm_route(row.geometry, r.geometry, profile)
-            dist_row.append(dist)
-            dur_row.append(dur)
-        dist_matrix.append(dist_row)
-        dur_matrix.append(dur_row)
+            dist_matrix[ix, i] = dist
+            dur_matrix[ix, i] = dur
 
-    return np.array(dist_matrix), np.array(dur_matrix)
+    return dist_matrix, dur_matrix
 
 def google_maps_dir_matrix(origin, destination, mode, api_key, **kwargs):
     '''
