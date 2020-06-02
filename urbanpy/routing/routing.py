@@ -7,7 +7,7 @@ import time
 import networkx as nx
 import geopandas as gpd
 from tqdm.auto import tqdm
-from numba import jit
+#from numba import jit
 
 __all__ = [
     'start_osrm_server',
@@ -337,7 +337,7 @@ def ors_api(locations, origin, destination, profile, metrics, api_key):
     else:
         return -1, -1
 
-@jit(forceobj=True)
+#@jit(forceobj=True)
 def compute_osrm_dist_matrix(origins, destinations, profile):
     '''
     Compute distance and travel time origin-destination matrices
