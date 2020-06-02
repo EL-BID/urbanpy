@@ -7,7 +7,7 @@ UrbanPy is an open source project to automate data extraction, measurement, and 
 # Functional goals
 
 - [x] Download open source spatial data (Limits & Points of Interests)
-- [x] Allow for the use of a grid system or administrative boundaries as spatial units 
+- [x] Allow for the use of a grid system or administrative boundaries as spatial units
 - [x] Origin-destination matrix calculation by any mode using a routing API
 - [x] Obtain travel time from spatial units to the closest facilities
 - [x] Consolidate the results as tables and/or shapefiles (georeferenced datasets)
@@ -47,10 +47,11 @@ $ pip install urbanpy
 * matplotlib
 
 It is important to note that for travel time computation, if needed, a method
-is implements the Open Source Routing Machine (OSRM). This method pulls, extracts and
-add graph weights to the downloaded network and runs the routing server. Make sure
-to have docker installed for the library to work correctly. Urbanpy provides a
-simple approximation with nearest neighbor search using a
+is implements the Open Source Routing Machine (OSRM).
+This method pulls, extracts and adds graph weights to the downloaded network and
+runs the routing server. 
+Make sure to have docker installed for the library to work correctly.
+Urbanpy provides a simple approximation with nearest neighbor search using a
 BallTree and haversine distance, but the difference between
 real travel time and the approximation may vary from city to city.  
 
