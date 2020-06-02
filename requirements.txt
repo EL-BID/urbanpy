@@ -4,7 +4,6 @@ shapely
 numpy
 requests
 h3
-numba
 matplotlib
 plotly
 tqdm

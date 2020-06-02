@@ -61,45 +61,6 @@ def choropleth_map(gdf, color_column, df_filter=None, **kwargs):
                                mapbox_style="carto-positron", **kwargs)
     fig.show()
 
-def scatterplot(df, x, y, engine, save, filename=None, **kwargs):
-    '''
-    Simple function of scatterplots using either matplotlib of plotly to generate
-    scatterplot visualization of data.
-
-    Parameters
-    ----------
-
-    df: DataFrame or GeoDataFrame
-        Input data to plot
-    x: str
-       Input column to use in the x-axis
-    y: str
-       Input column to use in the y-axis
-
-    engine: str. One of {'matplotlib', 'plotly'}
-            Plotting library to use
-
-    save: bool
-          Flag to determine if the figure should be saved
-
-    filename: str
-              Path to save figure to
-
-    Returns
-    -------
-
-    Examples
-    --------
-
-    '''
-
-    if engine == 'matplotlib':
-        fig = plt.figure()
-        scatter = plt.scatter(df[x], df[y])
-
-    else:
-        pass
-
 # def pydeck_df(gdf, features, cmap, bins, color_feature):
 #     '''
 #     Prepare a DataFrame for Polygon plotting in PyDeck
