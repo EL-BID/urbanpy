@@ -7,7 +7,7 @@ from numba import jit
 __all__ = [
     'swap_xy',
     'nn_search',
-    'tuples_to_lists',
+    #'tuples_to_lists',
     'shell_from_geometry',
     'create_duration_labels'
 ]
@@ -86,7 +86,7 @@ def nn_search(tree_features, query_features, metric='haversine'):
                    Array with the corresponding distance in km (if haversine then distance * earth radius)
 
     ind : array_like
-                   Array with the corresponding index of the tree_feaures values.
+                   Array with the corresponding index of the tree_features values.
 
     '''
 
@@ -103,42 +103,6 @@ def nn_search(tree_features, query_features, metric='haversine'):
         tree = BallTree(tree_features, metric=metric)
         dist, ind = tree.query(query_features)
         return dist, ind
-
-@jit
-def tuples_to_lists(json):
-    '''
-    Util function to convert the geo interface of a GeoDataFrame to PyDeck GeoJSON format.
-
-    Parameters
-    ----------
-
-    json : GeoJSON from a GeoDataFrame.__geo_interface__
-
-
-    Returns
-    -------
-
-    json : dict
-              GeoJSON with the corrected features
-
-    Examples
-    --------
-
-    >>> json = { 'type': 'FeatureCollection', 'features': [{'id': 0, 'geometry': {'coordinates' = (((-77, -12), (-77.1, -12.1)))}}]}
-
-    >>> tuples_to_lists(json)
-
-    {'type': 'FeatureCollection', 'features': [{'id': 0, 'geometry': {'coordinates' = [[[-77, -12], [-77.1, -12.1]]]}}]}
-
-    '''
-
-    for i in range(len(json['features'])):
-        t = [list(x) for x in json['features'][i]['geometry']['coordinates']]
-        poly = [[list(x) for x in t[0]]]
-
-        json['features'][i]['geometry']['coordinates'] = poly
-
-    return json
 
 def shell_from_geometry(geometry):
     '''
@@ -190,3 +154,39 @@ def create_duration_labels(durations):
     custom_labels = default_labels[:ix]
 
     return custom_bins, custom_labels
+
+# @jit(forceobj=True)
+# def tuples_to_lists(json):
+#     '''
+#     Util function to convert the geo interface of a GeoDataFrame to PyDeck GeoJSON format.
+#
+#     Parameters
+#     ----------
+#
+#     json : GeoJSON from a GeoDataFrame.__geo_interface__
+#
+#
+#     Returns
+#     -------
+#
+#     json : dict
+#               GeoJSON with the corrected features
+#
+#     Examples
+#     --------
+#
+#     >>> json = { 'type': 'FeatureCollection', 'features': [{'id': 0, 'geometry': {'coordinates': (((-77, -12), (-77.1, -12.1)))}}]}
+#
+#     >>> tuples_to_lists(json)
+#
+#     {'type': 'FeatureCollection', 'features': [{'id': 0, 'geometry': {'coordinates': [[[-77, -12], [-77.1, -12.1]]]}}]}
+#
+#     '''
+#
+#     for i in range(len(json['features'])):
+#         t = [list(x) for x in json['features'][i]['geometry']['coordinates']]
+#         poly = [[list(x) for x in t[0]]]
+#
+#         json['features'][i]['geometry']['coordinates'] = poly
+#
+#     return json

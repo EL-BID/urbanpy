@@ -4,8 +4,10 @@ import requests
 import googlemaps
 import numpy as np
 import time
+import networkx as nx
+import geopandas as gpd
 from tqdm.auto import tqdm
-from numba import jit
+#from numba import jit
 
 __all__ = [
     'start_osrm_server',
@@ -14,7 +16,8 @@ __all__ = [
     'google_maps_dist_matrix',
     'ors_api',
     'compute_osrm_dist_matrix',
-    'google_maps_dir_matrix'
+    'google_maps_dir_matrix',
+    'nx_route'
 ]
 
 CONTAINER_NAME = 'osrm_routing_server'
@@ -143,7 +146,7 @@ def stop_osrm_server():
                 print('Server is not running.')
 
         else:
-            print('Server does not exists.')
+            print('Server does not exist.')
 
     elif sys.platform == 'win32':
         print('Still working on windows support')
@@ -188,10 +191,8 @@ def osrm_route(origin, destination, profile):
         distance, duration = data['distance'], data['duration']
         return distance, duration
     except Exception as err:
-        print(err)
-        print(response.reason)
-        print(response.url)
-        pass
+        #print(err)
+        return np.nan, np.nan
 
 def google_maps_dist_matrix(origin, destination, mode, api_key, **kwargs):
     '''
@@ -336,7 +337,7 @@ def ors_api(locations, origin, destination, profile, metrics, api_key):
     else:
         return -1, -1
 
-@jit(forceobj=True)
+#@jit(forceobj=True)
 def compute_osrm_dist_matrix(origins, destinations, profile):
     '''
     Compute distance and travel time origin-destination matrices
@@ -344,10 +345,10 @@ def compute_osrm_dist_matrix(origins, destinations, profile):
     Parameters
     ----------
 
-    origins : GeoDataFrame
+    origins : GeoDataFrame or GeoSeries
               Input Point geometries corresponding to the starting points of a route.
 
-    destinations : GeoDataFrame
+    destinations : GeoDataFrame or GeoSeries
                    Point geometries corresponding to the end points of a route.
 
     Returns
@@ -379,20 +380,22 @@ def compute_osrm_dist_matrix(origins, destinations, profile):
 
     '''
 
-    dist_matrix = []
-    dur_matrix = []
+    dist_matrix = np.zeros_like([], shape=(origins.shape[0], destinations.shape[0]))
+    dur_matrix = np.zeros_like([], shape=(origins.shape[0], destinations.shape[0]))
+
+    if type(origins) == gpd.GeoSeries:
+        origins = origins.to_frame()
+
+    if type(destinations) == gpd.GeoSeries:
+        destinations = destinations.to_frame()
 
     for ix, row in tqdm(origins.iterrows(), total=origins.shape[0]):
-        dist_row = []
-        dur_row = []
         for i, r in tqdm(destinations.iterrows(), total=destinations.shape[0]):
             dist, dur = osrm_route(row.geometry, r.geometry, profile)
-            dist_row.append(dist)
-            dur_row.append(dur)
-        dist_matrix.append(dist_row)
-        dur_matrix.append(dur_row)
+            dist_matrix[ix, i] = dist
+            dur_matrix[ix, i] = dur
 
-    return np.array(dist_matrix), np.array(dur_matrix)
+    return dist_matrix, dur_matrix
 
 def google_maps_dir_matrix(origin, destination, mode, api_key, **kwargs):
     '''
@@ -467,3 +470,62 @@ def google_maps_dir_matrix(origin, destination, mode, api_key, **kwargs):
         time = None
 
     return dist, time
+
+def nx_route(graph, source, target, weight, length=True):
+    '''
+    Compute shortest path from a source and target node.
+
+    Parameters
+    ----------
+
+    graph: NetworkX Graph
+           Input graph from which to calculate paths
+
+    source: str or int
+            ID of the source node from which to calculate path. Depending on the graph,
+            this may be a string or integer or a combination of both as tuples.
+
+    target: str or int
+            ID of the target node. Type corresponds to node id types in the input graph.
+
+    weight: str
+            Attribute to be used as weights in the path. If None returns the sequence of nodes
+            or the number of nodes to travel as length.
+
+    length: bool
+            Flag for whether to calculate the path lenght or the sequence of nodes to follow.
+            If weight is none and length is true, the number of nodes in the path will be returned.
+
+    Returns
+    -------
+
+    path: list
+          Sequence of node ids in a list.
+
+    path_length: float or int
+                 Length of the path according to the weight attribute.
+
+    Examples
+    --------
+
+    '''
+    if length:
+        try:
+            path_length = nx.shortest_path_length(graph,
+                         source,
+                         target,
+                         weight=weight)
+            return path_length
+        except:
+            #If there is no path within the graph
+            return -1
+    else:
+        try:
+            path = nx.shortest_path(graph,
+                         source,
+                         target,
+                         weight=weight)
+            return path
+        except:
+            #If there is no path within the graph
+            return -1
