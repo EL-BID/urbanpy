@@ -1,7 +1,6 @@
 name: urbanpy
 channels:
     - conda-forge
-    - akoda
 dependencies:
 # required
 - fiona>=1.7
@@ -20,9 +19,6 @@ dependencies:
 # network analysis
 - osmnx
 
-# hexagons
-- h3
-
 # geospatial
 - gdal>=3.0.4
 - libgdal>=3.0.4
@@ -31,9 +27,8 @@ dependencies:
 
 #pip dependencies
 - pip:
-- numpy
-- numba
-- scikit-learn
-- requests
-- tqdm
-- numpydoc
+  - h3
+  - numpy
+  - scikit-learn
+  - requests
+  - tqdm
