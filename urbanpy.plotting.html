@@ -1,76 +1,185 @@
 
-<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>urbanpy.plotting package &#8212; urbanpy 0.1 documentation</title>
-    <link rel="stylesheet" href="static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
-    <script type="text/javascript" src="static/jquery.js"></script>
-    <script type="text/javascript" src="static/underscore.js"></script>
-    <script type="text/javascript" src="static/doctools.js"></script>
-    <script type="text/javascript" src="static/language_data.js"></script>
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>urbanpy.plotting package &mdash; urbanpy 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="urbanpy.routing package" href="urbanpy.routing.html" />
-    <link rel="prev" title="urbanpy.geom package" href="urbanpy.geom.html" />
+    <link rel="prev" title="urbanpy.geom package" href="urbanpy.geom.html" /> 
+</head>
 
-  <link rel="stylesheet" href="static/custom.css" type="text/css" />
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> urbanpy
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">urbanpy</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="urbanpy.html">urbanpy package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="urbanpy.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="urbanpy.download.html">urbanpy.download package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="urbanpy.geom.html">urbanpy.geom package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">urbanpy.plotting package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="urbanpy.routing.html">urbanpy.routing package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="urbanpy.utils.html">urbanpy.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="urbanpy.html#module-urbanpy">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">urbanpy</a>
+        
+      </nav>
 
 
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
-  </head><body>
-
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
 
 
-          <div class="body" role="main">
 
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">urbanpy</a> &raquo;</li>
+        
+          <li><a href="urbanpy.html">urbanpy package</a> &raquo;</li>
+        
+      <li>urbanpy.plotting package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/urbanpy.plotting.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
   <div class="section" id="urbanpy-plotting-package">
 <h1>urbanpy.plotting package<a class="headerlink" href="#urbanpy-plotting-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-urbanpy.plotting">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-urbanpy.plotting" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-urbanpy.plotting.plotting">
+<span id="urbanpy-plotting-plotting-module"></span><h2>urbanpy.plotting.plotting module<a class="headerlink" href="#module-urbanpy.plotting.plotting" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="urbanpy.plotting.pydeck_df">
-<code class="sig-prename descclassname">urbanpy.plotting.</code><code class="sig-name descname">pydeck_df</code><span class="sig-paren">(</span><em class="sig-param">gdf</em>, <em class="sig-param">features</em>, <em class="sig-param">cmap</em>, <em class="sig-param">bins</em>, <em class="sig-param">color_feature</em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.plotting.pydeck_df" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prepare a DataFrame for Polygon plotting in PyDeck</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>gdf</strong><span class="classifier">GeoDataFrame with the geometries to plot</span></dt><dd></dd>
-<dt><strong>features</strong><span class="classifier">list</span></dt><dd><p>List of features to add to the polygon df</p>
-</dd>
-<dt><strong>cmap</strong><span class="classifier">str</span></dt><dd><p>Matplotlib colormap to use for plotting</p>
-</dd>
-<dt><strong>bins</strong><span class="classifier">list</span></dt><dd><p>Bins to aggregate data into</p>
-</dd>
-<dt><strong>color_feature</strong><span class="classifier">str</span></dt><dd><p>Column name for data to transform into bins and color features</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>polygon_df</strong><span class="classifier">DataFrame</span></dt><dd><p>df with the coordinates in a list as a column and the selected features</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="urbanpy.plotting.gen_pydeck_layer">
-<code class="sig-prename descclassname">urbanpy.plotting.</code><code class="sig-name descname">gen_pydeck_layer</code><span class="sig-paren">(</span><em class="sig-param">layer_type</em>, <em class="sig-param">data</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.plotting.gen_pydeck_layer" title="Permalink to this definition">¶</a></dt>
+<dt id="urbanpy.plotting.plotting.gen_pydeck_layer">
+<code class="sig-prename descclassname">urbanpy.plotting.plotting.</code><code class="sig-name descname">gen_pydeck_layer</code><span class="sig-paren">(</span><em class="sig-param">layer_type</em>, <em class="sig-param">data</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.plotting.plotting.gen_pydeck_layer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="urbanpy.plotting.choropleth_map">
-<code class="sig-prename descclassname">urbanpy.plotting.</code><code class="sig-name descname">choropleth_map</code><span class="sig-paren">(</span><em class="sig-param">gdf</em>, <em class="sig-param">color_column</em>, <em class="sig-param">map_center</em>, <em class="sig-param">df_filter=None</em>, <em class="sig-param">scale=False</em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.plotting.choropleth_map" title="Permalink to this definition">¶</a></dt>
+<dt id="urbanpy.plotting.plotting.choropleth_map">
+<code class="sig-prename descclassname">urbanpy.plotting.plotting.</code><code class="sig-name descname">choropleth_map</code><span class="sig-paren">(</span><em class="sig-param">gdf</em>, <em class="sig-param">color_column</em>, <em class="sig-param">df_filter=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.plotting.plotting.choropleth_map" title="Permalink to this definition">¶</a></dt>
 <dd><p>Produce a Choroplethmap using plotly by passing a GeoDataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -79,19 +188,44 @@
 </dd>
 <dt><strong>color_column</strong><span class="classifier">str</span></dt><dd><p>Column from gdf to use as color</p>
 </dd>
-<dt><strong>map_center</strong><span class="classifier">list</span></dt><dd><p>Map center when plotting. [lat, lon] coordinates</p>
-</dd>
 <dt><strong>df_filter</strong><span class="classifier">pd.Series, default to None</span></dt><dd><p>Pandas Series containing true/false values that satisfy a
-condition (population &gt; 100)</p>
+condition (e.g. (df[‘population’] &gt; 100))</p>
 </dd>
-<dt><strong>scale</strong><span class="classifier">bool</span></dt><dd><p>Display scale</p>
-</dd>
+<dt><strong>**kargs</strong><span class="classifier">Any parameter of plotly.px.choroplethmapbox.</span></dt><dd></dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>fig</strong><span class="classifier">plotly.graph_objects.Figure</span></dt><dd><p>Figure object containing the map</p>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hex_lima</span> <span class="o">=</span> <span class="n">gen_hexagons</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hex_lima</span><span class="p">[</span><span class="s1">&#39;pop_2020&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">population_2020</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">choropleth_map</span><span class="p">(</span><span class="n">hex_lima</span><span class="p">,</span> <span class="s1">&#39;pop_2020&#39;</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">,</span> <span class="o">-</span><span class="mi">77</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-urbanpy.plotting">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-urbanpy.plotting" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="urbanpy.plotting.gen_pydeck_layer">
+<code class="sig-prename descclassname">urbanpy.plotting.</code><code class="sig-name descname">gen_pydeck_layer</code><span class="sig-paren">(</span><em class="sig-param">layer_type</em>, <em class="sig-param">data</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.plotting.gen_pydeck_layer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="urbanpy.plotting.choropleth_map">
+<code class="sig-prename descclassname">urbanpy.plotting.</code><code class="sig-name descname">choropleth_map</code><span class="sig-paren">(</span><em class="sig-param">gdf</em>, <em class="sig-param">color_column</em>, <em class="sig-param">df_filter=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.plotting.choropleth_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produce a Choroplethmap using plotly by passing a GeoDataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>gdf</strong><span class="classifier">GeoDataFrame</span></dt><dd><p>Input data containing a geometry column and features</p>
 </dd>
+<dt><strong>color_column</strong><span class="classifier">str</span></dt><dd><p>Column from gdf to use as color</p>
+</dd>
+<dt><strong>df_filter</strong><span class="classifier">pd.Series, default to None</span></dt><dd><p>Pandas Series containing true/false values that satisfy a
+condition (e.g. (df[‘population’] &gt; 100))</p>
+</dd>
+<dt><strong>**kargs</strong><span class="classifier">Any parameter of plotly.px.choroplethmapbox.</span></dt><dd></dd>
 </dl>
 </dd>
 </dl>
@@ -107,93 +241,52 @@ condition (population &gt; 100)</p>
 </div>
 
 
+           </div>
+           
           </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="urbanpy.routing.html" class="btn btn-neutral float-right" title="urbanpy.routing package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="urbanpy.geom.html" class="btn btn-neutral float-left" title="urbanpy.geom package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Andres Regal, Claudio Ortega
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
 
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">urbanpy</a></h1>
+
+    </section>
+
+  </div>
+  
 
 
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
 
+  
+  
+    
+   
 
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">urbanpy</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="urbanpy.html">urbanpy package</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="urbanpy.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="urbanpy.download.html">urbanpy.download package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="urbanpy.geom.html">urbanpy.geom package</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">urbanpy.plotting package</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="#module-urbanpy.plotting">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l4"><a class="reference internal" href="urbanpy.routing.html">urbanpy.routing package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="urbanpy.utils.html">urbanpy.utils package</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="urbanpy.html#module-urbanpy">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-  <li><a href="modules.html">urbanpy</a><ul>
-  <li><a href="urbanpy.html">urbanpy package</a><ul>
-      <li>Previous: <a href="urbanpy.geom.html" title="previous chapter">urbanpy.geom package</a></li>
-      <li>Next: <a href="urbanpy.routing.html" title="next chapter">urbanpy.routing package</a></li>
-  </ul></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2020, Andres Regal, Claudio Ortega.
-
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-
-      |
-      <a href="_sources/urbanpy.plotting.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
-
-
-
-
-  </body>
+</body>
 </html>
