@@ -59,7 +59,7 @@ def choropleth_map(gdf, color_column, df_filter=None, **kwargs):
                                color=color_column, locations="index",
                                center={"lat": lat[0], "lon": lon[0]},
                                mapbox_style="carto-positron", **kwargs)
-    fig.show()
+    return fig
 
 # def pydeck_df(gdf, features, cmap, bins, color_feature):
 #     '''
