@@ -67,8 +67,6 @@ def start_osrm_server(country, continent):
     See also
     --------
 
-    http://project-osrm.org/docs/v5.5.1/api/#general-options
-
     '''
 
     # Download, process and run server command sequence
