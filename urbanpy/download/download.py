@@ -164,7 +164,7 @@ def hdx_fb_population(country, map):
             'elderly': 'https://data.humdata.org/dataset/2f865527-b7bf-466c-b620-c12b8d07a053/resource/3e871e9d-d9fa-4d52-af47-43cae54c7a6d/download/col_elderly_60_plus_2019-06-01_csv.zip'
         },
         'ecuador': {
-            'full': 'https://data.humdata.org/dataset/2f865527-b7bf-466c-b620-c12b8d07a053/resource/3e871e9d-d9fa-4d52-af47-43cae54c7a6d/download/col_elderly_60_plus_2019-06-01_csv.zip',
+            'full': 'https://data.humdata.org/dataset/2f865527-b7bf-466c-b620-c12b8d07a053/resource/3e871e9d-d9fa-4d52-af47-43cae54c7a6d/download/ecu_elderly_60_plus_2019-06-01_csv.zip',
             'children': 'https://data.humdata.org/dataset/58c3ac3f-febd-4222-8969-59c0fe0e7a0d/resource/80e46cf3-1906-41a9-a779-8f501cab48a5/download/ecu_children_under_five_2019-06-01_csv.zip',
             'youth': 'https://data.humdata.org/dataset/58c3ac3f-febd-4222-8969-59c0fe0e7a0d/resource/57362a78-e2fa-4f71-8876-1a6d67e27fe5/download/ecu_youth_15_24_2019-06-01_csv.zip',
             'elderly': 'https://data.humdata.org/dataset/58c3ac3f-febd-4222-8969-59c0fe0e7a0d/resource/904d8988-d18d-41a5-a7f7-22668204cefe/download/ecu_elderly_60_plus_2019-06-01_csv.zip'
@@ -205,7 +205,7 @@ def overpass_pois(bounds, facilities=None, custom_query=None):
     bounds: array_like
                 Input bounds for query. Follows [minx,miny,maxx,maxy] pattern.
 
-    facilities: {'food', 'health', 'education', 'financial'}
+    facilities: {'food', 'health', 'education', 'finance'}
                 Type of facilities to download according to HOTOSM types. Based on this a different type of query is constructed.
 
     custom_query: str (Optional)
