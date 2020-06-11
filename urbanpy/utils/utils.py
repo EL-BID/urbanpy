@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from math import ceil
 from sklearn.neighbors import BallTree
-from numba import jit
+#from numba import jit
 
 __all__ = [
     'swap_xy',

@@ -181,7 +181,7 @@ def gen_hexagons(resolution, city):
     # Create hexagon dataframe
     city_hexagons = gpd.GeoDataFrame(h3_indexes, geometry=h3_polygons).drop_duplicates()
     city_hexagons.crs = 'EPSG:4326'
-    city_hexagons = city_hexagons.rename({0: 'hex'}, axis=1) # Format column name for readability
+    city_hexagons = city_hexagons.rename(columns={0: 'hex'}) # Format column name for readability
 
     return city_hexagons
 
