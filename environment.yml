@@ -25,6 +25,7 @@ dependencies:
 - proj>=6.3.0
 - geos>=3.8.0
 
+- pip
 #pip dependencies
 - pip:
   - h3
