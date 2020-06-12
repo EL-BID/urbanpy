@@ -1,13 +1,13 @@
+import time
 import subprocess
 import sys
 import requests
 import googlemaps
 import numpy as np
-import time
 import networkx as nx
 import geopandas as gpd
 from tqdm.auto import tqdm
-#from numba import jit
+# from numba import jit
 
 __all__ = [
     'start_osrm_server',
@@ -64,9 +64,6 @@ def start_osrm_server(country, continent):
     Starting server ...
     Server was started succesfully.
 
-    See also
-    --------
-
     '''
 
     # Download, process and run server command sequence
@@ -79,26 +76,21 @@ def start_osrm_server(country, continent):
     docker run -t --name osrm_partition -v $(pwd):/data osrm/osrm-backend osrm-partition /data/{country}-latest.osm.pbf;
     docker run -t --name osrm_customize -v $(pwd):/data osrm/osrm-backend osrm-customize /data/{country}-latest.osm.pbf;
     docker container rm osrm_extract osrm_partition osrm_customize;
-    docker run -t --name {CONTAINER_NAME} -p 5000:5000 -v $(pwd):/data osrm/osrm-backend osrm-routed --algorithm mld /data/{country}-latest.osm.pbf;
+    docker run -t --name {CONTAINER_NAME}_{continent}_{country} -p 5000:5000 -v $(pwd):/data osrm/osrm-backend osrm-routed --algorithm mld /data/{country}-latest.osm.pbf;
     '''
 
-    non_dwn_str = f'''
-    cd ~/data/osrm/;
-    docker run -t --name osrm_routing_server -p 5000:5000 -v $(pwd):/data osrm/osrm-backend osrm-routed --algorithm mld /data/{country}-latest.osm.pbf;
-    '''
-
-    container_running = check_container_is_running(CONTAINER_NAME)
+    container_running = check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}")
 
     # Check platform
     if sys.platform in ['darwin', 'linux']:
         # Check if container exists:
-        if subprocess.run(['docker', 'inspect', CONTAINER_NAME]).returncode == 0:
+        if subprocess.run(['docker', 'inspect', CONTAINER_NAME + f"_{continent}_{country}"]).returncode == 0:
             if container_running:
                 print('Server is already running.')
             else:
                 try:
                     print('Starting server ...')
-                    subprocess.run(['docker', 'start', CONTAINER_NAME], check=True)
+                    subprocess.run(['docker', 'start', CONTAINER_NAME + f"_{continent}_{country}"], check=True)
                     time.sleep(5)
                     print('Server was started succesfully')
                 except subprocess.CalledProcessError as error:
@@ -111,7 +103,7 @@ def start_osrm_server(country, continent):
 
                 # Verify container is running
                 while container_running == False:
-                    container_running = check_container_is_running(CONTAINER_NAME)
+                    container_running = check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}")
 
                 print('Server was started succesfully')
             except subprocess.CalledProcessError as error:
@@ -124,18 +116,26 @@ def start_osrm_server(country, continent):
     else:
         print('Platform not supported')
 
-def stop_osrm_server():
+def stop_osrm_server(country, continent):
     '''
     Run docker stop on the server's container.
+
+        Parameters
+        ----------
+
+        country : str
+                 Which country osrm to stop. Expected in lower case & dashes replace spaces.
+        continent : str
+                 Continent of the given country. Expected in lower case & dashes replace spaces.
     '''
 
     # Check platform
     if sys.platform in ['darwin', 'linux']:
         # Check if container exists:
-        if subprocess.run(['docker', 'top', CONTAINER_NAME]).returncode == 0:
-            if check_container_is_running(CONTAINER_NAME) == True:
+        if subprocess.run(['docker', 'top', CONTAINER_NAME + f"_{continent}_{country}"]).returncode == 0:
+            if check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}") == True:
                 try:
-                    subprocess.run(['docker', 'stop', CONTAINER_NAME], check=True)
+                    subprocess.run(['docker', 'stop', CONTAINER_NAME + f"_{continent}_{country}"], check=True)
                     #subprocess.run(['docker', 'container', 'rm', 'osrm_routing_server'])
                     print('Server was stoped succesfully')
                 except subprocess.CalledProcessError as error:
@@ -239,11 +239,6 @@ def google_maps_dist_matrix(origin, destination, mode, api_key, **kwargs):
     >>> up.routing.google_maps_dist_matrix([(-12,-77),(-12.11,-77.01)], [(-12.11,-77.01),(-12,-77)], 'walking', API_KEY)
         ([[13743, 0], [0, 13720]], [[10232, 0], [0, 10674]])
 
-    See also
-    --------
-
-
-
     '''
 
     client = googlemaps.Client(key=api_key)
@@ -253,21 +248,21 @@ def google_maps_dist_matrix(origin, destination, mode, api_key, **kwargs):
 
         rows = r['rows']
 
-        dist, time = [], []
+        dist, dur = [], []
 
         if len(rows) > 1:
             for row in rows:
                 dist.append([element['distance']['value'] for element in row['elements']])
-                time.append([element['duration']['value'] for element in row['elements']])
+                dur.append([element['duration']['value'] for element in row['elements']])
         else:
             dist = r["rows"][0]["elements"][0]["distance"]["value"]
-            time = r["rows"][0]["elements"][0]["duration"]["value"]
+            dur = r["rows"][0]["elements"][0]["duration"]["value"]
     except Exception as err:
         print(err)
         dist = None
-        time = None
+        dur = None
 
-    return dist, time
+    return dist, dur
 
 def ors_api(locations, origin, destination, profile, metrics, api_key):
     '''
@@ -280,7 +275,7 @@ def ors_api(locations, origin, destination, profile, metrics, api_key):
             Input origin(s) indices in the location array to compute travel times and distances
 
     destination : list
-                 Input destination(s) indices in the location array to compute travel times and distances
+            Input destination(s) indices in the location array to compute travel times and distances
 
     profile : str. One of {'driving-car', 'foot-walking', 'cycling-regular'}
 
@@ -327,6 +322,7 @@ def ors_api(locations, origin, destination, profile, metrics, api_key):
         'Authorization': api_key,
         'Content-Type': 'application/json; charset=utf-8'
     }
+    
     r = requests.post(f'https://api.openrouteservice.org/v2/matrix/{profile}', json=body, headers=headers)
 
     if r.status_code == 200:
@@ -428,7 +424,7 @@ def google_maps_dir_matrix(origin, destination, mode, api_key, **kwargs):
     dist : int
            Distance for the o/d pair. Depends on metric parameter
 
-    time : int
+    dur : int
            Travel time duration, depends on units kwargs
 
     Examples
@@ -437,11 +433,6 @@ def google_maps_dir_matrix(origin, destination, mode, api_key, **kwargs):
     >>> API_KEY = 'example-key'
     >>> up.routing.google_maps_dir_matrix('San Juan de Lurigancho', 'Miraflores', 'walking', API_KEY)
         (18477, 13494)
-
-    See also
-    --------
-
-
 
     '''
 
@@ -452,22 +443,22 @@ def google_maps_dir_matrix(origin, destination, mode, api_key, **kwargs):
 
         legs = r[0]['legs']
 
-        dist, time = 0, 0
+        dist, dur = 0, 0
 
         if len(legs) > 1:
             for leg in legs:
                 dist += leg['distance']['value']
-                time += leg['duration']['value']
+                dur += leg['duration']['value']
         else:
             dist = legs[0]['distance']['value']
-            time = legs[0]['duration']['value']
+            dur = legs[0]['duration']['value']
 
     except Exception as err:
         print(err)
         dist = None
-        time = None
+        dur = None
 
-    return dist, time
+    return dist, dur
 
 def nx_route(graph, source, target, weight, length=True):
     '''
