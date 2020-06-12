@@ -1,21 +1,21 @@
-import pydeck as pdk
+# import pydeck as pdk
 import pandas as pd
 import plotly.express as px
 import matplotlib.pyplot as plt
-#from urbanpy.utils import tuples_to_lists
+# from urbanpy.utils import tuples_to_lists
 
 __all__ = [
-    #'pydeck_df',
-    'gen_pydeck_layer',
+    # 'pydeck_df',
+    # 'gen_pydeck_layer',
     'choropleth_map',
 ]
 
 
-def gen_pydeck_layer(layer_type, data, **kwargs):
-    if layer_type == 'H3HexagonLayer':
-        return pdk.Layer("H3HexagonLayer", data, **kwargs)
-    else:
-        return pdk.Layer('PolygonLayer', data, **kwargs)
+# def gen_pydeck_layer(layer_type, data, **kwargs):
+#     if layer_type == 'H3HexagonLayer':
+#         return pdk.Layer("H3HexagonLayer", data, **kwargs)
+#     else:
+#         return pdk.Layer('PolygonLayer', data, **kwargs)
 
 def choropleth_map(gdf, color_column, df_filter=None, **kwargs):
     '''
