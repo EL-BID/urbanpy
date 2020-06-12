@@ -34,7 +34,7 @@ class RoutingTest(unittest.TestCase):
 
 
         #Start OSRM
-        up.routing.start_osrm_server('peru', 'south_america')
+        up.routing.start_osrm_server('peru', 'south-america')
 
         #Test 3x3 matrix
         dur, dist = up.routing.compute_osrm_dist_matrix(gdf, gdf_1, 'walking')
@@ -61,7 +61,7 @@ class RoutingTest(unittest.TestCase):
                                        [np.nan, 23908.8, 23908.8]]).all())
 
         #Close OSRM routing Server
-        up.routing.stop_osrm_server()
+        up.routing.stop_osrm_server('peru', 'south-america')
 
     def test_nx_route(self):
         '''
@@ -87,7 +87,6 @@ class RoutingTest(unittest.TestCase):
         self.assertEqual(up.routing.nx_route(G, source, target, None), 11)
 
         #Test with no path
-
         source, target = 1418626943, 1985246159
 
         #Test length
