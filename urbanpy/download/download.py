@@ -3,8 +3,7 @@ import geopandas as gpd
 import pandas as pd
 import numpy as np
 import osmnx as ox
-from shapely.geometry import Point, Polygon
-from urbanpy.utils import shell_from_geometry
+from shapely.geometry import Polygon
 
 __all__ = [
     'nominatim_osm',
