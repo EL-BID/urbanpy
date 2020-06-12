@@ -91,10 +91,10 @@ def start_osrm_server(country, continent):
                 try:
                     print('Starting server ...')
                     subprocess.run(['docker', 'start', CONTAINER_NAME + f"_{continent}_{country}"], check=True)
-                    time.sleep(5)
+                    time.sleep(5) # Wait server to be prepared to receive requests
                     print('Server was started succesfully')
                 except subprocess.CalledProcessError as error:
-                    print(f'Something went wrong. Please check your docker installation.\nError: {error}')
+                    print(f'Something went wrong. Please check if port 5000 is being used or check your docker installation.\nError: {error}')
 
         else:
             try:
@@ -106,6 +106,8 @@ def start_osrm_server(country, continent):
                     container_running = check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}")
 
                 print('Server was started succesfully')
+                time.sleep(5) # Wait server to be prepared to receive requests
+
             except subprocess.CalledProcessError as error:
                 print(f'Something went wrong. Please check your docker installation.\nError: {error}')
 
@@ -322,7 +324,7 @@ def ors_api(locations, origin, destination, profile, metrics, api_key):
         'Authorization': api_key,
         'Content-Type': 'application/json; charset=utf-8'
     }
-    
+
     r = requests.post(f'https://api.openrouteservice.org/v2/matrix/{profile}', json=body, headers=headers)
 
     if r.status_code == 200:
