@@ -467,31 +467,31 @@ def nx_route(graph, source, target, weight, length=True):
     Parameters
     ----------
 
-    graph: NetworkX Graph
+    graph : NetworkX Graph
            Input graph from which to calculate paths
 
-    source: str or int
+    source : str or int
             ID of the source node from which to calculate path. Depending on the graph,
             this may be a string or integer or a combination of both as tuples.
 
-    target: str or int
+    target : str or int
             ID of the target node. Type corresponds to node id types in the input graph.
 
-    weight: str
+    weight : str
             Attribute to be used as weights in the path. If None returns the sequence of nodes
             or the number of nodes to travel as length.
 
-    length: bool
+    length : bool
             Flag for whether to calculate the path lenght or the sequence of nodes to follow.
             If weight is none and length is true, the number of nodes in the path will be returned.
 
     Returns
     -------
 
-    path: list
+    path : list
           Sequence of node ids in a list.
 
-    path_length: float or int
+    path_length : float or int
                  Length of the path according to the weight attribute.
 
     Examples
