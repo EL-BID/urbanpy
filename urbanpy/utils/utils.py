@@ -134,9 +134,7 @@ def geo_boundary_to_polygon(x):
         Polygon representing H3 hexagon area
 
     '''
-    geo_boundary = h3.h3_to_geo_boundary(x)
-    [bound.reverse() for bound in geo_boundary]
-    return Polygon(geo_boundary)
+    return Polygon([bound[::-1] for bound in h3.h3_to_geo_boundary(x)]) # format as x,y (lon, lat)
 
 def create_duration_labels(durations):
     '''
