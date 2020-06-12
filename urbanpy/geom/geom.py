@@ -3,7 +3,8 @@ import geopandas as gpd
 import osmnx as ox
 from h3 import h3
 from tqdm import tqdm
-from shapely.geometry import Point, Polygon
+from shapely.geometry import Polygon
+from urbanpy.utils import geo_boundary_to_polygon
 
 __all__ = [
     'merge_geom_downloads',
@@ -12,6 +13,7 @@ __all__ = [
     'gen_hexagons',
     'merge_shape_hex',
     'overlay_polygons_hexs',
+    'resolution_downsampling',
     'osmnx_coefficient_computation',
 ]
 
@@ -297,6 +299,37 @@ def overlay_polygons_hexs(polygons, hexs, hex_col, columns):
     hex_gdf = gpd.GeoDataFrame(hex_df[[hex_col]+columns], geometry=hex_df['geometry'], crs=hexs.crs)
 
     return hex_gdf
+
+def resolution_downsampling(gdf, hex_col, coarse_resolution, agg):
+    '''
+    Downsample hexagon resolution aggregating indicated metrics (e.g. Transform hexagon resolution from 9 to 6).
+
+    Parameters
+    ----------
+
+    gdf : GeoDataFrame
+            GeoDataFrame with hexagon geometries (output from gen_hexagons).
+
+    hex_col : str
+            Determines the column with the hex id.
+
+    coarse_resolution : int, 0:15
+            Hexagon resolution lower than gdf actual resolution (higher values create smaller hexagons).
+
+    Returns
+    -------
+
+    gdfc : GeoDataFrame
+            GeoDataFrame with lower resolution hexagons geometry and metrics aggregated as indicated.
+
+    '''
+    gdf_coarse = gdf.copy()
+    coarse_hex_col = 'hex_{}'.format(coarse_resolution)
+    gdf_coarse[coarse_hex_col] = gdf_coarse[hex_col].apply(lambda x: h3.h3_to_parent(x,coarse_resolution))
+    dfc = gdf_coarse.groupby([coarse_hex_col]).agg(agg).reset_index()
+    gdfc_geometry = dfc[coarse_hex_col].apply(up.utils.geo_boundary_to_polygon)
+
+    return gpd.GeoDataFrame(gdfc, geometry=gdfc_geometry, crs=gdf.crs)
 
 def osmnx_coefficient_computation(gdf, net_type, basic_stats, extended_stats, connectivity=False, anc=False, ecc=False, bc=False, cc=False):
     '''
