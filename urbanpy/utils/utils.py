@@ -9,6 +9,7 @@ __all__ = [
     'nn_search',
     #'tuples_to_lists',
     'shell_from_geometry',
+    'geo_boundary_to_polygon',
     'create_duration_labels'
 ]
 
@@ -113,6 +114,27 @@ def shell_from_geometry(geometry):
     for record in geometry:
         shell.append([record['lon'], record['lat']])
     return shell
+
+def geo_boundary_to_polygon(x):
+    '''
+    Transform h3 geo boundary to shapely Polygon
+
+    Parameters
+    ----------
+
+    x : str
+        H3 hexagon index
+
+    Returns
+    -------
+
+    polygon : Polygon
+        Polygon representing H3 hexagon area
+
+    '''
+    geo_boundary = h3.h3_to_geo_boundary(x)
+    [bound.reverse() for bound in geo_boundary]
+    return Polygon(geo_boundary)
 
 def create_duration_labels(durations):
     '''
