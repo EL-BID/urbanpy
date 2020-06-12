@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
+from h3 import h3
 from math import ceil
+from shapely.geometry import Polygon
 from sklearn.neighbors import BallTree
 #from numba import jit
 

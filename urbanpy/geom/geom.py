@@ -3,7 +3,6 @@ import geopandas as gpd
 import osmnx as ox
 from h3 import h3
 from tqdm import tqdm
-from shapely.geometry import Polygon
 from urbanpy.utils import geo_boundary_to_polygon
 
 __all__ = [
@@ -171,10 +170,7 @@ def gen_hexagons(resolution, city):
     for _, geo in city_poly.iterrows():
         hexagons = h3.polyfill(geo['geometry'].__geo_interface__, res=resolution, geo_json_conformant=True)
         for hexagon in hexagons:
-            h3_geo_boundary = h3.h3_to_geo_boundary(hexagon)
-            [bound.reverse() for bound in h3_geo_boundary] # format as x,y (lon, lat)
-            h3_polygons.append(Polygon(h3_geo_boundary))
-
+            h3_polygons.append(geo_boundary_to_polygon(hexagon))
             h3_indexes.append(hexagon)
 
     # Create hexagon dataframe
@@ -327,9 +323,9 @@ def resolution_downsampling(gdf, hex_col, coarse_resolution, agg):
     coarse_hex_col = 'hex_{}'.format(coarse_resolution)
     gdf_coarse[coarse_hex_col] = gdf_coarse[hex_col].apply(lambda x: h3.h3_to_parent(x,coarse_resolution))
     dfc = gdf_coarse.groupby([coarse_hex_col]).agg(agg).reset_index()
-    gdfc_geometry = dfc[coarse_hex_col].apply(up.utils.geo_boundary_to_polygon)
+    gdfc_geometry = dfc[coarse_hex_col].apply(geo_boundary_to_polygon)
 
-    return gpd.GeoDataFrame(gdfc, geometry=gdfc_geometry, crs=gdf.crs)
+    return gpd.GeoDataFrame(dfc, geometry=gdfc_geometry, crs=gdf.crs)
 
 def osmnx_coefficient_computation(gdf, net_type, basic_stats, extended_stats, connectivity=False, anc=False, ecc=False, bc=False, cc=False):
     '''
