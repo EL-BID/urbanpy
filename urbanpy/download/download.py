@@ -135,8 +135,8 @@ def hdx_fb_population(country, map):
         },
         'bolivia': {
             'full': 'https://data.humdata.org/dataset/64f916a6-2f35-4399-8971-25e18fdb09bd/resource/d5fc8980-f3f2-4523-ac4d-f188201518d5/download/population_bol_2018-10-01.csv.zip',
-            'children': 'https://data.humdata.org/dataset/64f916a6-2f35-4399-8971-25e18fdb09bd/resource/d5fc8980-f3f2-4523-ac4d-f188201518d5/download/population_bol_2018-10-01.csv.zip',
-            'youth': 'https://data.humdata.org/dataset/64f916a6-2f35-4399-8971-25e18fdb09bd/resource/d5fc8980-f3f2-4523-ac4d-f188201518d5/download/population_bol_2018-10-01.csv.zip',
+            'children': 'https://data.humdata.org/dataset/64f916a6-2f35-4399-8971-25e18fdb09bd/resource/4fe96e38-3895-4f5e-b3f9-df6317a9752f/download/bol_children_under_five_2019-06-01_csv.zip',
+            'youth': 'https://data.humdata.org/dataset/64f916a6-2f35-4399-8971-25e18fdb09bd/resource/7c5fba5b-cdb6-49f2-8ae5-5337734444d2/download/bol_youth_15_24_2019-06-01_csv.zip',
             'elderly': 'https://data.humdata.org/dataset/64f916a6-2f35-4399-8971-25e18fdb09bd/resource/8acccec8-a1a4-42d7-b301-fb734324960e/download/bol_elderly_60_plus_2019-06-01_csv.zip'
         },
         'brazil': {
@@ -163,7 +163,7 @@ def hdx_fb_population(country, map):
             'elderly': 'https://data.humdata.org/dataset/2f865527-b7bf-466c-b620-c12b8d07a053/resource/3e871e9d-d9fa-4d52-af47-43cae54c7a6d/download/col_elderly_60_plus_2019-06-01_csv.zip'
         },
         'ecuador': {
-            'full': 'https://data.humdata.org/dataset/2f865527-b7bf-466c-b620-c12b8d07a053/resource/3e871e9d-d9fa-4d52-af47-43cae54c7a6d/download/ecu_elderly_60_plus_2019-06-01_csv.zip',
+            'full': 'https://data.humdata.org/dataset/58c3ac3f-febd-4222-8969-59c0fe0e7a0d/resource/c05a3c81-a78c-4e6c-ac05-de1316d4ba12/download/population_ecu_2018-10-01.csv.zip',
             'children': 'https://data.humdata.org/dataset/58c3ac3f-febd-4222-8969-59c0fe0e7a0d/resource/80e46cf3-1906-41a9-a779-8f501cab48a5/download/ecu_children_under_five_2019-06-01_csv.zip',
             'youth': 'https://data.humdata.org/dataset/58c3ac3f-febd-4222-8969-59c0fe0e7a0d/resource/57362a78-e2fa-4f71-8876-1a6d67e27fe5/download/ecu_youth_15_24_2019-06-01_csv.zip',
             'elderly': 'https://data.humdata.org/dataset/58c3ac3f-febd-4222-8969-59c0fe0e7a0d/resource/904d8988-d18d-41a5-a7f7-22668204cefe/download/ecu_elderly_60_plus_2019-06-01_csv.zip'
