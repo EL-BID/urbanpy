@@ -309,7 +309,7 @@ def osmnx_graph(download_type, network_type='drive', query_str=None,
         return G
 
     elif (download_type == 'point') and (geom is not None) and (distance is not None):
-        G = ox.graph_from_point(geom, distance=distance)
+        G = ox.graph_from_point(geom, dist=distance)
         return G
 
     elif download_type == 'place' and query_str is not None:

@@ -2,6 +2,7 @@ import unittest
 import geopandas as gpd
 import numpy as np
 import networkx as nx
+from shapely.geometry import Polygon
 
 import sys
 sys.path.append('..')
@@ -26,7 +27,7 @@ class GeomTest(unittest.TestCase):
         empty_polygon = merged_geom.difference(gdf1).difference(gdf2)[0]
 
         # Test empty polygon
-        self.assertEqual(shapely.geometry.polygon.Polygon(), empty_polygon)
+        self.assertEqual(Polygon(), empty_polygon)
 
     def test_filter_population(self):
         '''
