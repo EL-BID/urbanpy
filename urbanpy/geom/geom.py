@@ -227,8 +227,9 @@ def merge_shape_hex(hexs, shape, agg, how='inner', op='intersects'):
     888e62132bfffff | POLYGON ((-76.84736 -12.17523, -76.85167 -12.1... | 608.312696
     888e628debfffff | POLYGON ((-76.67982 -12.18998, -76.68413 -12.1... | NaN
     888e6299b3fffff | POLYGON ((-76.78876 -11.97286, -76.79307 -11.9... | 3225.658803
-
+    
     '''
+
     joined = gpd.sjoin(shape, hexs, how=how, op=op)
 
     #Uses index right based on the order of points and hex. Right takes hex index
