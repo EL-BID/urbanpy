@@ -72,7 +72,7 @@ def filter_population(pop_df, polygon_gdf):
     >>> lima = download_osm(2, 'Lima, Peru')
     >>> callao = download_osm(1, 'Callao, Peru')
     >>> lima = merge_geom_downloads([lima, callao])
-    >>> pop = pop_lima = download_hdx_population_data("4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/317f1c39-8417-4bde-a076-99bd37feefce/download/population_per_2018-10-01.csv.zip")
+    >>> pop = download_hdx_population_data("4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/317f1c39-8417-4bde-a076-99bd37feefce/download/population_per_2018-10-01.csv.zip")
     >>> filter_population(pop, lima)
     latitude   | longitude  | population_2015 | population_2020 | geometry
     -12.519861 | -76.774583 | 2.633668        | 2.644757        | POINT (-76.77458 -12.51986)
@@ -103,7 +103,7 @@ def remove_features(gdf, bounds):
              Input GeoDataFrame containing the point features filtered with filter_population
 
     bounds : array_like
-                Array input following [miny, maxy, minx, maxx] for filtering
+                Array input following [minx, miny, maxx, maxy] for filtering (GeoPandas total_bounds method output)
 
 
     Returns
@@ -121,9 +121,8 @@ def remove_features(gdf, bounds):
     (348434, 4) (348427, 4)
 
     '''
-    miny, maxy, minx, maxx = bounds
-    filter = gdf['latitude'].between(miny,maxy) & gdf['longitude'].between(minx,maxx)
-    drop_ix = gdf[filter].index
+    minx, miny, maxx, maxy = bounds
+    drop_ix = gdf.cx[minx:maxx, miny:maxy].index
 
     return gdf.drop(drop_ix)
 
@@ -161,16 +160,14 @@ def gen_hexagons(resolution, city):
     '''
 
     # Polyfill the city boundaries
-    h3_centroids = list()
     h3_polygons = list()
     h3_indexes = list()
 
     # Get every polygon in Multipolygon shape
     city_poly = city.explode().reset_index(drop=True)
 
-    for ix, geo in city_poly.iterrows():
-        hexagons = h3.polyfill(geo['geometry'].__geo_interface__, res=resolution, \
-                                    geo_json_conformant=True)
+    for _, geo in city_poly.iterrows():
+        hexagons = h3.polyfill(geo['geometry'].__geo_interface__, res=resolution, geo_json_conformant=True)
         for hexagon in hexagons:
             h3_geo_boundary = h3.h3_to_geo_boundary(hexagon)
             [bound.reverse() for bound in h3_geo_boundary] # format as x,y (lon, lat)
@@ -185,7 +182,7 @@ def gen_hexagons(resolution, city):
 
     return city_hexagons
 
-def merge_shape_hex(hex, shape, how, op, agg):
+def merge_shape_hex(hexs, shape, agg, how='inner', op='intersects'):
     '''
     Merges a H3 hexagon GeoDataFrame with a Point GeoDataFrame and aggregates the
     point gdf data.
@@ -193,27 +190,28 @@ def merge_shape_hex(hex, shape, how, op, agg):
     Parameters
     ----------
 
-    hex : GeoDataFrame
+    hexs : GeoDataFrame
              Input GeoDataFrame containing hexagon geometries
 
     shape : GeoDataFrame
                 Input GeoDataFrame containing points and features to be aggregated
 
-    how : str. One of {'inner', 'left', 'right'}. Determines how to merge data.
+    agg : dict. A dictionary with column names as keys and values as aggregation
+             operations. The aggregation must be one of {'sum', 'min', 'max'}.
+
+    how : str. One of {'inner', 'left', 'right'}. Default 'inner'.
+                Determines how to merge data:
              'left' uses keys from left and only retains geometry from left
              'right' uses keys from right and only retains geometry from right
              'inner': use intersection of keys from both dfs; retain only left geometry column
 
-    op : str. One of {'intersects', 'contains', 'within'}. Determines how
-                 geometries are queried for merging.
-
-    agg : dict. A dictionary with column names as keys and values as aggregation
-             operations. The aggregation must be one of {'sum', 'min', 'max'}.
+    op : str. One of {'intersects', 'contains', 'within'}. Default 'intersects'
+                Determines how geometries are queried for merging.
 
     Returns
     -------
 
-    hex : GeoDataFrame
+    hexs : GeoDataFrame
                    Result of a spatial join within hex and points. All features are aggregated
                    based on the input parameters
 
@@ -223,8 +221,8 @@ def merge_shape_hex(hex, shape, how, op, agg):
     >>> lima = download_osm(2, 'Lima, Peru')
     >>> pop_lima = download_hdx(...)
     >>> pop_df = filter_population(pop_lima, lima)
-    >>> hex = gen_hexagons(8, lima)
-    >>> merge_point_hex(hex, pop_df, 'inner', 'within', {'population_2020':'sum'})
+    >>> hexs = gen_hexagons(8, lima)
+    >>> merge_point_hex(hexs, pop_df, 'inner', 'within', {'population_2020':'sum'})
     0               | geometry                                          | population_2020
     888e628d8bfffff | POLYGON ((-76.66002 -12.20371, -76.66433 -12.2... | NaN
     888e62c5ddfffff | POLYGON ((-76.94564 -12.16138, -76.94996 -12.1... | 14528.039097
@@ -233,13 +231,13 @@ def merge_shape_hex(hex, shape, how, op, agg):
     888e6299b3fffff | POLYGON ((-76.78876 -11.97286, -76.79307 -11.9... | 3225.658803
 
     '''
-    joined = gpd.sjoin(shape, hex, how=how, op=op)
+    joined = gpd.sjoin(shape, hexs, how=how, op=op)
 
     #Uses index right based on the order of points and hex. Right takes hex index
     hex_merge = joined.groupby('index_right').agg(agg)
 
     #Avoid SpecificationError by copying the DataFrame
-    ret_hex = hex.copy()
+    ret_hex = hexs.copy()
 
     for key in agg.keys():
         ret_hex.loc[hex_merge.index, key] = hex_merge[key].values
@@ -253,10 +251,10 @@ def overlay_polygons_hexs(polygons, hexs, hex_col, columns):
     Parameters
     ----------
     polygons : GeoDataFrame
-                Input GeoDataFrame containing polygons and columns recalculated
+                Input GeoDataFrame containing polygons and columns to be processed
 
-    hex : GeoDataFrame
-             Input GeoDataFrame containing hexagon geometries
+    hexs : GeoDataFrame
+             Input GeoDataFrame containing desired output hexagon resolution geometries
 
     hex_col : str
             Determines the column with the hex id.
@@ -266,7 +264,7 @@ def overlay_polygons_hexs(polygons, hexs, hex_col, columns):
     Returns
     -------
 
-    hex : GeoDataFrame
+    hexs : GeoDataFrame
                    Result of a spatial join within hex and points. All columns are adjusted
                    based on the overlayed area.
 
@@ -352,6 +350,6 @@ def osmnx_coefficient_computation(gdf, net_type, basic_stats, extended_stats, co
             for stat in extended_stats:
                 gdf.loc[index, stat] = ext_stats.get(stat)
         except Exception as err:
-                print(f'On record {index}: ', err)
-                pass
+            print(f'On record {index}: ', err)
+
     return gdf
