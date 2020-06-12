@@ -1,20 +1,5 @@
-urbanpy.utils package
-=====================
-
-Submodules
-----------
-
-urbanpy.utils.utils module
---------------------------
-
-.. automodule:: urbanpy.utils.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-Module contents
----------------
+Utils Module
+============
 
 .. automodule:: urbanpy.utils
    :members:

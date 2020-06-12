@@ -5,62 +5,62 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  
   <title>Welcome to urbanpy’s documentation! &mdash; urbanpy 0.1 documentation</title>
+  
 
+  
+  
+  
+  
 
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
+    
 
-
-
-
-
-  <script type="text/javascript" src="static/js/modernizr.min.js"></script>
-
-
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
-        <script type="text/javascript" src="static/jquery.js"></script>
-        <script type="text/javascript" src="static/underscore.js"></script>
-        <script type="text/javascript" src="static/doctools.js"></script>
-        <script type="text/javascript" src="static/language_data.js"></script>
-
-    <script type="text/javascript" src="static/js/theme.js"></script>
-
-
-
-
-  <link rel="stylesheet" href="static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="urbanpy" href="modules.html" />
+    <link rel="next" title="&lt;no title&gt;" href="modules.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
 
-
+   
   <div class="wy-grid-for-nav">
-
+    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
+          
 
-
-
+          
             <a href="#" class="icon icon-home"> urbanpy
+          
 
-
-
+          
           </a>
 
+          
+            
+            
+          
 
-
-
-
-
-
+          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -69,43 +69,46 @@
   </form>
 </div>
 
-
+          
         </div>
 
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-
-
-
-
-
-
+          
+            
+            
+              
+            
+            
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">urbanpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="urbanpy.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 </ul>
 
-
-
+            
+          
         </div>
       </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
-
+      
       <nav class="wy-nav-top" aria-label="top navigation">
-
+        
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="#">urbanpy</a>
-
+        
       </nav>
 
 
       <div class="wy-nav-content">
-
+        
         <div class="rst-content">
-
-
+        
+          
 
 
 
@@ -124,73 +127,81 @@
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
-
+    
       <li><a href="#">Docs</a> &raquo;</li>
-
+        
       <li>Welcome to urbanpy’s documentation!</li>
-
-
+    
+    
       <li class="wy-breadcrumbs-aside">
-
-
+        
+            
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
-
-
+          
+        
       </li>
-
+    
   </ul>
 
-
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-
+            
   <div class="section" id="welcome-to-urbanpy-s-documentation">
 <h1>Welcome to urbanpy’s documentation!<a class="headerlink" href="#welcome-to-urbanpy-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p><strong>A library to download, process and visualize high resolution urban
+data in an easy and fast way.</strong></p>
+<p>UrbanPy is an open source project to automate data extraction,
+measurement, and visualization of urban accessibility metrics.</p>
+</div>
+<div class="section" id="functional-goals">
+<h1>Functional goals<a class="headerlink" href="#functional-goals" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>[x] Download open source spatial data (Limits &amp; Points of Interests)</p></li>
+<li><p>[x] Allow for the use of a grid system or administrative boundaries
+as spatial units</p></li>
+<li><p>[x] Origin-destination matrix calculation by any mode using a routing
+API</p></li>
+<li><p>[x] Obtain travel time from spatial units to the closest facilities</p></li>
+<li><p>[x] Consolidate the results as tables and/or shapefiles
+(georeferenced datasets)</p></li>
+<li><p>[x] Visualize the results as maps</p></li>
+</ul>
+</div>
+<div class="section" id="ux-goals">
+<h1>UX goals<a class="headerlink" href="#ux-goals" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>[ ] Atomic functions (one purpose per function)</p></li>
+<li><p>[x] Use the power of Python Geospatial Ecosystem under the hood</p></li>
+<li><p>[x] Allow to flexible processing pipelines (custom layer/metrics
+aggregations)</p></li>
+<li><p>[x] Clear documentation with usage and examples</p></li>
+<li><p>[x] Clear and replicable example notebooks</p></li>
+</ul>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">urbanpy</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="urbanpy.html">urbanpy package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="urbanpy.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="urbanpy.download.html">urbanpy.download package</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="urbanpy.download.html#submodules">Submodules</a></li>
-<li class="toctree-l5"><a class="reference internal" href="urbanpy.download.html#module-urbanpy.download.download">urbanpy.download.download module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="urbanpy.download.html#module-urbanpy.download">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage/installation.html#for-users">For users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/installation.html#for-developers">For developers</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="urbanpy.geom.html">urbanpy.geom package</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="urbanpy.geom.html#submodules">Submodules</a></li>
-<li class="toctree-l5"><a class="reference internal" href="urbanpy.geom.html#module-urbanpy.geom.geom">urbanpy.geom.geom module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="urbanpy.geom.html#module-urbanpy.geom">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l4"><a class="reference internal" href="urbanpy.plotting.html">urbanpy.plotting package</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="urbanpy.plotting.html#submodules">Submodules</a></li>
-<li class="toctree-l5"><a class="reference internal" href="urbanpy.plotting.html#module-urbanpy.plotting.plotting">urbanpy.plotting.plotting module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="urbanpy.plotting.html#module-urbanpy.plotting">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l4"><a class="reference internal" href="urbanpy.routing.html">urbanpy.routing package</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="urbanpy.routing.html#submodules">Submodules</a></li>
-<li class="toctree-l5"><a class="reference internal" href="urbanpy.routing.html#module-urbanpy.routing.routing">urbanpy.routing.routing module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="urbanpy.routing.html#module-urbanpy.routing">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l4"><a class="reference internal" href="urbanpy.utils.html">urbanpy.utils package</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="urbanpy.utils.html#submodules">Submodules</a></li>
-<li class="toctree-l5"><a class="reference internal" href="urbanpy.utils.html#module-urbanpy.utils.utils">urbanpy.utils.utils module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="urbanpy.utils.html#module-urbanpy.utils">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="urbanpy.html">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.html#modules-description">Modules Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.html#modules-reference">Modules Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="urbanpy.download.html">Download Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="urbanpy.geom.html">Geom Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="urbanpy.plotting.html">Plotting Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="urbanpy.routing.html">Routing Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="urbanpy.utils.html">Utils Module</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="urbanpy.html#module-urbanpy">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 </ul>
 </div>
 </div>
@@ -202,20 +213,26 @@
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
 </div>
+<div class="section" id="license">
+<h1>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h1>
+<p>UrbanPy is completely free and open source and licensed under the
+<a class="reference external" href="https://creativecommons.org/licenses/by-nc-nd/3.0/igo/">Creative Commons
+3.0</a> license.</p>
+</div>
 
 
            </div>
-
+           
           </div>
           <footer>
-
+  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-
-        <a href="modules.html" class="btn btn-neutral float-right" title="urbanpy" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-
-
+      
+        <a href="modules.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
     </div>
-
+  
 
   <hr/>
 
@@ -225,7 +242,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -235,7 +252,7 @@
     </section>
 
   </div>
-
+  
 
 
   <script type="text/javascript">
@@ -244,10 +261,10 @@
       });
   </script>
 
-
-
-
-
+  
+  
+    
+   
 
 </body>
 </html>
