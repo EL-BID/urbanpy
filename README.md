@@ -90,7 +90,7 @@ $ source .env/bin/activate
 
 ## License
 
-UrbanPy is completely free and open source and licensed under the [Creative Commons 3.0](https://creativecommons.org/licenses/by-nc-nd/3.0/igo/) license.
+Copyright © 2020. Banco Interamericano de Desarrollo ("BID"). Uso autorizado. [AM-331-A3](/LICENSE.md)
 
 *Current support is tested on Linux Ubuntu 18.04 & Mac OS Catalina, coming soon we will test and support Windows 10.*
 
