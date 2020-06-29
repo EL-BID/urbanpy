@@ -90,6 +90,17 @@ $ source .env/bin/activate
 
 ## License
 
-UrbanPy is completely free and open source and licensed under the [Creative Commons 3.0](https://creativecommons.org/licenses/by-nc-nd/3.0/igo/) license.
+Copyright © 2020. Banco Interamericano de Desarrollo ("BID"). Uso autorizado. [AM-331-A3](/LICENSE.md)
 
-*Current support is tested on Linux Ubuntu 18.04 & Mac OS Catalina, coming soon we will test and support Windows 10.
+*Current support is tested on Linux Ubuntu 18.04 & Mac OS Catalina, coming soon we will test and support Windows 10.*
+
+## Authors
+
+UrbanPy's original authors are Claudio Ortega ([socials](https://www.linkedin.com/in/claudioortega27/)) and Andrés Regal ([socials](https://www.linkedin.com/in/andrés-regal/)).
+
+## Contribution guidelines
+
+**If you want to contribute to UrbanPy, be sure to review the
+[contribution guidelines](CONTRIBUTING.md). This project adheres to UrbanPy's
+[code of conduct](CODE_OF_CONDUCT.md). By participating, you are expected to
+uphold this code.**
