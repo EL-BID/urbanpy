@@ -14,34 +14,29 @@ __all__ = [
 ]
 
 def nominatim_osm(query, expected_position=0):
-    '''
-    Download OpenStreetMaps data for a specific city
+    """
+    Download OpenStreetMaps data for a specific city.
 
     Parameters
     ----------
-
     query: str
-        Query for city polygon data to be downloaded
-
+        Query for city polygon data to be downloaded.
     expected_position: int 0:n
-        Expected position of the polygon data within the Nominatim results. Default 0 (first result).
+        Expected position of the polygon data within the Nominatim results.
+        Default 0 (first result).
 
     Returns
     -------
-
     city: GeoDataFrame
-        GeoDataFrame with the city's polygon as its geometry column
-
+        GeoDataFrame with the city's polygon as its geometry column.
 
     Examples
     --------
-
-    >>> lima = download_osm("Lima, Peru", 2)
+    >>> lima = nominatim_osm('Lima, Peru', 2)
     >>> lima.head()
     geometry	 | place_id	 | osm_type	| osm_id     | display_name	| place_rank  |  category | type	       | importance	| icon
     MULTIPOLYGON | 235480647 | relation	| 1944670.0  | Lima, Peru	| 12	      |  boundary |	administrative | 0.703484	| https://nominatim.openstreetmap.org/images/map...
-
-    '''
+    """
     osm_url = 'https://nominatim.openstreetmap.org/search.php'
     osm_parameters = {
         'polygon_geojson': '1',
@@ -57,65 +52,56 @@ def nominatim_osm(query, expected_position=0):
     return city
 
 def hdx_dataset(resource):
-    '''
-    Download the High Resolution Population Density maps from HDX.
+    """
+    Download a dataset from HDX. The allowed formats are CSV (.csv) and zipped
+    CSV (.csv.zip).
 
     Parameters
     ----------
-
-    resource : str
-                  Specific address to the resource for each city. Since every dataset
-                  is referenced to a diferent resource id, only the base url can be provided
-                  by the library
+    resource: str
+        Specific address to the HDX dataset resource. Since every dataset is
+        referenced to a diferent resource id, only the base url can be provided
+        by this library.
 
     Returns
     -------
-
-    population : DataFrame
-                    DataFrame with lat, lon, and population columns. Coordinates
-                    are in EPSG 4326.
-
+    dataset: DataFrame
+        Contains the requested HDX dataset resource.
 
     Examples
     --------
-
-    >>> pop_lima = download_hdx_population_data("4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/317f1c39-8417-4bde-a076-99bd37feefce/download/population_per_2018-10-01.csv.zip")
-    >>> pop_lima.head()
+    >>> hdx_data = hdx_dataset('4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/317f1c39-8417-4bde-a076-99bd37feefce/download/population_per_2018-10-01.csv.zip')
+    >>> hdx_data.head()
     latitude   | longitude  | population_2015 |	population_2020
     -18.339306 | -70.382361 | 11.318147	      | 12.099885
     -18.335694 | -70.393750 | 11.318147	      | 12.099885
     -18.335694 | -70.387361	| 11.318147	      | 12.099885
     -18.335417 | -70.394028	| 11.318147	      | 12.099885
     -18.335139 | -70.394306	| 11.318147	      | 12.099885
-
-    '''
+    """
     hdx_url = f'https://data.humdata.org/dataset/{resource}'
-    population = pd.read_csv(hdx_url)
-    return population
+    dataset = pd.read_csv(hdx_url)
+    return dataset
 
-def hdx_fb_population(country, map):
+def hdx_fb_population(country, map_type):
     '''
-    Download population density maps from Facebook HDX
+    Download population density maps from Facebook HDX.
 
     Parameters
     ----------
-
     country: str. One of {'argentina', 'bolivia', 'brazil', 'chile', 'colombia', 'ecuador', 'paraguay', 'peru', 'uruguay'}
-            Input country to download data from.
+        Input country to download data from.
+    map_type: str. One of {'full', 'children', 'youth', 'elderly'}
+        Input population map to download.
 
     Returns
     -------
-
     population: DataFrame
-                DataFrame with lat, lon, and population columns. Coordinates
-                are in EPSG 4326.
-
-    map: str. One of {'full', 'children', 'youth', 'elderly'}
-         Input population map to download
+        DataFrame with lat, lon, and population columns. Coordinates are in
+        EPSG 4326.
 
     Examples
     --------
-
     >>> urbanpy.download.hdx_fb_population('peru', 'full')
     latitude   | longitude  | population_2015 |	population_2020
     -18.339306 | -70.382361 | 11.318147	      | 12.099885
@@ -123,9 +109,7 @@ def hdx_fb_population(country, map):
     -18.335694 | -70.387361	| 11.318147	      | 12.099885
     -18.335417 | -70.394028	| 11.318147	      | 12.099885
     -18.335139 | -70.394306	| 11.318147	      | 12.099885
-
     '''
-
     dataset_dict = {
         'argentina': {
             'full': 'https://data.humdata.org/dataset/6cf49080-1226-4eda-8700-a0093cbdfe4d/resource/5737d87f-e17f-4c82-b1bd-d589ed631318/download/population_arg_2018-10-01.csv.zip',
@@ -189,44 +173,51 @@ def hdx_fb_population(country, map):
     }
 
     #Brazil is split into 4 maps
-    if type(dataset_dict[country][map]) == list:
-        return pd.concat([pd.read_csv(file) for file in dataset_dict[country][map]])
+    if isinstance(type(dataset_dict[country][map_type]), list):
+        return pd.concat([pd.read_csv(file) for file in dataset_dict[country][map_type]])
     else:
-        return pd.read_csv(dataset_dict[country][map])
+        return pd.read_csv(dataset_dict[country][map_type])
 
 def overpass_pois(bounds, facilities=None, custom_query=None):
     '''
-    Download POIs using Overpass API
+    Download POIs using Overpass API.
 
     Parameters
     ----------
-
     bounds: array_like
-                Input bounds for query. Follows [minx,miny,maxx,maxy] pattern.
-
-    facilities: {'food', 'health', 'education', 'finance'}
-                Type of facilities to download according to HOTOSM types. Based on this a different type of query is constructed.
-
-    custom_query: str (Optional)
-                String with custom Overpass QL query (See https://wiki.openstreetmap.org/wiki/Overpass_API/Language_Guide). If this parameter is diferent than None, bounds and facilities values are ignored. Defaults to None.
-
+        Input bounds for query. Follows [minx,miny,maxx,maxy] pattern.
+    facilities: str. One of {'food', 'health', 'education', 'finance'}
+        Type of facilities to download according to HOTOSM types. Based on this
+        a different type of query is constructed.
+    custom_query: str (Optional). Default None.
+        String with custom Overpass QL query (See https://wiki.openstreetmap.org/wiki/Overpass_API/Language_Guide).
+        If this parameter is diferent than None, bounds and facilities values
+        are ignored.
 
     Returns
     -------
-
-    gdf: GeoDataFrame containing all the POIs from the selected type of facility
-
-    response: Only if 'custom_query' is given. Returns an HTTP response from the Overpass Server
+    gdf: GeoDataFrame
+        POIs from the selected type of facility. If 'custom_query' is given
+        response is returned instead of gdf.
+    response: request.Response
+        Returned only if 'custom_query' is given. Contains the server's response
+        to the HTTP request from the Overpass API Server.
 
     Examples
     --------
-
+    >>> lima = nominatim_osm('Lima, Peru', 2)
+    >>> urbanpy.download.overpass_pois(lima.total_bounds, 'health')
+    type |  id	      | lat	      | lon	       | tags	                                           | geometry                   | poi_type
+    node |	367826732 |	-0.944005 |	-80.733941 | {'amenity': 'pharmacy', 'name': 'Fybeca'}         | POINT (-80.73394 -0.94401)	| pharmacy
+    node |	367830051 |	-0.954086 |	-80.742420 | {'amenity': 'hospital', 'emergency': 'yes', 'n... | POINT (-80.74242 -0.95409)	| hospital
+    node |	367830065 |	-0.954012 |	-80.741554 | {'amenity': 'hospital', 'name': 'Clínica del S... | POINT (-80.74155 -0.95401)	| hospital
+    node |	367830072 |	-0.953488 |	-80.740739 | {'amenity': 'hospital', 'name': 'Clínica Cente... | POINT (-80.74074 -0.95349)	| hospital
+    node |	3206491590|	-1.040708 |	-80.665107 | {'amenity': 'hospital', 'name': 'Clínica Monte... | POINT (-80.66511 -1.04071)	| hospital
     '''
     minx, miny, maxx, maxy = bounds
 
     bbox_string = f'{minx},{miny},{maxx},{maxy}'
 
-        # Definir consulta para instalaciones de oferta de alimentos en Lima
     overpass_url = "http://overpass-api.de/api/interpreter"
 
     facilities_opt = {
@@ -236,7 +227,7 @@ def overpass_pois(bounds, facilities=None, custom_query=None):
         'finance': 'node["amenity"~"mobile_money_agent|bureau_de_change|bank|microfinance|atm|sacco|money_transfer|post_office"];',
     }
 
-    if custom_query == None:
+    if custom_query is None:
         overpass_query = f"""
             [timeout:120][out:json][bbox];
             (
@@ -272,39 +263,33 @@ def osmnx_graph(download_type, network_type='drive', query_str=None,
 
     Parameters
     ----------
-
     download_type: str. One of {'polygon', 'place', 'point'}
-                   Input download type. If polygon, the polygon parameter must be
-                   provided as a Shapely Polygon.
+        Input download type. If polygon, the polygon parameter must be provided
+        as a Shapely Polygon.
     network_type: str. One of {'drive', 'drive_service', 'walk', 'bike', 'all', 'all_private'}
-                  Network type to download. Defaults to drive.
-
-    query_str: str
-               Optional. Only requiered for place type downloads. Query string to download a network.
-
-    polygon: Shapely Polygon or Point
-             Optional. Polygon requiered for polygon type downloads, Point for place downloads.
-             Polygons are used as bounds for network download, points as the center with a distance buffer.
-
+        Network type to download. Defaults to drive.
+    query_str: str (Optional).
+        Only requiered for place type downloads. Query string to download a network.
+    polygon: Shapely Polygon or Point (Optional).
+        Polygon requiered for polygon type downloads, Point for place downloads.
+        Polygons are used as bounds for network download, points as the center.
+        with a distance buffer.
     distance: int
-              Distance in meters to use as buffer from a point to download the network.
+        Distance in meters to use as buffer from a point to download the network.
 
     Returns
     -------
-
-    G: networkx MultiDiGraph
-       Requested graph with simplyfied geometries
+    G: networkx.MultiDiGraph
+        Requested graph with simplyfied geometries.
 
     Examples
     --------
-
     >>> poly = urbanpy.download.nominatim_osm('San Isidro, Peru')
     >>> G = urbanpy.download.osmnx_graph('polygon', geom=lima.loc[0,'geometry'])
+    >>> G
     <networkx.classes.multidigraph.MultiDiGraph at 0x1a2ba08150>
-
     '''
-
-    if (download_type == 'polygon') and (geom is not None) and (type(geom) == Polygon):
+    if (download_type == 'polygon') and (geom is not None) and isinstance(geom, Polygon):
         G = ox.graph_from_polygon(geom)
         return G
 
