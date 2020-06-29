@@ -92,8 +92,6 @@ $ source .env/bin/activate
 
 Copyright © 2020. Banco Interamericano de Desarrollo ("BID"). Uso autorizado. [AM-331-A3](/LICENSE.md)
 
-*Current support is tested on Linux Ubuntu 18.04 & Mac OS Catalina, coming soon we will test and support Windows 10.*
-
 ## Authors
 
 UrbanPy's original authors are Claudio Ortega ([socials](https://www.linkedin.com/in/claudioortega27/)) and Andrés Regal ([socials](https://www.linkedin.com/in/andrés-regal/)).
@@ -104,3 +102,5 @@ UrbanPy's original authors are Claudio Ortega ([socials](https://www.linkedin.co
 [contribution guidelines](CONTRIBUTING.md). This project adheres to UrbanPy's
 [code of conduct](CODE_OF_CONDUCT.md). By participating, you are expected to
 uphold this code.**
+
+*Current support is tested on Linux Ubuntu 18.04 & Mac OS Catalina, coming soon we will test and support Windows 10.*
