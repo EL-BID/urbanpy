@@ -103,4 +103,4 @@ UrbanPy's original authors are Claudio Ortega ([socials](https://www.linkedin.co
 [code of conduct](CODE_OF_CONDUCT.md). By participating, you are expected to
 uphold this code.**
 
-*Current support is tested on Linux Ubuntu 18.04 & Mac OS Catalina, coming soon we will test and support Windows 10.*
+*Current support is tested on Linux Ubuntu 18.04 & Mac OS Catalina, coming soon we will test and support Windows 10.
