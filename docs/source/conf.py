@@ -29,7 +29,7 @@ copyright = '2020, Andres Regal, Claudio Ortega'
 author = 'Andres Regal, Claudio Ortega'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1'
+release = '0.2'
 
 
 # -- General configuration ---------------------------------------------------

@@ -29,13 +29,13 @@ def check_container_is_running(container_name):
     Parameters
     ----------
 
-    container_name : str
+    container_name: str
         Name of container to check
 
     Returns
     -------
 
-    container_running : bool
+    container_running: bool
         True if container is running, False otherwise.
 
     '''
@@ -52,9 +52,9 @@ def start_osrm_server(country, continent):
     Parameters
     ----------
 
-    country : str
+    country: str
              Which country to download data from. Expected in lower case & dashes replace spaces.
-    continent : str
+    continent: str
              Which continent of the given country. Expected in lower case & dashes replace spaces.
 
     Examples
@@ -122,13 +122,20 @@ def stop_osrm_server(country, continent):
     '''
     Run docker stop on the server's container.
 
-        Parameters
-        ----------
+    Parameters
+    ----------
 
-        country : str
-                 Which country osrm to stop. Expected in lower case & dashes replace spaces.
-        continent : str
-                 Continent of the given country. Expected in lower case & dashes replace spaces.
+    country: str
+             Which country osrm to stop. Expected in lower case & dashes replace spaces.
+    continent: str
+               Continent of the given country. Expected in lower case & dashes replace spaces.
+
+    Examples
+    --------
+
+    >>> up.routing.stop_osrm_server('peru', 'south-america')
+    Server stopped succesfully
+
     '''
 
     # Check platform
@@ -163,22 +170,22 @@ def osrm_route(origin, destination, profile):
     Parameters
     ----------
 
-    origin : DataFrame with columns x and y or Point geometry
-                Input origin in lat lon pairs (y, x) to pass into the routing engine
+    origin: DataFrame with columns x and y or Point geometry
+            Input origin in lat lon pairs (y, x) to pass into the routing engine
 
-    destination : DataFrame with columns x and y or Point geometry
-                     Input destination in lat lon pairs (y,x) to pass to the routing engine
+    destination: DataFrame with columns x and y or Point geometry
+                 Input destination in lat lon pairs (y,x) to pass to the routing engine
 
-    profile : str. One of {'foot', 'car', 'bicycle'}
-                 Behavior to use when routing and estimating travel time.
+    profile: str. One of {'foot', 'car', 'bicycle'}
+             Behavior to use when routing and estimating travel time.
 
     Returns
     -------
 
-    distance : float
-                  Total travel distance from origin to destination in meters
-    duration : float
-                  Total travel time in minutes
+    distance: float
+              Total travel distance from origin to destination in meters
+    duration: float
+              Total travel time in minutes
 
     '''
     orig = f'{origin.x},{origin.y}'
@@ -201,21 +208,21 @@ def google_maps_dist_matrix(origin, destination, mode, api_key, **kwargs):
     Parameters
     ----------
 
-    origin : tuple, list or str
+    origin: tuple, list or str
             Origin for distance calculation. If tuple or list, a matrix for all
             lat-lon pairs will be computed (origin as rows). If str, google_maps
             will georeference and then compute.
 
-    destination : tuple, list or str
+    destination: tuple, list or str
                  Origin for distance calculation. If tuple or list, a matrix for all
                  lat-lon pairs will be computed (origin as rows). If str, google_maps
                  will georeference and then compute.
 
-    mode : str. One of {"driving", "walking", "transit", "bicycling"}
+    mode: str. One of {"driving", "walking", "transit", "bicycling"}
           Mode for travel time calculation
 
-    api_key : str
-              Google Maps API key
+    api_key: str
+             Google Maps API key
 
     **kwargs
         Additional keyword arguments for the distance matrix API. See
@@ -224,11 +231,11 @@ def google_maps_dist_matrix(origin, destination, mode, api_key, **kwargs):
     Returns
     -------
 
-    dist : int
-           Distance for the o/d pair. Depends on metric parameter
+    dist: int
+          Distance for the o/d pair. Depends on metric parameter
 
-    time : int
-           Travel time duration
+    time: int
+          Travel time duration
 
     Examples
     --------
@@ -273,33 +280,31 @@ def ors_api(locations, origin, destination, profile, metrics, api_key):
     Parameters
     ----------
 
-    origin : list
+    origin: list
             Input origin(s) indices in the location array to compute travel times and distances
 
-    destination : list
+    destination: list
             Input destination(s) indices in the location array to compute travel times and distances
 
-    profile : str. One of {'driving-car', 'foot-walking', 'cycling-regular'}
+    profile: str. One of {'driving-car', 'foot-walking', 'cycling-regular'}
 
     metrics: list
              Combination of metrics to compute (distance and travel time, or one of them)
 
-    api_key : str
+    api_key: str
              Authorization API key for OpenRouteService (see API limits)
 
     Returns
     -------
 
-    dist : list
+    dist: list
            Distance matrix
 
-    dur : list
+    dur: list
           Travel time matrix
 
     Examples
     --------
-
-    import requests
 
     >>> locations = [[9.70093,48.477473],[9.207916,49.153868],[37.573242,55.801281],[115.663757,38.106467]]
     >>> metrics = ["distance","duration"]
@@ -341,28 +346,28 @@ def compute_osrm_dist_matrix(origins, destinations, profile):
     Parameters
     ----------
 
-    origins : GeoDataFrame or GeoSeries
-              Input Point geometries corresponding to the starting points of a route.
+    origins: GeoDataFrame or GeoSeries
+             Input Point geometries corresponding to the starting points of a route.
 
-    destinations : GeoDataFrame or GeoSeries
-                   Point geometries corresponding to the end points of a route.
+    destinations: GeoDataFrame or GeoSeries
+                  Point geometries corresponding to the end points of a route.
 
     Returns
     -------
 
-    dist_matrix : array_like
-                  Array with origins as rows and destinations as columns. Distance in meters.
+    dist_matrix: array_like
+                 Array with origins as rows and destinations as columns. Distance in meters.
 
-    dur_matrix : array_like
-                 Array with origins as rows and destinations as columns. Duration in minutes.
+    dur_matrix: array_like
+                Array with origins as rows and destinations as columns. Duration in minutes.
 
     Examples
     --------
 
-    >>> hex, centroids = gen_hexagons(8, lima)
-    >>> fs = download_overpass_poi(hex.total_bounds, 'food_supply')
-    >>> setup_osrm_server('peru', True)
-    >>> dist, dur = compute_osrm_dist_matrix(points.head(), fs.head(), 'walking')
+    >>> hex = up.geom.gen_hexagons(8, lima)
+    >>> fs = up.download.overpass_pois(hex.total_bounds, 'food_supply')
+    >>> up.routing.start_osrm_server('peru', 'south-america')
+    >>> dist, dur = up.routing.compute_osrm_dist_matrix(points.head(), fs.head(), 'walking')
     array([[ 82012.4,  93899.9,  88964.6, 111839.8,  87844. ],
        [ 26346.3,  23725.6,  19618.9,  38607.9,  22725.6],
        [ 26504.4,  23883.7,  19777. ,  38766. ,  22883.7],
@@ -400,21 +405,21 @@ def google_maps_dir_matrix(origin, destination, mode, api_key, **kwargs):
     Parameters
     ----------
 
-    origin : tuple, list or str
+    origin: tuple, list or str
             Origin for distance calculation. If tuple or list, a matrix for all
             lat-lon pairs will be computed (origin as rows). If str, google_maps
             will georeference and then compute.
 
-    destination : tuple, list or str
+    destination: tuple, list or str
                  Origin for distance calculation. If tuple or list, a matrix for all
                  lat-lon pairs will be computed (origin as rows). If str, google_maps
                  will georeference and then compute.
 
-    mode : str. One of {"driving", "walking", "transit", "bicycling"}
+    mode: str. One of {"driving", "walking", "transit", "bicycling"}
           Mode for travel time calculation
 
-    api_key : str
-              Google Maps API key
+    api_key: str
+             Google Maps API key
 
     **kwargs
         Additional keyword arguments for the distance matrix API. See
@@ -423,11 +428,11 @@ def google_maps_dir_matrix(origin, destination, mode, api_key, **kwargs):
     Returns
     -------
 
-    dist : int
-           Distance for the o/d pair. Depends on metric parameter
+    dist: int
+          Distance for the o/d pair. Depends on metric parameter
 
-    dur : int
-           Travel time duration, depends on units kwargs
+    dur: int
+          Travel time duration, depends on units kwargs
 
     Examples
     --------
@@ -469,35 +474,43 @@ def nx_route(graph, source, target, weight, length=True):
     Parameters
     ----------
 
-    graph : NetworkX Graph
+    graph: NetworkX Graph
            Input graph from which to calculate paths
 
-    source : str or int
+    source: str or int
             ID of the source node from which to calculate path. Depending on the graph,
             this may be a string or integer or a combination of both as tuples.
 
-    target : str or int
+    target: str or int
             ID of the target node. Type corresponds to node id types in the input graph.
 
-    weight : str
+    weight: str
             Attribute to be used as weights in the path. If None returns the sequence of nodes
             or the number of nodes to travel as length.
 
-    length : bool
+    length: bool
             Flag for whether to calculate the path lenght or the sequence of nodes to follow.
             If weight is none and length is true, the number of nodes in the path will be returned.
 
     Returns
     -------
 
-    path : list
+    path: list
           Sequence of node ids in a list.
 
-    path_length : float or int
+    path_length: float or int
                  Length of the path according to the weight attribute.
 
     Examples
     --------
+
+    >>> import osmnx as ox
+    >>> import urbanpy as up
+    >>> from random import choices
+    >>> G = ox.graph_from_place('Lima, Peru')
+    >>> source, target = choices(list(G.nodes), k=2)
+    >>> up.routing.nx_route(G, source, target, 'length')
+    8348.236999999996
 
     '''
     if length:

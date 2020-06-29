@@ -23,22 +23,22 @@ def merge_geom_downloads(gdfs):
     Parameters
     ----------
 
-    dfs : array_like
+    dfs: array_like
              Array of GeoDataFrames to merge
 
     Returns
     -------
 
-    concat : GeoDataFrame
+    concat: GeoDataFrame
                 Output from concatenation and unary union of geometries, providing
                 a single geometry database for the city
 
     Examples
     --------
 
-    >>> lima = download_osm(2, "Lima, Peru")
-    >>> callao = download_osm(1, "Callao, Peru")
-    >>> lima = merge_geom_downloads([lima, callao])
+    >>> lima = up.download.nominatim_osm("Lima, Peru", 2)
+    >>> callao = up.download.nominatim_osm("Callao, Peru", 1)
+    >>> lima = up.geom.merge_geom_downloads([lima, callao])
     >>> lima.head()
     geometry
     MULTIPOLYGON (((-76.80277 -12.47562, -76.80261...)))
@@ -55,25 +55,25 @@ def filter_population(pop_df, polygon_gdf):
     Parameters
     ----------
 
-    pop_df : DataFrame
-                Result from download_hdx
+    pop_df: DataFrame
+            Result from download_hdx
 
-    polygon_gdf : GeoDataFrame
-                     Result from download_osm or merge_geom_downloads
+    polygon_gdf: GeoDataFrame
+                 Result from download_osm or merge_geom_downloads
 
     Returns
     -------
 
-    filtered_points_gdf : GeoDataFrame
+    filtered_points_gdf: GeoDataFrame
                          Population DataFrame filtered to polygon bounds
 
     Examples
     --------
 
-    >>> lima = download_osm(2, 'Lima, Peru')
-    >>> callao = download_osm(1, 'Callao, Peru')
-    >>> lima = merge_geom_downloads([lima, callao])
-    >>> pop = download_hdx_population_data("4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/317f1c39-8417-4bde-a076-99bd37feefce/download/population_per_2018-10-01.csv.zip")
+    >>> lima = up.download.nominatim_osm("Lima, Peru", 2)
+    >>> callao = up.download.nominatim_osm("Callao, Peru", 1)
+    >>> lima = up.geom.merge_geom_downloads([lima, callao])
+    >>> pop = up.download.hdx_fb_population('peru', 'full')
     >>> filter_population(pop, lima)
     latitude   | longitude  | population_2015 | population_2020 | geometry
     -12.519861 | -76.774583 | 2.633668        | 2.644757        | POINT (-76.77458 -12.51986)
@@ -149,8 +149,8 @@ def gen_hexagons(resolution, city):
     Examples
     --------
 
-    >>> lima = filter_population(pop_lima, poly_lima)
-    >>> lima_hex = gen_hexagons(8, lima)
+    >>> lima = up.geom.filter_population(pop_lima, poly_lima)
+    >>> lima_hex = up.geom.gen_hexagons(8, lima)
     hex	            | geometry
     888e620e41fffff | POLYGON ((-76.80007 -12.46917, -76.80439 -12.4...))
     888e62c809fffff | POLYGON ((-77.22539 -12.08663, -77.22971 -12.0...))
@@ -188,30 +188,31 @@ def merge_shape_hex(hexs, shape, agg, how='inner', op='intersects'):
     Parameters
     ----------
 
-    hexs : GeoDataFrame
-             Input GeoDataFrame containing hexagon geometries
+    hexs: GeoDataFrame
+          Input GeoDataFrame containing hexagon geometries
 
-    shape : GeoDataFrame
-                Input GeoDataFrame containing points and features to be aggregated
+    shape: GeoDataFrame
+           Input GeoDataFrame containing points and features to be aggregated
 
-    agg : dict. A dictionary with column names as keys and values as aggregation
-             operations. The aggregation must be one of {'sum', 'min', 'max'}.
+    agg: dict
+         A dictionary with column names as keys and values as aggregation
+         operations. The aggregation must be one of {'sum', 'min', 'max'}.
 
-    how : str. One of {'inner', 'left', 'right'}. Default 'inner'.
-                Determines how to merge data:
+    how: str. One of {'inner', 'left', 'right'}. Default 'inner'.
+         Determines how to merge data:
              'left' uses keys from left and only retains geometry from left
              'right' uses keys from right and only retains geometry from right
              'inner': use intersection of keys from both dfs; retain only left geometry column
 
-    op : str. One of {'intersects', 'contains', 'within'}. Default 'intersects'
-                Determines how geometries are queried for merging.
+    op: str. One of {'intersects', 'contains', 'within'}. Default 'intersects'
+        Determines how geometries are queried for merging.
 
     Returns
     -------
 
-    hexs : GeoDataFrame
-                   Result of a spatial join within hex and points. All features are aggregated
-                   based on the input parameters
+    hexs: GeoDataFrame
+          Result of a spatial join within hex and points. All features are aggregated
+          based on the input parameters
 
     Examples
     --------
@@ -227,7 +228,7 @@ def merge_shape_hex(hexs, shape, agg, how='inner', op='intersects'):
     888e62132bfffff | POLYGON ((-76.84736 -12.17523, -76.85167 -12.1... | 608.312696
     888e628debfffff | POLYGON ((-76.67982 -12.18998, -76.68413 -12.1... | NaN
     888e6299b3fffff | POLYGON ((-76.78876 -11.97286, -76.79307 -11.9... | 3225.658803
-    
+
     '''
 
     joined = gpd.sjoin(shape, hexs, how=how, op=op)
@@ -249,34 +250,36 @@ def overlay_polygons_hexs(polygons, hexs, hex_col, columns):
 
     Parameters
     ----------
-    polygons : GeoDataFrame
+    polygons: GeoDataFrame
                 Input GeoDataFrame containing polygons and columns to be processed
 
-    hexs : GeoDataFrame
+    hexs: GeoDataFrame
              Input GeoDataFrame containing desired output hexagon resolution geometries
 
-    hex_col : str
+    hex_col: str
             Determines the column with the hex id.
 
-    columns : list. A list with column names of the columns that are going to be proportionally adjusted
+    columns: list
+             A list with column names of the columns that are going to be proportionally adjusted
 
     Returns
     -------
 
     hexs : GeoDataFrame
-                   Result of a spatial join within hex and points. All columns are adjusted
-                   based on the overlayed area.
+           Result of a spatial join within hex and points. All columns are adjusted
+           based on the overlayed area.
 
     Examples
     --------
 
-    >>> overlay_polygons_hexs(zonas_pob, hex_lima, 'hex', pob_vulnerable)
-                   hex   POB_TOTAL   geometry
-    0  898e6200493ffff  193.705376   POLYGON ((-76.80695 -12.35199, -76.80812 -12.3...
-    1  898e6200497ffff  175.749780   POLYGON ((-76.80412 -12.35395, -76.80528 -12.3...
-    2  898e620049bffff   32.231078   POLYGON ((-76.81011 -12.35342, -76.81127 -12.3...
-    3  898e62004a7ffff   74.154973   POLYGON ((-76.79911 -12.36468, -76.80027 -12.3...
-    4  898e62004b7ffff   46.989828   POLYGON ((-76.79879 -12.36128, -76.79995 -12.3...
+    >>> up.geom.overlay_polygons_hexs(zonas_pob, hex_lima, 'hex', pob_vulnerable)
+                hex |  POB_TOTAL |  geometry
+    898e6200493ffff | 193.705376 |  POLYGON ((-76.80695 -12.35199, -76.80812 -12.3...
+    898e6200497ffff | 175.749780 |  POLYGON ((-76.80412 -12.35395, -76.80528 -12.3...
+    898e620049bffff |  32.231078 |  POLYGON ((-76.81011 -12.35342, -76.81127 -12.3...
+    898e62004a7ffff |  74.154973 |  POLYGON ((-76.79911 -12.36468, -76.80027 -12.3...
+    898e62004b7ffff |  46.989828 |  POLYGON ((-76.79879 -12.36128, -76.79995 -12.3...
+
     '''
     polygons_ = polygons.copy() # Preserve data state
     polygons_['poly_area'] = polygons_.geometry.area # Calc polygon area
@@ -304,22 +307,23 @@ def resolution_downsampling(gdf, hex_col, coarse_resolution, agg):
     Parameters
     ----------
 
-    gdf : GeoDataFrame
-            GeoDataFrame with hexagon geometries (output from gen_hexagons).
+    gdf: GeoDataFrame
+         GeoDataFrame with hexagon geometries (output from gen_hexagons).
 
-    hex_col : str
-            Determines the column with the hex id.
+    hex_col: str
+             Determines the column with the hex id.
 
-    coarse_resolution : int, 0:15
-            Hexagon resolution lower than gdf actual resolution (higher values create smaller hexagons).
+    coarse_resolution: int, 0:15
+                       Hexagon resolution lower than gdf actual resolution (higher values create smaller hexagons).
 
     Returns
     -------
 
-    gdfc : GeoDataFrame
-            GeoDataFrame with lower resolution hexagons geometry and metrics aggregated as indicated.
+    gdfc: GeoDataFrame
+          GeoDataFrame with lower resolution hexagons geometry and metrics aggregated as indicated.
 
     '''
+
     gdf_coarse = gdf.copy()
     coarse_hex_col = 'hex_{}'.format(coarse_resolution)
     gdf_coarse[coarse_hex_col] = gdf_coarse[hex_col].apply(lambda x: h3.h3_to_parent(x,coarse_resolution))
@@ -335,29 +339,32 @@ def osmnx_coefficient_computation(gdf, net_type, basic_stats, extended_stats, co
     Parameters
     ----------
 
-    gdf : GeoDataFrame
-             GeoDataFrame with geometries to download graphs contained within them.
+    gdf: GeoDataFrame
+         GeoDataFrame with geometries to download graphs contained within them.
 
     net_type: str
               Network type to download. One of {'drive', 'drive_service', 'walk', 'bike', 'all', 'all_private'}
 
-    basic_stats : list
-                     List of basic stats to compute from downloaded graph
+    basic_stats: list
+                 List of basic stats to compute from downloaded graph
 
-    extended_stats : list
-                        List of extended stats to compute from graph
+    extended_stats: list
+                    List of extended stats to compute from graph
 
-    connectivity : bool. Default False.
-                      Compute node and edge connectivity
+    connectivity: bool. Default False.
+                  Compute node and edge connectivity
 
-    anc : bool. Default False.
-             Compute avg node connectivity
-    ecc : bool. Default False.
-             Compute shortest paths, eccentricity and topological metric
-    bc : bool. Default False.
-             Compute node betweeness centrality
-    cc : bool. Default False.
-             Compute node closeness centrality
+    anc: bool. Default False.
+         Compute avg node connectivity
+
+    ecc: bool. Default False.
+         Compute shortest paths, eccentricity and topological metric
+
+    bc: bool. Default False.
+        Compute node betweeness centrality
+
+    cc: bool. Default False.
+        Compute node closeness centrality
 
     For more detail about these parameters, see https://osmnx.readthedocs.io/en/stable/osmnx.html#module-osmnx.stats
 
@@ -365,6 +372,26 @@ def osmnx_coefficient_computation(gdf, net_type, basic_stats, extended_stats, co
     -------
 
     gdf : Input GeoDataFrame with updated columns containing the selected metrics
+
+    Examples
+    --------
+
+    >>> hexagons = up.geom.gen_hexagons(8, lima)
+    >>> up.geom.osmnx_coefficient_computation(hexagons.head(), 'walk', ['circuity_avg'], [])
+    On record 1:  There are no nodes within the requested geometry
+    On record 3:  There are no nodes within the requested geometry
+                hex	| geometry	                                        | circuity_avg
+	888e62c64bfffff	| POLYGON ((-76.89763 -12.03869, -76.90194 -12.0... | 1.021441
+	888e6212e1fffff	| POLYGON ((-76.75291 -12.19727, -76.75722 -12.2... | NaN
+	888e62d333fffff	| POLYGON ((-77.09253 -11.83762, -77.09685 -11.8... | 1.025313
+	888e666c2dfffff	| POLYGON ((-76.93109 -11.79031, -76.93540 -11.7... | NaN
+	888e62d4b3fffff	| POLYGON ((-76.87935 -12.03688, -76.88366 -12.0... | 1.044654
+
+
+    See also
+    --------
+
+    https://osmnx.readthedocs.io/en/stable/osmnx.html#module-osmnx.stats
 
     '''
 
