@@ -3,7 +3,7 @@ Effective: April 2018
 Contenido de la página
 
 El Software, con excepción de los Documentos de Soporte y Uso, deberá estar sujetos a los siguientes términos y condiciones, los cuales se empaquetarán como parte de cada Software bajo un archivo que llevará el nombre de "LICENCIA" :   
-"Copyright © 2019. Banco Interamericano de Desarrollo ("BID"). Uso autorizado."
+"Copyright © 2020. Banco Interamericano de Desarrollo ("BID"). Uso autorizado."
 
 ### 1. Licencia
 Por medio de la presente licencia ("Licencia") no exclusiva, revocable, global y libre de regalías el BID otorga permiso al usuario ("Usuario") para reproducir, distribuir, ejecutar públicamente, prestar y poner a disposición del público, y modificar el software y sus modificaciones, por sí o como parte de una colección, siempre que sea para fines no comerciales, sujeto a los términos y condiciones aquí señalados.
