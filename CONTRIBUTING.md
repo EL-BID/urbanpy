@@ -23,7 +23,7 @@ UrbanPy team members will be assigned to review your pull requests. Once the pul
 
 ## Contribution guidelines and standards
 
-Before sending your pull request for review, make sure your changes are consistent with the guidelines and follow the TensorFlow coding style.
+Before sending your pull request for review, make sure your changes are consistent with the guidelines and follow the Google coding style.
 
 ### General guidelines and philosophy for contribution
 
