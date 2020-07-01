@@ -142,13 +142,13 @@ def geo_boundary_to_polygon(x):
     Parameters
     ----------
 
-    x : str
+    x: str
         H3 hexagon index
 
     Returns
     -------
 
-    polygon : Polygon
+    polygon: Polygon
         Polygon representing H3 hexagon area
 
     '''
@@ -161,16 +161,16 @@ def create_duration_labels(durations):
     Parameters
     ----------
 
-    durations : Pandas Series
+    durations: Pandas Series
         Series containing trip durations in minutes.
 
     Returns
     -------
 
-    custom_bins : list
+    custom_bins: list
         List of numbers with the inputs for the bins parameter of pd.cut function
 
-    custom_labels : list
+    custom_labels: list
         List of numbers with the inputs for the labels parameter of pd.cut function
 
     '''
