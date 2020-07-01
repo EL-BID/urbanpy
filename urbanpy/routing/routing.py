@@ -60,7 +60,7 @@ def start_osrm_server(country, continent):
     Examples
     --------
 
-    >>> up.routing.start_osrm_server('peru', 'south-america')
+    >>> urbanpy.routing.start_osrm_server('peru', 'south-america')
     Starting server ...
     Server was started succesfully.
 
@@ -133,7 +133,7 @@ def stop_osrm_server(country, continent):
     Examples
     --------
 
-    >>> up.routing.stop_osrm_server('peru', 'south-america')
+    >>> urbanpy.routing.stop_osrm_server('peru', 'south-america')
     Server stopped succesfully
 
     '''
@@ -241,11 +241,11 @@ def google_maps_dist_matrix(origin, destination, mode, api_key, **kwargs):
     --------
 
     >>> API_KEY = 'example-key'
-    >>> up.routing.google_maps_dist_matrix('San Juan de Lurigancho', 'Miraflores', 'walking', API_KEY)
+    >>> urbanpy.routing.google_maps_dist_matrix('San Juan de Lurigancho', 'Miraflores', 'walking', API_KEY)
         (18477, 13494)
-    >>> up.routing.google_maps_dist_matrix((-12,-77), (-12.01,-77.01), 'walking', API_KEY)
+    >>> urbanpy.routing.google_maps_dist_matrix((-12,-77), (-12.01,-77.01), 'walking', API_KEY)
         (2428, 1838)
-    >>> up.routing.google_maps_dist_matrix([(-12,-77),(-12.11,-77.01)], [(-12.11,-77.01),(-12,-77)], 'walking', API_KEY)
+    >>> urbanpy.routing.google_maps_dist_matrix([(-12,-77),(-12.11,-77.01)], [(-12.11,-77.01),(-12,-77)], 'walking', API_KEY)
         ([[13743, 0], [0, 13720]], [[10232, 0], [0, 10674]])
 
     '''
@@ -311,7 +311,7 @@ def ors_api(locations, origin, destination, profile, metrics, api_key):
     >>> sources = [0]
     >>> destinations = [1,2,3]
     >>> api_key = ...
-    >>> up.routing.ors_api(locations, sources, destinations, metrics, 'driving-car', api_key)
+    >>> urbanpy.routing.ors_api(locations, sources, destinations, metrics, 'driving-car', api_key)
     [[5753.86,88998.08,399003.44]]
     [[140861.31,2434228.75,1.0262603E7]]
 
@@ -364,10 +364,10 @@ def compute_osrm_dist_matrix(origins, destinations, profile):
     Examples
     --------
 
-    >>> hex = up.geom.gen_hexagons(8, lima)
-    >>> fs = up.download.overpass_pois(hex.total_bounds, 'food_supply')
-    >>> up.routing.start_osrm_server('peru', 'south-america')
-    >>> dist, dur = up.routing.compute_osrm_dist_matrix(points.head(), fs.head(), 'walking')
+    >>> hex = urbanpy.geom.gen_hexagons(8, lima)
+    >>> fs = urbanpy.download.overpass_pois(hex.total_bounds, 'food_supply')
+    >>> urbanpy.routing.start_osrm_server('peru', 'south-america')
+    >>> dist, dur = urbanpy.routing.compute_osrm_dist_matrix(points.head(), fs.head(), 'walking')
     array([[ 82012.4,  93899.9,  88964.6, 111839.8,  87844. ],
        [ 26346.3,  23725.6,  19618.9,  38607.9,  22725.6],
        [ 26504.4,  23883.7,  19777. ,  38766. ,  22883.7],
@@ -438,7 +438,7 @@ def google_maps_dir_matrix(origin, destination, mode, api_key, **kwargs):
     --------
 
     >>> API_KEY = 'example-key'
-    >>> up.routing.google_maps_dir_matrix('San Juan de Lurigancho', 'Miraflores', 'walking', API_KEY)
+    >>> urbanpy.routing.google_maps_dir_matrix('San Juan de Lurigancho', 'Miraflores', 'walking', API_KEY)
         (18477, 13494)
 
     '''
