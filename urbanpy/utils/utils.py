@@ -22,18 +22,26 @@ def swap_xy(geom):
     Parameters
     ----------
 
-    geom : GeoSeries
-              Input series containing the geometries needing a coordinate swap
+    geom: GeoSeries
+          Input series containing the geometries needing a coordinate swap
 
     Returns
     -------
 
-    shell : list
-               List containing the exterior borders of the geometry
-    holes : list
-               Array of all holes within a geometry. Only for Polygon and Multipolygon
-    coords : list
-                List of geomerty type with the swapped x,y coordinates
+    shell: list
+           List containing the exterior borders of the geometry
+    holes: list
+           Array of all holes within a geometry. Only for Polygon and Multipolygon
+    coords: list
+            List of geomerty type with the swapped x,y coordinates
+
+    Examples
+    --------
+
+    >>> p = Point(-77,-12)
+    >>> p_ = urbanpy.utils.swap_xy(p)
+    >>> print((p.x, p.y), (p_.x, p_.y))
+    (-77.0, -12.0) (-12.0, -77.0)
 
     '''
     if geom.is_empty:
@@ -71,25 +79,35 @@ def nn_search(tree_features, query_features, metric='haversine'):
     Parameters
     ----------
 
-    tree_features : array_like
-                       Input features to create the search tree. Features are in
-                       lat, lon format.
+    tree_features: array_like
+                   Input features to create the search tree. Features are in
+                   lat, lon format.
 
-    query_features : array_like
-                        Points to which calculate the nearest neighbor within the tree.
-                        lat, lon coordinates expected.
+    query_features: array_like
+                    Points to which calculate the nearest neighbor within the tree.
+                    lat, lon coordinates expected.
 
-    metric : str
-                Distance metric for neighorhood search. Default haversine for latlon coordinates. If haversine is selected lat, lon coordinates are converted to radians.
+    metric: str
+            Distance metric for neighorhood search. Default haversine for latlon coordinates.
+            If haversine is selected lat, lon coordinates are converted to radians.
 
     Returns
     -------
 
-    dist : array_like
-                   Array with the corresponding distance in km (if haversine then distance * earth radius)
+    dist: array_like
+          Array with the corresponding distance in km (if haversine then distance * earth radius)
 
-    ind : array_like
-                   Array with the corresponding index of the tree_features values.
+    ind: array_like
+         Array with the corresponding index of the tree_features values.
+
+    Examples
+    --------
+
+    >>> x = np.random.uniform(-78,-79, 20)
+    >>> y = np.random.uniform(-12, -11, 20)
+    >>> features = np.vstack([x,y]).T
+    >>> query = [[-77,-12]]
+    >>> urbanpy.utils.nn_search(features, query)
 
     '''
 
