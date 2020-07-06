@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Plotting Module &mdash; urbanpy 0.1 documentation</title>
+  <title>Plotting Module &mdash; urbanpy 0.2 documentation</title>
 
 
 
@@ -18,13 +18,13 @@
 
 
   <script type="text/javascript" src="static/js/modernizr.min.js"></script>
-  
+
 
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
-        <script src="static/jquery.js"></script>
-        <script src="static/underscore.js"></script>
-        <script src="static/doctools.js"></script>
-        <script src="static/language_data.js"></script>
+        <script type="text/javascript" src="static/jquery.js"></script>
+        <script type="text/javascript" src="static/underscore.js"></script>
+        <script type="text/javascript" src="static/doctools.js"></script>
+        <script type="text/javascript" src="static/language_data.js"></script>
 
     <script type="text/javascript" src="static/js/theme.js"></script>
 
@@ -83,20 +83,22 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="usage/installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage/installation.html#usage">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage/quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage/quickstart.html#usage">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="urbanpy.html">Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="urbanpy.html#modules-description">Modules Description</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="urbanpy.html#modules-reference">Modules Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="urbanpy.download.html">Download Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="urbanpy.geom.html">Geom Module</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Plotting Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="urbanpy.routing.html">Routing Modules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="urbanpy.utils.html">Utils Module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="urbanpy.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.html#modules-description">Modules Description</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="urbanpy.html#modules-reference">Modules Reference</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="urbanpy.download.html">Download Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="urbanpy.geom.html">Geom Module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Plotting Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="urbanpy.routing.html">Routing Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="urbanpy.utils.html">Utils Module</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">AM-331-A3 Licencia de Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_of_conduct.html">Contributor Covenant Code of Conduct</a></li>
 </ul>
 
 
@@ -167,28 +169,28 @@
 
   <div class="section" id="module-urbanpy.plotting">
 <span id="plotting-module"></span><h1>Plotting Module<a class="headerlink" href="#module-urbanpy.plotting" title="Permalink to this headline">¶</a></h1>
-<dl class="py function">
+<dl class="function">
 <dt id="urbanpy.plotting.choropleth_map">
-<code class="sig-prename descclassname">urbanpy.plotting.</code><code class="sig-name descname">choropleth_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gdf</span></em>, <em class="sig-param"><span class="n">color_column</span></em>, <em class="sig-param"><span class="n">df_filter</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.plotting.choropleth_map" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">urbanpy.plotting.</code><code class="sig-name descname">choropleth_map</code><span class="sig-paren">(</span><em class="sig-param">gdf</em>, <em class="sig-param">color_column</em>, <em class="sig-param">df_filter=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.plotting.choropleth_map" title="Permalink to this definition">¶</a></dt>
 <dd><p>Produce a Choroplethmap using plotly by passing a GeoDataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>gdf</strong><span class="classifier">GeoDataFrame</span></dt><dd><p>Input data containing a geometry column and features</p>
+<dt><strong>gdf: GeoDataFrame</strong></dt><dd><p>Input data containing a geometry column and features</p>
 </dd>
-<dt><strong>color_column</strong><span class="classifier">str</span></dt><dd><p>Column from gdf to use as color</p>
+<dt><strong>color_column: str</strong></dt><dd><p>Column from gdf to use as color</p>
 </dd>
-<dt><strong>df_filter</strong><span class="classifier">pd.Series, default to None</span></dt><dd><p>Pandas Series containing true/false values that satisfy a
+<dt><strong>df_filter: pd.Series, default to None</strong></dt><dd><p>Pandas Series containing true/false values that satisfy a
 condition (e.g. (df[‘population’] &gt; 100))</p>
 </dd>
-<dt><strong>**kargs</strong><span class="classifier">Any parameter of plotly.px.choroplethmapbox.</span></dt><dd></dd>
+<dt><strong>**kargs: Any parameter of plotly.px.choroplethmapbox.</strong></dt><dd></dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hex_lima</span> <span class="o">=</span> <span class="n">gen_hexagons</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hex_lima</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">gen_hexagons</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">lima</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hex_lima</span><span class="p">[</span><span class="s1">&#39;pop_2020&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">population_2020</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">choropleth_map</span><span class="p">(</span><span class="n">hex_lima</span><span class="p">,</span> <span class="s1">&#39;pop_2020&#39;</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">,</span> <span class="o">-</span><span class="mi">77</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">urbanpy</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">choropleth_map</span><span class="p">(</span><span class="n">hex_lima</span><span class="p">,</span> <span class="s1">&#39;pop_2020&#39;</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">,</span> <span class="o">-</span><span class="mi">77</span><span class="p">])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -215,7 +217,7 @@ condition (e.g. (df[‘population’] &gt; 100))</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, Andres Regal, Claudio Ortega
+        &copy; Copyright 2020, IADB
 
     </p>
   </div>

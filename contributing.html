@@ -1,0 +1,275 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Contributing guidelines &mdash; urbanpy 0.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributor Covenant Code of Conduct" href="code_of_conduct.html" />
+    <link rel="prev" title="AM-331-A3 Licencia de Software" href="license.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> urbanpy
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="urbanpy.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">AM-331-A3 Licencia de Software</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing guidelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pull-request-checklist">Pull request checklist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-become-a-contributor-and-submit-your-own-code">How to become a contributor and submit your own code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contributing-code">Contributing code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contribution-guidelines-and-standards">Contribution guidelines and standards</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#general-guidelines-and-philosophy-for-contribution">General guidelines and philosophy for contribution</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="code_of_conduct.html">Contributor Covenant Code of Conduct</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">urbanpy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">&lt;no title&gt;</a> &raquo;</li>
+        
+      <li>Contributing guidelines</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/contributing.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="contributing-guidelines">
+<h1>Contributing guidelines<a class="headerlink" href="#contributing-guidelines" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="pull-request-checklist">
+<h2>Pull request checklist<a class="headerlink" href="#pull-request-checklist" title="Permalink to this headline">¶</a></h2>
+<p>Before sending a pull request, be sure to follow this list.</p>
+<ul class="simple">
+<li><p>Read the <a class="reference external" href="CONTRIBUTING.md">contributing guidelines</a></p></li>
+<li><p>Read the <a class="reference external" href="CODE_OF_CONDUCT.md">code of conduct</a></p></li>
+<li><p>Check if your changes comply with the <a class="reference external" href="https://github.com/google/styleguide/blob/gh-pages/pyguide.md">style
+guide</a></p></li>
+</ul>
+</div>
+<div class="section" id="how-to-become-a-contributor-and-submit-your-own-code">
+<h2>How to become a contributor and submit your own code<a class="headerlink" href="#how-to-become-a-contributor-and-submit-your-own-code" title="Permalink to this headline">¶</a></h2>
+<p>We’d love to accept your changes, suggestions and patches! Be sure that
+your changes, source code, and other ideas/implementations do not cause
+intellectual property issues.</p>
+</div>
+<div class="section" id="contributing-code">
+<h2>Contributing code<a class="headerlink" href="#contributing-code" title="Permalink to this headline">¶</a></h2>
+<p>If you have any improvements or new functionality that is interesting
+for UrbanPy, send us your pull requests! If you are new to pull
+requests, see Github’s <a class="reference external" href="https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests">how to
+guide</a>.</p>
+<p>UrbanPy team members will be assigned to review your pull requests. Once
+the pull requests are approved and pass continuous integration checks, a
+UrbanPy team member will apply ready to pull label to your change. This
+means we are working on getting your pull request submitted to our
+internal repository. After the change has been submitted internally,
+your pull request will be merged automatically on GitHub.</p>
+</div>
+<div class="section" id="contribution-guidelines-and-standards">
+<h2>Contribution guidelines and standards<a class="headerlink" href="#contribution-guidelines-and-standards" title="Permalink to this headline">¶</a></h2>
+<p>Before sending your pull request for review, make sure your changes are
+consistent with the guidelines and follow the Google coding style.</p>
+<div class="section" id="general-guidelines-and-philosophy-for-contribution">
+<h3>General guidelines and philosophy for contribution<a class="headerlink" href="#general-guidelines-and-philosophy-for-contribution" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Include unit tests when you contribute new features, as they help to
+a) prove that your code works correctly, and b) guard against future
+breaking changes to lower the maintenance cost.</p></li>
+<li><p>Bug fixes also generally require unit tests, because the presence of
+bugs usually indicates insufficient test coverage.</p></li>
+<li><p>When you contribute a new feature to UrbanPy, the maintenance burden
+is (by default) transferred to the UrbanPy team. This means that the
+benefit of the contribution must be compared against the cost of
+maintaining the feature.</p></li>
+<li><p>Full new features (e.g., a cutting-edge travel time matrix
+computation algorithm) typically will live in urbanpy/utils to get
+some airtime before a decision is made regarding whether they are to
+be migrated to the core modules.</p></li>
+<li><p>As every PR may require several CPU hours of CI testing, we
+discourage submitting PRs to fix one typo, one warning, etc. We
+recommend fixing the same issue at the file level at least (e.g.: fix
+all typos in a file, fix all compiler warning in a file, etc.)</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="code_of_conduct.html" class="btn btn-neutral float-right" title="Contributor Covenant Code of Conduct" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="license.html" class="btn btn-neutral float-left" title="AM-331-A3 Licencia de Software" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, IADB
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

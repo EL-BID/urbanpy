@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Utils Module &mdash; urbanpy 0.1 documentation</title>
+  <title>Utils Module &mdash; urbanpy 0.2 documentation</title>
 
 
 
@@ -21,21 +21,21 @@
 
 
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
-        <script src="static/jquery.js"></script>
-        <script src="static/underscore.js"></script>
-        <script src="static/doctools.js"></script>
-        <script src="static/language_data.js"></script>
+        <script type="text/javascript" src="static/jquery.js"></script>
+        <script type="text/javascript" src="static/underscore.js"></script>
+        <script type="text/javascript" src="static/doctools.js"></script>
+        <script type="text/javascript" src="static/language_data.js"></script>
 
     <script type="text/javascript" src="static/js/theme.js"></script>
 
 
 
-  
+
   <link rel="stylesheet" href="static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="License" href="license.html" />
+    <link rel="next" title="AM-331-A3 Licencia de Software" href="license.html" />
     <link rel="prev" title="Routing Modules" href="urbanpy.routing.html" />
 </head>
 
@@ -83,20 +83,22 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="usage/installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage/installation.html#usage">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage/quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage/quickstart.html#usage">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="urbanpy.html">Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="urbanpy.html#modules-description">Modules Description</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="urbanpy.html#modules-reference">Modules Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="urbanpy.download.html">Download Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="urbanpy.geom.html">Geom Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="urbanpy.plotting.html">Plotting Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="urbanpy.routing.html">Routing Modules</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Utils Module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="urbanpy.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.html#modules-description">Modules Description</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="urbanpy.html#modules-reference">Modules Reference</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="urbanpy.download.html">Download Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="urbanpy.geom.html">Geom Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="urbanpy.plotting.html">Plotting Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="urbanpy.routing.html">Routing Modules</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Utils Module</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">AM-331-A3 Licencia de Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_of_conduct.html">Contributor Covenant Code of Conduct</a></li>
 </ul>
 
 
@@ -152,7 +154,7 @@
       <li class="wy-breadcrumbs-aside">
 
 
-            <a href="_sources/urbanpy.utils.rst.txt" rel="nofollow"> View page source</a>
+            <a href="sources/urbanpy.utils.rst.txt" rel="nofollow"> View page source</a>
 
 
       </li>
@@ -167,100 +169,116 @@
 
   <div class="section" id="module-urbanpy.utils">
 <span id="utils-module"></span><h1>Utils Module<a class="headerlink" href="#module-urbanpy.utils" title="Permalink to this headline">¶</a></h1>
-<dl class="py function">
-<dt id="urbanpy.utils.create_duration_labels">
-<code class="sig-prename descclassname">urbanpy.utils.</code><code class="sig-name descname">create_duration_labels</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">durations</span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.utils.create_duration_labels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates inputs for pd.cut function (bins and labels) especifically for the trip durations columns.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>durations</strong><span class="classifier">Pandas Series</span></dt><dd><p>Series containing trip durations in minutes.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>custom_bins</strong><span class="classifier">list</span></dt><dd><p>List of numbers with the inputs for the bins parameter of pd.cut function</p>
-</dd>
-<dt><strong>custom_labels</strong><span class="classifier">list</span></dt><dd><p>List of numbers with the inputs for the labels parameter of pd.cut function</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="urbanpy.utils.geo_boundary_to_polygon">
-<code class="sig-prename descclassname">urbanpy.utils.</code><code class="sig-name descname">geo_boundary_to_polygon</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.utils.geo_boundary_to_polygon" title="Permalink to this definition">¶</a></dt>
-<dd><p>Transform h3 geo boundary to shapely Polygon</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>x</strong><span class="classifier">str</span></dt><dd><p>H3 hexagon index</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>polygon</strong><span class="classifier">Polygon</span></dt><dd><p>Polygon representing H3 hexagon area</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="urbanpy.utils.nn_search">
-<code class="sig-prename descclassname">urbanpy.utils.</code><code class="sig-name descname">nn_search</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tree_features</span></em>, <em class="sig-param"><span class="n">query_features</span></em>, <em class="sig-param"><span class="n">metric</span><span class="o">=</span><span class="default_value">'haversine'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.utils.nn_search" title="Permalink to this definition">¶</a></dt>
-<dd><p>Build a BallTree for nearest neighbor search based on selected distance.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>tree_features</strong><span class="classifier">array_like</span></dt><dd><p>Input features to create the search tree. Features are in
-lat, lon format.</p>
-</dd>
-<dt><strong>query_features</strong><span class="classifier">array_like</span></dt><dd><p>Points to which calculate the nearest neighbor within the tree.
-lat, lon coordinates expected.</p>
-</dd>
-<dt><strong>metric</strong><span class="classifier">str</span></dt><dd><p>Distance metric for neighorhood search. Default haversine for latlon coordinates. If haversine is selected lat, lon coordinates are converted to radians.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>dist</strong><span class="classifier">array_like</span></dt><dd><p>Array with the corresponding distance in km (if haversine then distance * earth radius)</p>
-</dd>
-<dt><strong>ind</strong><span class="classifier">array_like</span></dt><dd><p>Array with the corresponding index of the tree_features values.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="urbanpy.utils.shell_from_geometry">
-<code class="sig-prename descclassname">urbanpy.utils.</code><code class="sig-name descname">shell_from_geometry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">geometry</span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.utils.shell_from_geometry" title="Permalink to this definition">¶</a></dt>
-<dd><p>Util function for park and pitch processing.</p>
-</dd></dl>
-
-<dl class="py function">
+<dl class="function">
 <dt id="urbanpy.utils.swap_xy">
-<code class="sig-prename descclassname">urbanpy.utils.</code><code class="sig-name descname">swap_xy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">geom</span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.utils.swap_xy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">urbanpy.utils.</code><code class="sig-name descname">swap_xy</code><span class="sig-paren">(</span><em class="sig-param">geom</em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.utils.swap_xy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Util function in case an x,y coordinate needs to be switched</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>geom</strong><span class="classifier">GeoSeries</span></dt><dd><p>Input series containing the geometries needing a coordinate swap</p>
+<dt><strong>geom: GeoSeries</strong></dt><dd><p>Input series containing the geometries needing a coordinate swap</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>shell</strong><span class="classifier">list</span></dt><dd><p>List containing the exterior borders of the geometry</p>
+<dt>shell: list</dt><dd><p>List containing the exterior borders of the geometry</p>
 </dd>
-<dt><strong>holes</strong><span class="classifier">list</span></dt><dd><p>Array of all holes within a geometry. Only for Polygon and Multipolygon</p>
+<dt>holes: list</dt><dd><p>Array of all holes within a geometry. Only for Polygon and Multipolygon</p>
 </dd>
-<dt><strong>coords</strong><span class="classifier">list</span></dt><dd><p>List of geomerty type with the swapped x,y coordinates</p>
+<dt>coords: list</dt><dd><p>List of geomerty type with the swapped x,y coordinates</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="o">-</span><span class="mi">77</span><span class="p">,</span><span class="o">-</span><span class="mi">12</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p_</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">swap_xy</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">p_</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">p_</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
+<span class="go">(-77.0, -12.0) (-12.0, -77.0)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="urbanpy.utils.nn_search">
+<code class="sig-prename descclassname">urbanpy.utils.</code><code class="sig-name descname">nn_search</code><span class="sig-paren">(</span><em class="sig-param">tree_features</em>, <em class="sig-param">query_features</em>, <em class="sig-param">metric='haversine'</em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.utils.nn_search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a BallTree for nearest neighbor search based on selected distance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>tree_features: array_like</strong></dt><dd><p>Input features to create the search tree. Features are in
+lat, lon format.</p>
+</dd>
+<dt><strong>query_features: array_like</strong></dt><dd><p>Points to which calculate the nearest neighbor within the tree.
+lat, lon coordinates expected.</p>
+</dd>
+<dt><strong>metric: str</strong></dt><dd><p>Distance metric for neighorhood search. Default haversine for latlon coordinates.
+If haversine is selected lat, lon coordinates are converted to radians.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>dist: array_like</dt><dd><p>Array with the corresponding distance in km (if haversine then distance * earth radius)</p>
+</dd>
+<dt>ind: array_like</dt><dd><p>Array with the corresponding index of the tree_features values.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">78</span><span class="p">,</span><span class="o">-</span><span class="mi">79</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">12</span><span class="p">,</span> <span class="o">-</span><span class="mi">11</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">query</span> <span class="o">=</span> <span class="p">[[</span><span class="o">-</span><span class="mi">77</span><span class="p">,</span><span class="o">-</span><span class="mi">12</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">urbanpy</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">nn_search</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="urbanpy.utils.shell_from_geometry">
+<code class="sig-prename descclassname">urbanpy.utils.</code><code class="sig-name descname">shell_from_geometry</code><span class="sig-paren">(</span><em class="sig-param">geometry</em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.utils.shell_from_geometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Util function for park and pitch processing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="urbanpy.utils.geo_boundary_to_polygon">
+<code class="sig-prename descclassname">urbanpy.utils.</code><code class="sig-name descname">geo_boundary_to_polygon</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.utils.geo_boundary_to_polygon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform h3 geo boundary to shapely Polygon</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x: str</strong></dt><dd><p>H3 hexagon index</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>polygon: Polygon</dt><dd><p>Polygon representing H3 hexagon area</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="urbanpy.utils.create_duration_labels">
+<code class="sig-prename descclassname">urbanpy.utils.</code><code class="sig-name descname">create_duration_labels</code><span class="sig-paren">(</span><em class="sig-param">durations</em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.utils.create_duration_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates inputs for pd.cut function (bins and labels) especifically for the trip durations columns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>durations: Pandas Series</strong></dt><dd><p>Series containing trip durations in minutes.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>custom_bins: list</dt><dd><p>List of numbers with the inputs for the bins parameter of pd.cut function</p>
+</dd>
+<dt>custom_labels: list</dt><dd><p>List of numbers with the inputs for the labels parameter of pd.cut function</p>
 </dd>
 </dl>
 </dd>
@@ -277,7 +295,7 @@ lat, lon coordinates expected.</p>
 
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
 
-        <a href="license.html" class="btn btn-neutral float-right" title="License" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="license.html" class="btn btn-neutral float-right" title="AM-331-A3 Licencia de Software" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
 
 
         <a href="urbanpy.routing.html" class="btn btn-neutral float-left" title="Routing Modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -289,7 +307,7 @@ lat, lon coordinates expected.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, Andres Regal, Claudio Ortega
+        &copy; Copyright 2020, IADB
 
     </p>
   </div>

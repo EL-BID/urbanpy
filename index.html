@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Welcome to urbanpy’s documentation! &mdash; urbanpy 0.1 documentation</title>
+  <title>Welcome to urbanpy’s documentation! &mdash; urbanpy 0.2 documentation</title>
 
 
 
@@ -21,10 +21,10 @@
 
 
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
-        <script src="static/jquery.js"></script>
-        <script src="static/underscore.js"></script>
-        <script src="static/doctools.js"></script>
-        <script src="static/language_data.js"></script>
+        <script type="text/javascript" src="static/jquery.js"></script>
+        <script type="text/javascript" src="static/underscore.js"></script>
+        <script type="text/javascript" src="static/doctools.js"></script>
+        <script type="text/javascript" src="static/language_data.js"></script>
 
     <script type="text/javascript" src="static/js/theme.js"></script>
 
@@ -84,7 +84,9 @@
 <li class="toctree-l1"><a class="reference internal" href="usage/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage/quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="urbanpy.html">Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">AM-331-A3 Licencia de Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_of_conduct.html">Contributor Covenant Code of Conduct</a></li>
 </ul>
 
 
@@ -136,7 +138,7 @@
       <li class="wy-breadcrumbs-aside">
 
 
-            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+            <a href="sources/index.rst.txt" rel="nofollow"> View page source</a>
 
 
       </li>
@@ -165,9 +167,8 @@ as spatial units</p></li>
 <li><p>[x] Origin-destination matrix calculation by any mode using a routing
 API</p></li>
 <li><p>[x] Obtain travel time from spatial units to the closest facilities</p></li>
-<li><p>[x] Consolidate the results as tables and/or shapefiles
-(georeferenced datasets)</p></li>
-<li><p>[x] Visualize the results as maps</p></li>
+<li><p>[x] Consolidate the results as tables and/or shapefiles (georeferenced datasets)</p></li>
+<li><p>[x] Visualise the results as maps</p></li>
 </ul>
 </div>
 <div class="section" id="ux-goals">
@@ -180,6 +181,96 @@ aggregations)</p></li>
 <li><p>[x] Clear documentation with usage and examples</p></li>
 <li><p>[x] Clear and replicable example notebooks</p></li>
 </ul>
+<div class="section" id="main-modules">
+<h2>Main modules<a class="headerlink" href="#main-modules" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>download: Main functions for data download from Nominatin API,
+OverPass API and HDX population data</p></li>
+<li><p>geom: Spatial operations, grid partitioning, spatial filtering and
+street network statistics</p></li>
+<li><p>plotting: Visualization wrappers for plotly interactive choropleth
+maps</p></li>
+<li><p>routing: Distance matrix computations (may require your own API keys)</p></li>
+<li><p>utils: Data handling helpers</p></li>
+</ul>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="for-users">
+<h3>For users<a class="headerlink" href="#for-users" title="Permalink to this headline">¶</a></h3>
+<p>To install the urbanpy library you can use:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$ pip install urbanpy
+</pre></div>
+</div>
+<p>Then use <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">urbanpy</span></code> in your python scripts to use the library.</p>
+<p>If you plan to use the <a class="reference external" href="http://project-osrm.org/">OSRM Server</a> route
+or distance matrix calculation functionalities* you must have Docker
+installed in your system, refer to Docker
+<a class="reference external" href="https://www.docker.com/products/docker-desktop">Installation</a>.</p>
+</div>
+<div class="section" id="additional-dependecies-notes">
+<h3>Additional Dependecies Notes<a class="headerlink" href="#additional-dependecies-notes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>It is important to note that for travel time computation, if needed,
+a method is implements the Open Source Routing Machine (OSRM). This
+method pulls, extracts and adds graph weights to the downloaded
+network and runs the routing server. Make sure to have docker
+installed for the library to work correctly.</p></li>
+<li><p>Urbanpy provides a simple approximation with nearest neighbor search
+using a BallTree and haversine distance, but the difference between
+real travel time and the approximation may vary from city to city.</p></li>
+<li><p>Additionally, the use of spatial libraries like osmnx, geopandas and
+h3 require certain extra packages. Specifically, for rtree (spatial
+indexing to allow spatial joins) libspatialindex is required. OSMnx
+and Geopandas requiere GDAL as well. If not handled by installing
+geopandas’s dependencies, installing fiona, pyproj and shapely should
+satisfy the requirements. Another way to ensure all dependencies are
+met, installing osmnx via conda should suffice. H3 requires cc, make,
+and cmake in your $PATH when installing, otherwise installation will
+not be successful. Please refer to <a class="reference external" href="https://github.com/uber/h3">h3’s
+documentation</a> for a more detailed
+guide on installation options and requirements.</p></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<p>UrbanPy lets you download and visualize city boundaries extremely easy:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">urbanpy</span> <span class="k">as</span> <span class="nn">up</span>
+
+<span class="n">boundaries</span> <span class="o">=</span> <span class="n">up</span><span class="o">.</span><span class="n">download</span><span class="o">.</span><span class="n">nominatim_osm</span><span class="p">(</span><span class="s1">&#39;Lima, Peru&#39;</span><span class="p">,</span> <span class="n">expected_position</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">boundaries</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Since <code class="docutils literal notranslate"><span class="pre">boundaries</span></code> is a GeoDataFrame it can be easily plotted with the
+method <code class="docutils literal notranslate"><span class="pre">.plot()</span></code>. You can also generate hexagons to fill the city
+boundaries in a oneliner.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">hexs</span><span class="p">,</span> <span class="n">hexs_centroids</span> <span class="o">=</span> <span class="n">up</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">gen_hexagons</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">city</span><span class="o">=</span><span class="n">boundaries</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Also check our <a class="reference external" href="/notebooks">example notebooks</a>, and if you have
+examples or visualizations of your own, we encourage you to share
+contribute.</p>
+<p>If you plan to contribute or customize urbanpy first clone this repo and
+cd into it. Then, we strongly recommend you to create a virtual
+environment. You can use conda, this installation manage some
+complicated C spatial library dependencies:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$ conda env create -n urbanpy -f environment.yml <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.6
+$ conda activate urbanpy
+</pre></div>
+</div>
+<p>Or if you are more confident about your setup, you can use pip:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$ python3 -m venv .env
+$ <span class="nb">source</span> .env/bin/activate
+<span class="o">(</span>.env<span class="o">)</span> $ pip install -r requirements.txt
+</pre></div>
+</div>
+<div class="section" id="authors">
+<h2>Authors<a class="headerlink" href="#authors" title="Permalink to this headline">¶</a></h2>
+<p>UrbanPy’s original authors are Claudio Ortega
+(<a class="reference external" href="https://www.linkedin.com/in/claudioortega27/">socials</a>) and Andrés
+Regal (<a class="reference external" href="https://www.linkedin.com/in/andrés-regal/">socials</a>).</p>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
@@ -201,8 +292,55 @@ aggregations)</p></li>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">AM-331-A3 Licencia de Software</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="license.html#licencia">1. Licencia</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="license.html#definiciones">2. Definiciones</a></li>
 </ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#derechos-del-bid">3. Derechos del BID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#derechos-del-usuario-sobre-software-derivado">4. Derechos del Usuario sobre Software Derivado</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#restricciones">5. Restricciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#reconocimiento">6. Reconocimiento</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#nombre-y-logo-del-bid">7. Nombre y Logo del BID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#declaraciones-y-garantias">8. Declaraciones y Garantías</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#limitacion-de-responsabilidad">9. Limitación de Responsabilidad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#indemnizacion">10. Indemnización</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#terminacion-de-la-licencia">11. Terminación de la Licencia</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#devolucion-del-sistema-informatico">12. Devolución del Sistema Informático</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#ley-aplicable">13. Ley Aplicable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#privilegios-e-inmunidades">14. Privilegios e Inmunidades</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#resolucion-de-disputas">15. Resolución de Disputas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#relacion-entre-las-partes">16. Relación entre las Partes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#divisibilidad">17. Divisibilidad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#validez-de-obligaciones">18. Validez de Obligaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#notificaciones">19. Notificaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#enmienda">20. Enmienda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="license.html#acuerdo-final">21. Acuerdo Final</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing guidelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#pull-request-checklist">Pull request checklist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#how-to-become-a-contributor-and-submit-your-own-code">How to become a contributor and submit your own code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#contributing-code">Contributing code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#contribution-guidelines-and-standards">Contribution guidelines and standards</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="contributing.html#general-guidelines-and-philosophy-for-contribution">General guidelines and philosophy for contribution</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="code_of_conduct.html">Contributor Covenant Code of Conduct</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="code_of_conduct.html#our-pledge">Our Pledge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code_of_conduct.html#our-standards">Our Standards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code_of_conduct.html#our-responsibilities">Our Responsibilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code_of_conduct.html#scope">Scope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code_of_conduct.html#enforcement">Enforcement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code_of_conduct.html#attribution">Attribution</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>*Current support is tested on Linux Ubuntu 18.04 &amp; Mac OS Catalina,
+coming soon we will test and support Windows 10.</p>
 </div>
 </div>
 <div class="section" id="indices-and-tables">
@@ -212,12 +350,6 @@ aggregations)</p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-</div>
-<div class="section" id="license">
-<h1>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h1>
-<p>UrbanPy is completely free and open source and licensed under the
-<a class="reference external" href="https://creativecommons.org/licenses/by-nc-nd/3.0/igo/">Creative Commons
-3.0</a> license.</p>
 </div>
 
 
@@ -238,7 +370,7 @@ aggregations)</p></li>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, Andres Regal, Claudio Ortega
+        &copy; Copyright 2020, IADB
 
     </p>
   </div>

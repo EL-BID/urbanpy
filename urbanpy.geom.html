@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Geom Module &mdash; urbanpy 0.1 documentation</title>
+  <title>Geom Module &mdash; urbanpy 0.2 documentation</title>
 
 
 
@@ -21,10 +21,10 @@
 
 
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
-        <script src="static/jquery.js"></script>
-        <script src="static/underscore.js"></script>
-        <script src="static/doctools.js"></script>
-        <script src="static/language_data.js"></script>
+        <script type="text/javascript" src="static/jquery.js"></script>
+        <script type="text/javascript" src="static/underscore.js"></script>
+        <script type="text/javascript" src="static/doctools.js"></script>
+        <script type="text/javascript" src="static/language_data.js"></script>
 
     <script type="text/javascript" src="static/js/theme.js"></script>
 
@@ -96,7 +96,9 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">AM-331-A3 Licencia de Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_of_conduct.html">Contributor Covenant Code of Conduct</a></li>
 </ul>
 
 
@@ -167,32 +169,62 @@
 
   <div class="section" id="module-urbanpy.geom">
 <span id="geom-module"></span><h1>Geom Module<a class="headerlink" href="#module-urbanpy.geom" title="Permalink to this headline">¶</a></h1>
-<dl class="py function">
-<dt id="urbanpy.geom.filter_population">
-<code class="sig-prename descclassname">urbanpy.geom.</code><code class="sig-name descname">filter_population</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pop_df</span></em>, <em class="sig-param"><span class="n">polygon_gdf</span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.geom.filter_population" title="Permalink to this definition">¶</a></dt>
-<dd><p>Filter an HDX database download to the polygon bounds</p>
+<dl class="function">
+<dt id="urbanpy.geom.merge_geom_downloads">
+<code class="sig-prename descclassname">urbanpy.geom.</code><code class="sig-name descname">merge_geom_downloads</code><span class="sig-paren">(</span><em class="sig-param">gdfs</em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.geom.merge_geom_downloads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge several GeoDataFrames from OSM download_osm</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>pop_df</strong><span class="classifier">DataFrame</span></dt><dd><p>Result from download_hdx</p>
-</dd>
-<dt><strong>polygon_gdf</strong><span class="classifier">GeoDataFrame</span></dt><dd><p>Result from download_osm or merge_geom_downloads</p>
+<dt><strong>dfs: array_like</strong></dt><dd><p>Array of GeoDataFrames to merge</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>filtered_points_gdf</strong><span class="classifier">GeoDataFrame</span></dt><dd><p>Population DataFrame filtered to polygon bounds</p>
+<dt>concat: GeoDataFrame</dt><dd><p>Output from concatenation and unary union of geometries, providing
+a single geometry database for the city</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lima</span> <span class="o">=</span> <span class="n">download_osm</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Lima, Peru&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">callao</span> <span class="o">=</span> <span class="n">download_osm</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Callao, Peru&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">lima</span> <span class="o">=</span> <span class="n">merge_geom_downloads</span><span class="p">([</span><span class="n">lima</span><span class="p">,</span> <span class="n">callao</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">download_hdx_population_data</span><span class="p">(</span><span class="s2">&quot;4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/317f1c39-8417-4bde-a076-99bd37feefce/download/population_per_2018-10-01.csv.zip&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">filter_population</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">lima</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lima</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">download</span><span class="o">.</span><span class="n">nominatim_osm</span><span class="p">(</span><span class="s2">&quot;Lima, Peru&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">callao</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">download</span><span class="o">.</span><span class="n">nominatim_osm</span><span class="p">(</span><span class="s2">&quot;Callao, Peru&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lima</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">merge_geom_downloads</span><span class="p">([</span><span class="n">lima</span><span class="p">,</span> <span class="n">callao</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lima</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="go">geometry</span>
+<span class="go">MULTIPOLYGON (((-76.80277 -12.47562, -76.80261...)))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="urbanpy.geom.filter_population">
+<code class="sig-prename descclassname">urbanpy.geom.</code><code class="sig-name descname">filter_population</code><span class="sig-paren">(</span><em class="sig-param">pop_df</em>, <em class="sig-param">polygon_gdf</em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.geom.filter_population" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter an HDX database download to the polygon bounds</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>pop_df: DataFrame</strong></dt><dd><p>Result from download_hdx</p>
+</dd>
+<dt><strong>polygon_gdf: GeoDataFrame</strong></dt><dd><p>Result from download_osm or merge_geom_downloads</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>filtered_points_gdf: GeoDataFrame</dt><dd><p>Population DataFrame filtered to polygon bounds</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lima</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">download</span><span class="o">.</span><span class="n">nominatim_osm</span><span class="p">(</span><span class="s2">&quot;Lima, Peru&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">callao</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">download</span><span class="o">.</span><span class="n">nominatim_osm</span><span class="p">(</span><span class="s2">&quot;Callao, Peru&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lima</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">merge_geom_downloads</span><span class="p">([</span><span class="n">lima</span><span class="p">,</span> <span class="n">callao</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">download</span><span class="o">.</span><span class="n">hdx_fb_population</span><span class="p">(</span><span class="s1">&#39;peru&#39;</span><span class="p">,</span> <span class="s1">&#39;full&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">urbanpy</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">filter_population</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">lima</span><span class="p">)</span>
 <span class="go">latitude   | longitude  | population_2015 | population_2020 | geometry</span>
 <span class="go">-12.519861 | -76.774583 | 2.633668        | 2.644757        | POINT (-76.77458 -12.51986)</span>
 <span class="go">-12.519861 | -76.745972 | 2.633668        | 2.644757        | POINT (-76.74597 -12.51986)</span>
@@ -203,29 +235,58 @@
 </div>
 </dd></dl>
 
-<dl class="py function">
-<dt id="urbanpy.geom.gen_hexagons">
-<code class="sig-prename descclassname">urbanpy.geom.</code><code class="sig-name descname">gen_hexagons</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">resolution</span></em>, <em class="sig-param"><span class="n">city</span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.geom.gen_hexagons" title="Permalink to this definition">¶</a></dt>
-<dd><p>Converts an input multipolygon layer to H3 hexagons given a resolution.</p>
+<dl class="function">
+<dt id="urbanpy.geom.remove_features">
+<code class="sig-prename descclassname">urbanpy.geom.</code><code class="sig-name descname">remove_features</code><span class="sig-paren">(</span><em class="sig-param">gdf</em>, <em class="sig-param">bounds</em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.geom.remove_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a set of features based on bounds</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>resolution</strong><span class="classifier">int, 0:15</span></dt><dd><p>Hexagon resolution, higher values create smaller hexagons.</p>
+<dt><strong>gdf: GeoDataFrame</strong></dt><dd><p>Input GeoDataFrame containing the point features filtered with filter_population</p>
 </dd>
-<dt><strong>city</strong><span class="classifier">GeoDataFrame</span></dt><dd><p>Input city polygons to transform into hexagons.</p>
+<dt><strong>bounds: array_like</strong></dt><dd><p>Array input following [minx, miny, maxx, maxy] for filtering (GeoPandas total_bounds method output)</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>city_hexagons</strong><span class="classifier">GeoDataFrame</span></dt><dd><p>Hexagon geometry GeoDataFrame (hex_id, geom).</p>
+<dt>gdf: GeoDataFrame</dt><dd><p>Input DataFrame but without the desired features</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lima</span> <span class="o">=</span> <span class="n">filter_population</span><span class="p">(</span><span class="n">pop_lima</span><span class="p">,</span> <span class="n">poly_lima</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">lima_hex</span> <span class="o">=</span> <span class="n">gen_hexagons</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">lima</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lima</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">filter_population</span><span class="p">(</span><span class="n">pop_lima</span><span class="p">,</span> <span class="n">poly_lima</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">removed</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">remove_features</span><span class="p">(</span><span class="n">lima</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">12.2</span><span class="p">,</span><span class="o">-</span><span class="mi">12</span><span class="p">,</span> <span class="o">-</span><span class="mf">77.2</span><span class="p">,</span><span class="o">-</span><span class="mf">77.17</span><span class="p">])</span> <span class="c1">#Remove San Lorenzo Island</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">lima</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">removed</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="go">(348434, 4) (348427, 4)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="urbanpy.geom.gen_hexagons">
+<code class="sig-prename descclassname">urbanpy.geom.</code><code class="sig-name descname">gen_hexagons</code><span class="sig-paren">(</span><em class="sig-param">resolution</em>, <em class="sig-param">city</em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.geom.gen_hexagons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts an input multipolygon layer to H3 hexagons given a resolution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>resolution: int, 0:15</strong></dt><dd><p>Hexagon resolution, higher values create smaller hexagons.</p>
+</dd>
+<dt><strong>city: GeoDataFrame</strong></dt><dd><p>Input city polygons to transform into hexagons.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>city_hexagons: GeoDataFrame</dt><dd><p>Hexagon geometry GeoDataFrame (hex_id, geom).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lima</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">filter_population</span><span class="p">(</span><span class="n">pop_lima</span><span class="p">,</span> <span class="n">poly_lima</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lima_hex</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">gen_hexagons</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">lima</span><span class="p">)</span>
 <span class="go">hex             | geometry</span>
 <span class="go">888e620e41fffff | POLYGON ((-76.80007 -12.46917, -76.80439 -12.4...))</span>
 <span class="go">888e62c809fffff | POLYGON ((-77.22539 -12.08663, -77.22971 -12.0...))</span>
@@ -236,75 +297,46 @@
 </div>
 </dd></dl>
 
-<dl class="py function">
-<dt id="urbanpy.geom.merge_geom_downloads">
-<code class="sig-prename descclassname">urbanpy.geom.</code><code class="sig-name descname">merge_geom_downloads</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gdfs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.geom.merge_geom_downloads" title="Permalink to this definition">¶</a></dt>
-<dd><p>Merge several GeoDataFrames from OSM download_osm</p>
+<dl class="function">
+<dt id="urbanpy.geom.merge_shape_hex">
+<code class="sig-prename descclassname">urbanpy.geom.</code><code class="sig-name descname">merge_shape_hex</code><span class="sig-paren">(</span><em class="sig-param">hexs</em>, <em class="sig-param">shape</em>, <em class="sig-param">agg</em>, <em class="sig-param">how='inner'</em>, <em class="sig-param">op='intersects'</em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.geom.merge_shape_hex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merges a H3 hexagon GeoDataFrame with a Point GeoDataFrame and aggregates the
+point gdf data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>dfs</strong><span class="classifier">array_like</span></dt><dd><p>Array of GeoDataFrames to merge</p>
+<dt><strong>hexs: GeoDataFrame</strong></dt><dd><p>Input GeoDataFrame containing hexagon geometries</p>
 </dd>
-</dl>
+<dt><strong>shape: GeoDataFrame</strong></dt><dd><p>Input GeoDataFrame containing points and features to be aggregated</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>concat</strong><span class="classifier">GeoDataFrame</span></dt><dd><p>Output from concatenation and unary union of geometries, providing
-a single geometry database for the city</p>
+<dt><strong>agg: dict</strong></dt><dd><p>A dictionary with column names as keys and values as aggregation
+operations. The aggregation must be one of {‘sum’, ‘min’, ‘max’}.</p>
 </dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lima</span> <span class="o">=</span> <span class="n">download_osm</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Lima, Peru&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">callao</span> <span class="o">=</span> <span class="n">download_osm</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Callao, Peru&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">lima</span> <span class="o">=</span> <span class="n">merge_geom_downloads</span><span class="p">([</span><span class="n">lima</span><span class="p">,</span> <span class="n">callao</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">lima</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-<span class="go">geometry</span>
-<span class="go">MULTIPOLYGON (((-76.80277 -12.47562, -76.80261...)))</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt id="urbanpy.geom.merge_shape_hex">
-<code class="sig-prename descclassname">urbanpy.geom.</code><code class="sig-name descname">merge_shape_hex</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hexs</span></em>, <em class="sig-param"><span class="n">shape</span></em>, <em class="sig-param"><span class="n">agg</span></em>, <em class="sig-param"><span class="n">how</span><span class="o">=</span><span class="default_value">'inner'</span></em>, <em class="sig-param"><span class="n">op</span><span class="o">=</span><span class="default_value">'intersects'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.geom.merge_shape_hex" title="Permalink to this definition">¶</a></dt>
-<dd><p>Merges a H3 hexagon GeoDataFrame with a Point GeoDataFrame and aggregates the
-point gdf data.</p>
-<dl class="field-list">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl>
-<dt><strong>hexs</strong><span class="classifier">GeoDataFrame</span></dt><dd><p>Input GeoDataFrame containing hexagon geometries</p>
-</dd>
-<dt><strong>shape</strong><span class="classifier">GeoDataFrame</span></dt><dd><p>Input GeoDataFrame containing points and features to be aggregated</p>
-</dd>
-<dt><strong>agg</strong><span class="classifier">dict. A dictionary with column names as keys and values as aggregation</span></dt><dd><p>operations. The aggregation must be one of {‘sum’, ‘min’, ‘max’}.</p>
-</dd>
-<dt><strong>how</strong><span class="classifier">str. One of {‘inner’, ‘left’, ‘right’}. Default ‘inner’.</span></dt><dd><blockquote>
-<div><p>Determines how to merge data:</p>
-</div></blockquote>
-<p>‘left’ uses keys from left and only retains geometry from left
+<dt><strong>how: str. One of {‘inner’, ‘left’, ‘right’}. Default ‘inner’.</strong></dt><dd><dl class="simple">
+<dt>Determines how to merge data:</dt><dd><p>‘left’ uses keys from left and only retains geometry from left
 ‘right’ uses keys from right and only retains geometry from right
 ‘inner’: use intersection of keys from both dfs; retain only left geometry column</p>
 </dd>
-<dt><strong>op</strong><span class="classifier">str. One of {‘intersects’, ‘contains’, ‘within’}. Default ‘intersects’</span></dt><dd><p>Determines how geometries are queried for merging.</p>
+</dl>
+</dd>
+<dt><strong>op: str. One of {‘intersects’, ‘contains’, ‘within’}. Default ‘intersects’</strong></dt><dd><p>Determines how geometries are queried for merging.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>hexs</strong><span class="classifier">GeoDataFrame</span></dt><dd><p>Result of a spatial join within hex and points. All features are aggregated
+<dt>hexs: GeoDataFrame</dt><dd><p>Result of a spatial join within hex and points. All features are aggregated
 based on the input parameters</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lima</span> <span class="o">=</span> <span class="n">download_osm</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Lima, Peru&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pop_lima</span> <span class="o">=</span> <span class="n">download_hdx</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pop_df</span> <span class="o">=</span> <span class="n">filter_population</span><span class="p">(</span><span class="n">pop_lima</span><span class="p">,</span> <span class="n">lima</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">hexs</span> <span class="o">=</span> <span class="n">gen_hexagons</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">lima</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">merge_point_hex</span><span class="p">(</span><span class="n">hexs</span><span class="p">,</span> <span class="n">pop_df</span><span class="p">,</span> <span class="s1">&#39;inner&#39;</span><span class="p">,</span> <span class="s1">&#39;within&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;population_2020&#39;</span><span class="p">:</span><span class="s1">&#39;sum&#39;</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lima</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">download</span><span class="o">.</span><span class="n">nominatim_osm</span><span class="p">(</span><span class="s1">&#39;Lima, Peru&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop_lima</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">download</span><span class="o">.</span><span class="n">hdx_fb_population</span><span class="p">(</span><span class="s1">&#39;peru&#39;</span><span class="p">,</span> <span class="s1">&#39;full&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pop_df</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">filter_population</span><span class="p">(</span><span class="n">pop_lima</span><span class="p">,</span> <span class="n">lima</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hexs</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">gen_hexagons</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">lima</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">urbanpy</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">merge_point_hex</span><span class="p">(</span><span class="n">hexs</span><span class="p">,</span> <span class="n">pop_df</span><span class="p">,</span> <span class="s1">&#39;inner&#39;</span><span class="p">,</span> <span class="s1">&#39;within&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;population_2020&#39;</span><span class="p">:</span><span class="s1">&#39;sum&#39;</span><span class="p">})</span>
 <span class="go">0               | geometry                                          | population_2020</span>
 <span class="go">888e628d8bfffff | POLYGON ((-76.66002 -12.20371, -76.66433 -12.2... | NaN</span>
 <span class="go">888e62c5ddfffff | POLYGON ((-76.94564 -12.16138, -76.94996 -12.1... | 14528.039097</span>
@@ -315,129 +347,115 @@ based on the input parameters</p>
 </div>
 </dd></dl>
 
-<dl class="py function">
-<dt id="urbanpy.geom.osmnx_coefficient_computation">
-<code class="sig-prename descclassname">urbanpy.geom.</code><code class="sig-name descname">osmnx_coefficient_computation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gdf</span></em>, <em class="sig-param"><span class="n">net_type</span></em>, <em class="sig-param"><span class="n">basic_stats</span></em>, <em class="sig-param"><span class="n">extended_stats</span></em>, <em class="sig-param"><span class="n">connectivity</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">anc</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ecc</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">bc</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cc</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.geom.osmnx_coefficient_computation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Apply osmnx’s graph from polygon to query a city’s street network within a geometry.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>gdf</strong><span class="classifier">GeoDataFrame</span></dt><dd><p>GeoDataFrame with geometries to download graphs contained within them.</p>
-</dd>
-<dt><strong>net_type: str</strong></dt><dd><p>Network type to download. One of {‘drive’, ‘drive_service’, ‘walk’, ‘bike’, ‘all’, ‘all_private’}</p>
-</dd>
-<dt><strong>basic_stats</strong><span class="classifier">list</span></dt><dd><p>List of basic stats to compute from downloaded graph</p>
-</dd>
-<dt><strong>extended_stats</strong><span class="classifier">list</span></dt><dd><p>List of extended stats to compute from graph</p>
-</dd>
-<dt><strong>connectivity</strong><span class="classifier">bool. Default False.</span></dt><dd><p>Compute node and edge connectivity</p>
-</dd>
-<dt><strong>anc</strong><span class="classifier">bool. Default False.</span></dt><dd><p>Compute avg node connectivity</p>
-</dd>
-<dt><strong>ecc</strong><span class="classifier">bool. Default False.</span></dt><dd><p>Compute shortest paths, eccentricity and topological metric</p>
-</dd>
-<dt><strong>bc</strong><span class="classifier">bool. Default False.</span></dt><dd><p>Compute node betweeness centrality</p>
-</dd>
-<dt><strong>cc</strong><span class="classifier">bool. Default False.</span></dt><dd><p>Compute node closeness centrality</p>
-</dd>
-<dt><strong>For more detail about these parameters, see https://osmnx.readthedocs.io/en/stable/osmnx.html#module-osmnx.stats</strong></dt><dd></dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>gdf</strong><span class="classifier">Input GeoDataFrame with updated columns containing the selected metrics</span></dt><dd></dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
+<dl class="function">
 <dt id="urbanpy.geom.overlay_polygons_hexs">
-<code class="sig-prename descclassname">urbanpy.geom.</code><code class="sig-name descname">overlay_polygons_hexs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">polygons</span></em>, <em class="sig-param"><span class="n">hexs</span></em>, <em class="sig-param"><span class="n">hex_col</span></em>, <em class="sig-param"><span class="n">columns</span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.geom.overlay_polygons_hexs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">urbanpy.geom.</code><code class="sig-name descname">overlay_polygons_hexs</code><span class="sig-paren">(</span><em class="sig-param">polygons</em>, <em class="sig-param">hexs</em>, <em class="sig-param">hex_col</em>, <em class="sig-param">columns</em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.geom.overlay_polygons_hexs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Overlays a Polygon GeoDataFrame with a H3 hexagon GeoDataFrame and divide the ‘columns’ the values proportionally to the overlayed area.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>polygons</strong><span class="classifier">GeoDataFrame</span></dt><dd><p>Input GeoDataFrame containing polygons and columns to be processed</p>
+<dt><strong>polygons: GeoDataFrame</strong></dt><dd><p>Input GeoDataFrame containing polygons and columns to be processed</p>
 </dd>
-<dt><strong>hexs</strong><span class="classifier">GeoDataFrame</span></dt><dd><p>Input GeoDataFrame containing desired output hexagon resolution geometries</p>
+<dt><strong>hexs: GeoDataFrame</strong></dt><dd><p>Input GeoDataFrame containing desired output hexagon resolution geometries</p>
 </dd>
-<dt><strong>hex_col</strong><span class="classifier">str</span></dt><dd><p>Determines the column with the hex id.</p>
+<dt><strong>hex_col: str</strong></dt><dd><p>Determines the column with the hex id.</p>
 </dd>
-<dt><strong>columns</strong><span class="classifier">list. A list with column names of the columns that are going to be proportionally adjusted</span></dt><dd></dd>
+<dt><strong>columns: list</strong></dt><dd><p>A list with column names of the columns that are going to be proportionally adjusted</p>
+</dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>hexs</strong><span class="classifier">GeoDataFrame</span></dt><dd><p>Result of a spatial join within hex and points. All columns are adjusted
+<dt>hexs: GeoDataFrame</dt><dd><p>Result of a spatial join within hex and points. All columns are adjusted
 based on the overlayed area.</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">overlay_polygons_hexs</span><span class="p">(</span><span class="n">zonas_pob</span><span class="p">,</span> <span class="n">hex_lima</span><span class="p">,</span> <span class="s1">&#39;hex&#39;</span><span class="p">,</span> <span class="n">pob_vulnerable</span><span class="p">)</span>
-<span class="go">               hex   POB_TOTAL   geometry</span>
-<span class="go">0  898e6200493ffff  193.705376   POLYGON ((-76.80695 -12.35199, -76.80812 -12.3...</span>
-<span class="go">1  898e6200497ffff  175.749780   POLYGON ((-76.80412 -12.35395, -76.80528 -12.3...</span>
-<span class="go">2  898e620049bffff   32.231078   POLYGON ((-76.81011 -12.35342, -76.81127 -12.3...</span>
-<span class="go">3  898e62004a7ffff   74.154973   POLYGON ((-76.79911 -12.36468, -76.80027 -12.3...</span>
-<span class="go">4  898e62004b7ffff   46.989828   POLYGON ((-76.79879 -12.36128, -76.79995 -12.3...</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">urbanpy</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">overlay_polygons_hexs</span><span class="p">(</span><span class="n">zonas_pob</span><span class="p">,</span> <span class="n">hex_lima</span><span class="p">,</span> <span class="s1">&#39;hex&#39;</span><span class="p">,</span> <span class="n">pob_vulnerable</span><span class="p">)</span>
+<span class="go">            hex |  POB_TOTAL |  geometry</span>
+<span class="go">898e6200493ffff | 193.705376 |  POLYGON ((-76.80695 -12.35199, -76.80812 -12.3...</span>
+<span class="go">898e6200497ffff | 175.749780 |  POLYGON ((-76.80412 -12.35395, -76.80528 -12.3...</span>
+<span class="go">898e620049bffff |  32.231078 |  POLYGON ((-76.81011 -12.35342, -76.81127 -12.3...</span>
+<span class="go">898e62004a7ffff |  74.154973 |  POLYGON ((-76.79911 -12.36468, -76.80027 -12.3...</span>
+<span class="go">898e62004b7ffff |  46.989828 |  POLYGON ((-76.79879 -12.36128, -76.79995 -12.3...</span>
 </pre></div>
 </div>
 </dd></dl>
 
-<dl class="py function">
-<dt id="urbanpy.geom.remove_features">
-<code class="sig-prename descclassname">urbanpy.geom.</code><code class="sig-name descname">remove_features</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gdf</span></em>, <em class="sig-param"><span class="n">bounds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.geom.remove_features" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove a set of features based on bounds</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>gdf</strong><span class="classifier">GeoDataFrame</span></dt><dd><p>Input GeoDataFrame containing the point features filtered with filter_population</p>
-</dd>
-<dt><strong>bounds</strong><span class="classifier">array_like</span></dt><dd><p>Array input following [minx, miny, maxx, maxy] for filtering (GeoPandas total_bounds method output)</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>gdf</strong><span class="classifier">GeoDataFrame</span></dt><dd><p>Input DataFrame but without the desired features</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lima</span> <span class="o">=</span> <span class="n">filter_population</span><span class="p">(</span><span class="n">pop_lima</span><span class="p">,</span> <span class="n">poly_lima</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">removed</span> <span class="o">=</span> <span class="n">remove_features</span><span class="p">(</span><span class="n">lima</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">12.2</span><span class="p">,</span><span class="o">-</span><span class="mi">12</span><span class="p">,</span> <span class="o">-</span><span class="mf">77.2</span><span class="p">,</span><span class="o">-</span><span class="mf">77.17</span><span class="p">])</span> <span class="c1">#Remove San Lorenzo Island</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">lima</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">removed</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="go">(348434, 4) (348427, 4)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
+<dl class="function">
 <dt id="urbanpy.geom.resolution_downsampling">
-<code class="sig-prename descclassname">urbanpy.geom.</code><code class="sig-name descname">resolution_downsampling</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gdf</span></em>, <em class="sig-param"><span class="n">hex_col</span></em>, <em class="sig-param"><span class="n">coarse_resolution</span></em>, <em class="sig-param"><span class="n">agg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.geom.resolution_downsampling" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">urbanpy.geom.</code><code class="sig-name descname">resolution_downsampling</code><span class="sig-paren">(</span><em class="sig-param">gdf</em>, <em class="sig-param">hex_col</em>, <em class="sig-param">coarse_resolution</em>, <em class="sig-param">agg</em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.geom.resolution_downsampling" title="Permalink to this definition">¶</a></dt>
 <dd><p>Downsample hexagon resolution aggregating indicated metrics (e.g. Transform hexagon resolution from 9 to 6).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>gdf</strong><span class="classifier">GeoDataFrame</span></dt><dd><p>GeoDataFrame with hexagon geometries (output from gen_hexagons).</p>
+<dt><strong>gdf: GeoDataFrame</strong></dt><dd><p>GeoDataFrame with hexagon geometries (output from gen_hexagons).</p>
 </dd>
-<dt><strong>hex_col</strong><span class="classifier">str</span></dt><dd><p>Determines the column with the hex id.</p>
+<dt><strong>hex_col: str</strong></dt><dd><p>Determines the column with the hex id.</p>
 </dd>
-<dt><strong>coarse_resolution</strong><span class="classifier">int, 0:15</span></dt><dd><p>Hexagon resolution lower than gdf actual resolution (higher values create smaller hexagons).</p>
+<dt><strong>coarse_resolution: int, 0:15</strong></dt><dd><p>Hexagon resolution lower than gdf actual resolution (higher values create smaller hexagons).</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>gdfc</strong><span class="classifier">GeoDataFrame</span></dt><dd><p>GeoDataFrame with lower resolution hexagons geometry and metrics aggregated as indicated.</p>
+<dt>gdfc: GeoDataFrame</dt><dd><p>GeoDataFrame with lower resolution hexagons geometry and metrics aggregated as indicated.</p>
 </dd>
 </dl>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="urbanpy.geom.osmnx_coefficient_computation">
+<code class="sig-prename descclassname">urbanpy.geom.</code><code class="sig-name descname">osmnx_coefficient_computation</code><span class="sig-paren">(</span><em class="sig-param">gdf</em>, <em class="sig-param">net_type</em>, <em class="sig-param">basic_stats</em>, <em class="sig-param">extended_stats</em>, <em class="sig-param">connectivity=False</em>, <em class="sig-param">anc=False</em>, <em class="sig-param">ecc=False</em>, <em class="sig-param">bc=False</em>, <em class="sig-param">cc=False</em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.geom.osmnx_coefficient_computation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply osmnx’s graph from polygon to query a city’s street network within a geometry.
+This may be a long procedure given the hexagon layer resolution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>gdf: GeoDataFrame</strong></dt><dd><p>GeoDataFrame with geometries to download graphs contained within them.</p>
+</dd>
+<dt><strong>net_type: str</strong></dt><dd><p>Network type to download. One of {‘drive’, ‘drive_service’, ‘walk’, ‘bike’, ‘all’, ‘all_private’}</p>
+</dd>
+<dt><strong>basic_stats: list</strong></dt><dd><p>List of basic stats to compute from downloaded graph</p>
+</dd>
+<dt><strong>extended_stats: list</strong></dt><dd><p>List of extended stats to compute from graph</p>
+</dd>
+<dt><strong>connectivity: bool. Default False.</strong></dt><dd><p>Compute node and edge connectivity</p>
+</dd>
+<dt><strong>anc: bool. Default False.</strong></dt><dd><p>Compute avg node connectivity</p>
+</dd>
+<dt><strong>ecc: bool. Default False.</strong></dt><dd><p>Compute shortest paths, eccentricity and topological metric</p>
+</dd>
+<dt><strong>bc: bool. Default False.</strong></dt><dd><p>Compute node betweeness centrality</p>
+</dd>
+<dt><strong>cc: bool. Default False.</strong></dt><dd><p>Compute node closeness centrality</p>
+</dd>
+<dt><strong>For more detail about these parameters, see https://osmnx.readthedocs.io/en/stable/osmnx.html#module-osmnx.stats</strong></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>gdf: Input GeoDataFrame with updated columns containing the selected metrics</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hexagons</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">gen_hexagons</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">lima</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">urbanpy</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">osmnx_coefficient_computation</span><span class="p">(</span><span class="n">hexagons</span><span class="o">.</span><span class="n">head</span><span class="p">(),</span> <span class="s1">&#39;walk&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;circuity_avg&#39;</span><span class="p">],</span> <span class="p">[])</span>
+<span class="go">On record 1:  There are no nodes within the requested geometry</span>
+<span class="go">On record 3:  There are no nodes within the requested geometry</span>
+<span class="go">            hex     | geometry                                              | circuity_avg</span>
+<span class="go">    888e62c64bfffff | POLYGON ((-76.89763 -12.03869, -76.90194 -12.0... | 1.021441</span>
+<span class="go">    888e6212e1fffff | POLYGON ((-76.75291 -12.19727, -76.75722 -12.2... | NaN</span>
+<span class="go">    888e62d333fffff | POLYGON ((-77.09253 -11.83762, -77.09685 -11.8... | 1.025313</span>
+<span class="go">    888e666c2dfffff | POLYGON ((-76.93109 -11.79031, -76.93540 -11.7... | NaN</span>
+<span class="go">    888e62d4b3fffff | POLYGON ((-76.87935 -12.03688, -76.88366 -12.0... | 1.044654</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
@@ -462,7 +480,7 @@ based on the overlayed area.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, Andres Regal, Claudio Ortega
+        &copy; Copyright 2020, IADB
 
     </p>
   </div>
