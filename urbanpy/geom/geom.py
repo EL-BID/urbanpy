@@ -388,12 +388,6 @@ def osmnx_coefficient_computation(gdf, net_type, basic_stats, extended_stats, co
 	888e666c2dfffff	| POLYGON ((-76.93109 -11.79031, -76.93540 -11.7... | NaN
 	888e62d4b3fffff	| POLYGON ((-76.87935 -12.03688, -76.88366 -12.0... | 1.044654
 
-
-    See also
-    --------
-
-    https://osmnx.readthedocs.io/en/stable/osmnx.html#module-osmnx.stats
-
     '''
 
     #May be a lengthy download depending on the amount of features

@@ -76,7 +76,7 @@ Also check our [example notebooks](/notebooks), and if you have examples or visu
 If you plan to contribute or customize urbanpy first clone this repo and cd into it. Then, we strongly recommend you to create a virtual environment. You can use conda, this installation manage some complicated C spatial library dependencies:
 
 ```sh
-$ conda env create -f environment.yml
+$ conda env create -n urbanpy -f environment.yml python=3.6
 $ conda activate urbanpy
 ```
 
