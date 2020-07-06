@@ -24,25 +24,25 @@ def choropleth_map(gdf, color_column, df_filter=None, **kwargs):
     Parameters
     ----------
 
-    gdf : GeoDataFrame
+    gdf: GeoDataFrame
              Input data containing a geometry column and features
 
-    color_column : str
+    color_column: str
                       Column from gdf to use as color
 
 
-    df_filter : pd.Series, default to None
+    df_filter: pd.Series, default to None
                    Pandas Series containing true/false values that satisfy a
                    condition (e.g. (df['population'] > 100))
 
-    **kargs : Any parameter of plotly.px.choroplethmapbox.
+    **kargs: Any parameter of plotly.px.choroplethmapbox.
 
     Examples
     --------
 
-    >>> hex_lima = gen_hexagons(...)
+    >>> hex_lima = urbanpy.geom.gen_hexagons(8, lima)
     >>> hex_lima['pop_2020'] = population_2020
-    >>> choropleth_map(hex_lima, 'pop_2020', [-12, -77])
+    >>> urbanpy.plotting.choropleth_map(hex_lima, 'pop_2020', [-12, -77])
 
     '''
 

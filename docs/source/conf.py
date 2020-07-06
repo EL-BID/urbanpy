@@ -25,7 +25,7 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = 'urbanpy'
-copyright = '2020, Andres Regal, Claudio Ortega'
+copyright = '2020, IADB'
 author = 'Andres Regal, Claudio Ortega'
 
 # The full version, including alpha/beta/rc tags
