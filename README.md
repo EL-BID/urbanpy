@@ -7,7 +7,7 @@ UrbanPy is an open source project to automate data extraction, measurement, and 
 # Functional goals
 
 - [x] Download open source spatial data (Limits & Points of Interests)
-- [x] Allow for the use of a grid system or administrative boundaries as spatial units
+- [x] Allow for the use of a grid system or administrative boundaries as spatial units.
 - [x] Origin-destination matrix calculation by any mode using a routing API
 - [x] Obtain travel time from spatial units to the closest facilities
 - [x] Consolidate the results as tables and/or shapefiles (georeferenced datasets)
