@@ -1,5 +1,6 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=EL-BID_urbanpy&metric=alert_status)](https://sonarcloud.io/dashboard?id=EL-BID_urbanpy)
 [![Analytics](https://gabeacon.irvinlim.com/UA-4677001-16/urbanpy/readme?useReferer)](https://github.com/EL-BID/urbanpy)
+[![Downloads](https://pepy.tech/badge/urbanpy)](https://pepy.tech/project/urbanpy)
 # Welcome to UrbanPy :city_sunrise:
 
 **A library to download, process and visualize high resolution urban data in an easy and fast way.**
