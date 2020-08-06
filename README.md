@@ -97,7 +97,7 @@ Copyright © 2020. Banco Interamericano de Desarrollo ("BID"). Uso autorizado. [
 
 ## Authors
 
-UrbanPy's original authors are Claudio Ortega ([socials](https://www.linkedin.com/in/claudioortega27/)), Andrés Regal ([socials](https://www.linkedin.com/in/andrés-regal/)), and Antonio Vazquez ([socials](https://www.linkedin.com/in/avazquez/)).
+UrbanPy's original authors are Claudio Ortega ([socials](https://www.linkedin.com/in/claudioortega27/)), Andrés Regal ([socials](https://www.linkedin.com/in/andrés-regal/)), and Antonio Vazquez Brust ([socials](https://www.linkedin.com/in/avazquez/)).
 
 ## Contribution guidelines
 
