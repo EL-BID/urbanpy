@@ -5,9 +5,10 @@ import requests
 import googlemaps
 import numpy as np
 import networkx as nx
+import osmnx as ox
 import geopandas as gpd
 from tqdm.auto import tqdm
-# from numba import jit
+from shapely.geometry import Point
 
 __all__ = [
     'start_osrm_server',
@@ -17,7 +18,9 @@ __all__ = [
     'ors_api',
     'compute_osrm_dist_matrix',
     'google_maps_dir_matrix',
-    'nx_route'
+    'nx_route',
+    'isochrone_from_api',
+    'isochrone_from_graph'
 ]
 
 CONTAINER_NAME = 'osrm_routing_server'
@@ -338,7 +341,6 @@ def ors_api(locations, origin, destination, profile, metrics, api_key):
     else:
         return -1, -1
 
-#@jit(forceobj=True)
 def compute_osrm_dist_matrix(origins, destinations, profile):
     '''
     Compute distance and travel time origin-destination matrices
@@ -533,3 +535,173 @@ def nx_route(graph, source, target, weight, length=True):
         except:
             #If there is no path within the graph
             return -1
+
+def isochrone_from_api(locations, time_range, profile, api, api_key):
+    '''
+    Get isochrones from either the OpenRouteService or MapBox API
+
+    Parameters
+    ----------
+
+    locations: array_like (float, float)
+               Set of locations from which to calculate the isochrones in lon, lat pairs.
+               Larger sets may exceed API limits.
+
+    time_range: array_like (int)
+                Time intervals to compute i.e. the travel time ranges for the
+                isochrones. Depends on the API
+
+    profile: str. Depends on the API.
+             Mobility profile to compute the isochrones
+
+    api: str. One of {"ors", "mapbox"}
+         API to request the isochrones from.
+
+    api_key: str
+             API auth key
+
+    Returns
+    -------
+
+    isochrones: GeoDataFrame
+                GeoPandas GeoDataFrame containing the isochrone polygons with columns:
+                contour (time range), group index (isochrone-location matcher) and geometry
+
+    Examples
+    --------
+
+    >>> import urbanpy as up
+    >>> API_KEY = "some_key"
+    >>> up.routing.isochrone_from_api([[8.681495,49.41461],[8.686507,49.41943]], [300,900], 'foot-walking', 'ors', API_KEY)
+     contour |  group_index |                                           geometry
+       300.0 |           0  | POLYGON ((8.67640 49.41485, 8.67643 49.41461, ...
+       900.0 |           0  | POLYGON ((8.66750 49.41169, 8.66755 49.41164, ...
+       300.0 |           1  | POLYGON ((8.68103 49.41902, 8.68167 49.41815, ...
+       900.0 |           1  | POLYGON ((8.67108 49.41982, 8.67109 49.41946, ...
+    >>> up.routing.isochrone_from_api([[8.681495,49.41461],[8.686507,49.41943]], [5,10], 'driving', 'mapbox', API_KEY)
+    contour | group_index |                                            geometry
+       10   |         0   | POLYGON ((8.68149 49.43661, 8.68100 49.43461, ...
+        5   |         0   | POLYGON ((8.67850 49.42361, 8.67621 49.42190, ...
+       10   |         1   | POLYGON ((8.67258 49.44751, 8.67138 49.44743, ...
+        5   |         1   | POLYGON ((8.68265 49.42957, 8.68151 49.42846, ...
+
+    '''
+
+    if api == 'ors':
+        body = {
+            "locations": locations,
+            "range": time_range
+        }
+
+        headers = {
+            'Accept': 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8',
+            'Authorization': api_key,
+            'Content-Type': 'application/json; charset=utf-8'
+        }
+
+        call = requests.post(f'https://api.openrouteservice.org/v2/isochrones/{profile}', json=body, headers=headers)
+
+        if call.status_code == 200:
+            isochrones = gpd.GeoDataFrame.from_features(call.json())
+            isochrones.crs = 'EPSG:4326'
+            isochrones.rename(columns={'value': 'contour'}, inplace=True)
+            return isochrones[['contour', 'group_index', 'geometry']]
+        else:
+            print(f'Request error with HTTP code {call.status_code}: {call.reason}')
+
+    else:
+        contour_min = ','.join([str(time) for time in time_range])
+        features = {}
+        #There may be a better solution. Mapbox does not support multiple points in one go
+        for ix, (lon, lat) in enumerate(locations):
+            pair = ','.join([str(lon), str(lat)])
+            url = f'https://api.mapbox.com/isochrone/v1/mapbox/{profile}/{pair}?contours_minutes={contour_min}&polygons=true&access_token={api_key}'
+            call = requests.get(url)
+            if call.status_code == 200:
+                if features == {}:
+                    features_ = call.json()
+                    #Assing a group index for the request number (id for the location-contour match)
+                    for feature in features_['features']:
+                        feature['properties']['group_index'] = ix
+                    features = features_
+                else:
+                    features_ = call.json()['features']
+                    for feature in features_:
+                        feature['properties']['group_index'] = ix
+                    features['features'].extend(features_)
+            else:
+                pass
+
+        isochrones = gpd.GeoDataFrame.from_features(features)
+        isochrones.crs = 'EPSG:4326'
+
+        return isochrones[['contour', 'group_index', 'geometry']]
+
+def isochrone_from_graph(graph, locations, time_range, profile):
+    '''
+    Create isochrones from a network graph.
+
+    Parameters
+    ----------
+
+    graph: NetworkX or OSMnx graph.
+           Input graph to compute isochrones from.
+
+    locations: array_like
+               Locations from which to trace the isochrones. CRS must be UTM (EPSG: 32178).
+
+    time_range: int
+                Travel time from which to construct the isochrones
+
+    profile: str or int
+             If str,  a default avg. speed will be used to compute the travel time.
+             If int, this value will be used as the avg. speed to compute the isochrones.
+
+    Returns
+    -------
+
+    isochrones: GeoDataFrame
+                GeoDataFrame containing the isochrones for the set of locations and time_ranges.
+
+    Examples
+    --------
+
+    >>> import urbanpy as up
+    >>> import osmnx as ox
+    >>> G = ox.graph_from_place('Berkeley, CA, USA', network_type='walking')
+    >>> up.routing.isochrone_from_graph(G, [[],[]], [5, 10], 'walking')
+
+
+    '''
+
+    profiles = {
+        'driving': 20,
+        'walking': 5,
+        'cycling': 10,
+    }
+
+    if profile not in profiles and type(profile) == int:
+        travel_speed = profile
+    else:
+        travel_speed = profiles[profile]
+
+    center_nodes = [ox.get_nearest_node(graph, (y, x)) for x, y in locations]
+    G = ox.project_graph(graph)
+
+    meters_per_minute = travel_speed * 1000 / 60 #km per hour to m per minute
+    for u, v, k, data in G.edges(data=True, keys=True):
+        data['time'] = data['length'] / meters_per_minute
+
+    data = []
+
+    for ix, center_node in enumerate(center_nodes):
+        for trip_time in sorted(time_range, reverse=True):
+            subgraph = nx.ego_graph(G, center_node, radius=trip_time, distance='time')
+            node_points = [Point((data['x'], data['y'])) for node, data in subgraph.nodes(data=True)]
+            bounding_poly = gpd.GeoSeries(node_points).unary_union.convex_hull
+            data.append([ix, trip_time, bounding_poly])
+
+    isochrones = gpd.GeoDataFrame(data, columns=['group_index', 'contour', 'geometry'])
+    isochrones.crs = 'EPSG:32718'
+
+    return isochrones
