@@ -648,7 +648,7 @@ def isochrone_from_graph(graph, locations, time_range, profile):
            Input graph to compute isochrones from.
 
     locations: array_like
-               Locations from which to trace the isochrones. CRS must be UTM (EPSG: 32178).
+               Locations (lon, lat) from which to trace the isochrones. CRS must be UTM (EPSG: 32178).
 
     time_range: int
                 Travel time from which to construct the isochrones
