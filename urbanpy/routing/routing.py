@@ -645,17 +645,17 @@ def isochrone_from_graph(graph, locations, time_range, profile):
     ----------
 
     graph: NetworkX or OSMnx graph.
-           Input graph to compute isochrones from.
+        Input graph to compute isochrones from.
 
     locations: array_like
-               Locations (lon, lat) from which to trace the isochrones. CRS must be UTM (EPSG: 32178).
+        Locations (lon, lat) from which to trace the isochrones.
 
     time_range: int
-                Travel time from which to construct the isochrones
+        Travel time from which to construct the isochrones
 
     profile: str or int
-             If str,  a default avg. speed will be used to compute the travel time.
-             If int, this value will be used as the avg. speed to compute the isochrones.
+        If str,  a default avg. speed will be used to compute the travel time.
+        If int, this value will be used as the avg. speed to compute the isochrones.
 
     Returns
     -------
