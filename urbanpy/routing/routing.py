@@ -67,7 +67,7 @@ def start_osrm_server(country, continent, profile):
     Examples
     --------
 
-    >>> urbanpy.routing.start_osrm_server('peru', 'south-america')
+    >>> urbanpy.routing.start_osrm_server('peru', 'south-america', 'foot')
     Starting server ...
     Server was started succesfully.
 
@@ -144,7 +144,7 @@ def stop_osrm_server(country, continent, profile):
     Examples
     --------
 
-    >>> urbanpy.routing.stop_osrm_server('peru', 'south-america')
+    >>> urbanpy.routing.stop_osrm_server('peru', 'south-america', 'foot')
     Server stopped succesfully
 
     '''
@@ -177,10 +177,10 @@ def osrm_route(origin, destination):
     '''
     Query an OSRM routing server for routes between an origin and a destination
     using a specified profile.
-    
+
     Travel mode ("foot", "bicycle", or "car") is determined by the profile 
     selected when starting the OSRM server 
-
+    
     Parameters
     ----------
 
@@ -202,7 +202,7 @@ def osrm_route(origin, destination):
     '''
     orig = f'{origin.x},{origin.y}'
     dest = f'{destination.x},{destination.y}'
-    url = f'http://localhost:5000/route/v1/{profile}/{orig};{dest}' #Local osrm server
+    url = f'http://localhost:5000/route/v1/profile/{orig};{dest}' #Local osrm server
     response = requests.get(url, params={'overview': 'false'})
 
     try:
@@ -350,7 +350,7 @@ def ors_api(locations, origin, destination, profile, metrics, api_key):
     else:
         return -1, -1
 
-def compute_osrm_dist_matrix(origins, destinations, profile):
+def compute_osrm_dist_matrix(origins, destinations):
     '''
     Compute distance and travel time origin-destination matrices
 
@@ -403,7 +403,7 @@ def compute_osrm_dist_matrix(origins, destinations, profile):
 
     for ix, row in tqdm(origins.iterrows(), total=origins.shape[0]):
         for i, r in tqdm(destinations.iterrows(), total=destinations.shape[0]):
-            dist, dur = osrm_route(row.geometry, r.geometry, profile)
+            dist, dur = osrm_route(row.geometry, r.geometry)
             dist_matrix[ix, i] = dist
             dur_matrix[ix, i] = dur
 
