@@ -48,17 +48,21 @@ def check_container_is_running(container_name):
 
     return container_running
 
-def start_osrm_server(country, continent):
+def start_osrm_server(country, continent, profile):
     '''
-    Download data for OSRM, process it and start local osrm server
+    Download data for OSRM, process it and start a local osrm server
 
     Parameters
     ----------
 
     country: str
              Which country to download data from. Expected in lower case & dashes replace spaces.
+             
     continent: str
              Which continent of the given country. Expected in lower case & dashes replace spaces.
+             
+    profile: str. One of {'foot', 'car', 'bicycle'}
+             Travel mode to use when routing and estimating travel time.
 
     Examples
     --------
@@ -75,25 +79,25 @@ def start_osrm_server(country, continent):
     mkdir -p ~/data/osrm/;
     cd ~/data/osrm/;
     wget https://download.geofabrik.de/{continent}/{country}-latest.osm.pbf;
-    docker run -t --name osrm_extract -v $(pwd):/data osrm/osrm-backend osrm-extract -p /opt/foot.lua /data/{country}-latest.osm.pbf;
+    docker run -t --name osrm_extract -v $(pwd):/data osrm/osrm-backend osrm-extract -p /opt/{profile}.lua /data/{country}-latest.osm.pbf;
     docker run -t --name osrm_partition -v $(pwd):/data osrm/osrm-backend osrm-partition /data/{country}-latest.osm.pbf;
     docker run -t --name osrm_customize -v $(pwd):/data osrm/osrm-backend osrm-customize /data/{country}-latest.osm.pbf;
     docker container rm osrm_extract osrm_partition osrm_customize;
-    docker run -t --name {CONTAINER_NAME}_{continent}_{country} -p 5000:5000 -v $(pwd):/data osrm/osrm-backend osrm-routed --algorithm mld /data/{country}-latest.osm.pbf;
+    docker run -t --name {CONTAINER_NAME}_{continent}_{country}_{profile} -p 5000:5000 -v $(pwd):/data osrm/osrm-backend osrm-routed --algorithm mld /data/{country}-latest.osm.pbf;
     '''
 
-    container_running = check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}")
+    container_running = check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}_{profile}")
 
     # Check platform
     if sys.platform in ['darwin', 'linux']:
         # Check if container exists:
-        if subprocess.run(['docker', 'inspect', CONTAINER_NAME + f"_{continent}_{country}"]).returncode == 0:
+        if subprocess.run(['docker', 'inspect', CONTAINER_NAME + f"_{continent}_{country}_{profile}"]).returncode == 0:
             if container_running:
                 print('Server is already running.')
             else:
                 try:
                     print('Starting server ...')
-                    subprocess.run(['docker', 'start', CONTAINER_NAME + f"_{continent}_{country}"], check=True)
+                    subprocess.run(['docker', 'start', CONTAINER_NAME + f"_{continent}_{country}_{profile}"], check=True)
                     time.sleep(5) # Wait server to be prepared to receive requests
                     print('Server was started succesfully')
                 except subprocess.CalledProcessError as error:
@@ -106,7 +110,7 @@ def start_osrm_server(country, continent):
 
                 # Verify container is running
                 while container_running == False:
-                    container_running = check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}")
+                    container_running = check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}_{profile}")
 
                 print('Server was started succesfully')
                 time.sleep(5) # Wait server to be prepared to receive requests
@@ -121,7 +125,7 @@ def start_osrm_server(country, continent):
     else:
         print('Platform not supported')
 
-def stop_osrm_server(country, continent):
+def stop_osrm_server(country, continent, profile):
     '''
     Run docker stop on the server's container.
 
@@ -129,9 +133,13 @@ def stop_osrm_server(country, continent):
     ----------
 
     country: str
-             Which country osrm to stop. Expected in lower case & dashes replace spaces.
+             Which country the osrm to stop is routing. Expected in lower case & dashes replace spaces.
+             
     continent: str
-               Continent of the given country. Expected in lower case & dashes replace spaces.
+             Continent of the given country. Expected in lower case & dashes replace spaces.
+               
+    profile: str. One of {'foot', 'car', 'bicycle'}
+             Travel mode to use when routing and estimating travel time.
 
     Examples
     --------
@@ -144,10 +152,10 @@ def stop_osrm_server(country, continent):
     # Check platform
     if sys.platform in ['darwin', 'linux']:
         # Check if container exists:
-        if subprocess.run(['docker', 'top', CONTAINER_NAME + f"_{continent}_{country}"]).returncode == 0:
-            if check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}") == True:
+        if subprocess.run(['docker', 'top', CONTAINER_NAME + f"_{continent}_{country}_{profile}"]).returncode == 0:
+            if check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}_{profile}") == True:
                 try:
-                    subprocess.run(['docker', 'stop', CONTAINER_NAME + f"_{continent}_{country}"], check=True)
+                    subprocess.run(['docker', 'stop', CONTAINER_NAME + f"_{continent}_{country}_{profile}"], check=True)
                     #subprocess.run(['docker', 'container', 'rm', 'osrm_routing_server'])
                     print('Server was stoped succesfully')
                 except subprocess.CalledProcessError as error:
@@ -165,10 +173,13 @@ def stop_osrm_server(country, continent):
     else:
         print('Platform not supported')
 
-def osrm_route(origin, destination, profile):
+def osrm_route(origin, destination):
     '''
     Query an OSRM routing server for routes between an origin and a destination
     using a specified profile.
+    
+    Travel mode ("foot", "bicycle", or "car") is determined by the profile 
+    selected when starting the OSRM server 
 
     Parameters
     ----------
@@ -179,8 +190,6 @@ def osrm_route(origin, destination, profile):
     destination: DataFrame with columns x and y or Point geometry
                  Input destination in lat lon pairs (y,x) to pass to the routing engine
 
-    profile: str. One of {'foot', 'car', 'bicycle'}
-             Behavior to use when routing and estimating travel time.
 
     Returns
     -------
@@ -193,7 +202,7 @@ def osrm_route(origin, destination, profile):
     '''
     orig = f'{origin.x},{origin.y}'
     dest = f'{destination.x},{destination.y}'
-    url = f'http://localhost:5000/route/v1/{profile}/{orig};{dest}' # Local osrm server
+    url = f'http://localhost:5000/route/v1/{profile}/{orig};{dest}' #Local osrm server
     response = requests.get(url, params={'overview': 'false'})
 
     try:
