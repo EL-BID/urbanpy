@@ -73,6 +73,8 @@ def start_osrm_server(country, continent, profile):
 
     '''
 
+    container_name = CONTAINER_NAME + f"_{continent}_{country}_{profile}"
+
     # Download, process and run server command sequence
     dwn_str = f'''
     docker pull osrm/osrm-backend;
@@ -97,7 +99,7 @@ def start_osrm_server(country, continent, profile):
             else:
                 try:
                     print('Starting server ...')
-                    subprocess.run(['docker', 'start', CONTAINER_NAME + f"_{continent}_{country}_{profile}"], check=True)
+                    subprocess.run(['docker', 'start', container_name], check=True)
                     time.sleep(5) # Wait server to be prepared to receive requests
                     print('Server was started succesfully')
                 except subprocess.CalledProcessError as error:
@@ -110,7 +112,7 @@ def start_osrm_server(country, continent, profile):
 
                 # Verify container is running
                 while container_running == False:
-                    container_running = check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}_{profile}")
+                    container_running = check_container_is_running(container_name)
 
                 print('Server was started succesfully')
                 time.sleep(5) # Wait server to be prepared to receive requests
@@ -134,10 +136,10 @@ def stop_osrm_server(country, continent, profile):
 
     country: str
              Which country the osrm to stop is routing. Expected in lower case & dashes replace spaces.
-             
+
     continent: str
              Continent of the given country. Expected in lower case & dashes replace spaces.
-               
+
     profile: str. One of {'foot', 'car', 'bicycle'}
              Travel mode to use when routing and estimating travel time.
 
@@ -149,13 +151,15 @@ def stop_osrm_server(country, continent, profile):
 
     '''
 
+    container_name = CONTAINER_NAME + f"_{continent}_{country}_{profile}"
+
     # Check platform
     if sys.platform in ['darwin', 'linux']:
         # Check if container exists:
-        if subprocess.run(['docker', 'top', CONTAINER_NAME + f"_{continent}_{country}_{profile}"]).returncode == 0:
-            if check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}_{profile}") == True:
+        if subprocess.run(['docker', 'top', container_name]).returncode == 0:
+            if check_container_is_running(container_name) == True:
                 try:
-                    subprocess.run(['docker', 'stop', CONTAINER_NAME + f"_{continent}_{country}_{profile}"], check=True)
+                    subprocess.run(['docker', 'stop', container_name], check=True)
                     #subprocess.run(['docker', 'container', 'rm', 'osrm_routing_server'])
                     print('Server was stoped succesfully')
                 except subprocess.CalledProcessError as error:
@@ -178,9 +182,9 @@ def osrm_route(origin, destination):
     Query an OSRM routing server for routes between an origin and a destination
     using a specified profile.
 
-    Travel mode ("foot", "bicycle", or "car") is determined by the profile 
-    selected when starting the OSRM server 
-    
+    Travel mode ("foot", "bicycle", or "car") is determined by the profile
+    selected when starting the OSRM server
+
     Parameters
     ----------
 
