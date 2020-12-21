@@ -206,7 +206,8 @@ def osrm_route(origin, destination):
     '''
     orig = f'{origin.x},{origin.y}'
     dest = f'{destination.x},{destination.y}'
-    url = f'http://localhost:5000/route/v1/profile/{orig};{dest}' #Local osrm server
+    # If "profile" is passed in the url the default profile is used by the local osrm server
+    url = f'http://localhost:5000/route/v1/profile/{orig};{dest}'
     response = requests.get(url, params={'overview': 'false'})
 
     try:
