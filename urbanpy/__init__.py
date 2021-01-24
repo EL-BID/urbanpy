@@ -1,7 +1,7 @@
 #from .urbanpy import *
 
-from . import download, geom, plotting, routing, utils
-# 
+from . import download, geom, plotting, routing, utils, accessibility
+#
 # __all__ = []
 #
 # __all__.extend(download.__all__)
