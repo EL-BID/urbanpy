@@ -51,12 +51,6 @@ def hu_access_map(units, pois, population_column, weight=1, d0=1250):
     geometry	 | place_id	 | osm_type	| osm_id     | display_name	| place_rank  |  category | type	       | importance	| icon
     MULTIPOLYGON | 235480647 | relation	| 1944670.0  | Lima, Peru	| 12	      |  boundary |	administrative | 0.703484	| https://nominatim.openstreetmap.org/images/map...
 
-
-    See also
-    --------
-
-
-
     '''
 
     #Setup
@@ -94,7 +88,7 @@ def hu_access_map(units, pois, population_column, weight=1, d0=1250):
     merge = merge[~merge['centroid'].isna() | ~merge['centroid'].isnull()]
 
     #Compute friction
-    merge['friction'] = merge.progress_apply(lambda r: friction(r['poi_geom'].distance(r['centroid'])), axis=1)
+    merge['friction'] = merge.progress_apply(lambda r: friction(r['poi_geom'].distance(r['centroid']), d0), axis=1)
 
     #Remove 0 population values
     merge = merge[merge[population_column] > 0]
@@ -121,7 +115,7 @@ def hu_access_map(units, pois, population_column, weight=1, d0=1250):
     merge = merge[~merge['geometry_y'].isna() | ~merge['geometry_y'].isnull()]
 
     #Compute friction
-    merge['friction'] = merge.progress_apply(lambda r: friction(r['centroid'].distance(r['geometry_y'])), axis=1)
+    merge['friction'] = merge.progress_apply(lambda r: friction(r['centroid'].distance(r['geometry_y']), d0), axis=1)
 
     #Compute accesibility Ai
     df_ai = merge[['idx_unit', 'idx_poi', 'friction', 'Rj']]
