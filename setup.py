@@ -14,7 +14,7 @@ setuptools.setup(
      description="A library to download, process and visualize high resolution urban data.",
      long_description=long_description,
      long_description_content_type="text/markdown",
-     url="https://github.com/IngenieriaUP/urbanpy",
+     url="https://github.com/EL-BID/urbanpy",
      packages=setuptools.find_packages(),
      classifiers=[
          "Programming Language :: Python :: 3",
