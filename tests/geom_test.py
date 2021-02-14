@@ -5,7 +5,7 @@ import networkx as nx
 from shapely.geometry import Polygon
 
 import sys
-sys.path.append('..')
+sys.path.append('../urbanpy')
 import urbanpy as up
 
 class GeomTest(unittest.TestCase):
