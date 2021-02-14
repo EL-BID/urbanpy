@@ -1,6 +1,7 @@
 import geopandas as gpd
 import pandas as pd
 import numpy as np
+from osmnx import project_gdf
 from tqdm.auto import tqdm
 
 __all__ = [
@@ -184,22 +185,23 @@ def pressure_map(blocks, pois, demand_column, operation='intersects', buffer_siz
 
     '''
 
+    if not pois.crs.is_projected:
+        pois_proj = project_gdf(pois)
 
-    if pois.crs.to_string() != 'EPSG:32718':
-        pois = pois.to_crs(epsg=32718)
-
-    if blocks.crs.to_string() != 'EPSG:32718':
-        blocks = blocks.to_crs(epsg=32718)
+    if not blocks.crs.is_projected:
+        blocks_proj = project_gdf(blocks)
 
     idx_blocks = [f'block_{i}' for i in blocks.index]
-    blocks['idx'] = idx_blocks
+    blocks_proj['idx'] = idx_blocks
 
-    buffers = gpd.GeoDataFrame(idx_blocks, columns=['idx'], geometry=blocks.geometry.buffer(buffer_size))
+    buffers = gpd.GeoDataFrame(idx_blocks, columns=['idx'], geometry=blocks_proj.geometry.buffer(buffer_size))
 
-    merge = gpd.sjoin(buffers, pois, op=operation)
-    nj = merge.groupby('idx').count()['index_right'].reset_index().rename(columns={'index_right': 'nj'})
+    merge = gpd.sjoin(buffers, pois_proj, op=operation)
+    nj = merge.groupby('idx').count()['index_right']
+    nj.name = 'nj'
+    nj = nj.reset_index()
 
-    blocks = pd.merge(blocks, result, how='left')
-    blocks['ds'] = blocks[demand_column] / (blocks['nj'] + 1)
+    blocks = pd.merge(blocks, nj, how='left')
+    blocks['ds'] = blocks[demand_column] / (blocks_proj['nj'] + 1)
 
     return blocks
