@@ -4,7 +4,7 @@ import numpy as np
 import networkx as nx
 
 import sys
-sys.path.append('..')
+sys.path.append('../urbanpy')
 import urbanpy as up
 
 class RoutingTest(unittest.TestCase):
