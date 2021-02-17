@@ -3,8 +3,13 @@
 
 name: Upload Python Package to TestPyPi and PyPi
 
-on: push
-
+on: 
+  workflow_run:
+    workflows: ["Python package"]
+    branches: [master]
+    types:
+      - completed
+    
 jobs:
   build-n-publish:
     name: Build and publish Python distributions to PyPi and TestPyPi
