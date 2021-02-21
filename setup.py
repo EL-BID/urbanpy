@@ -8,7 +8,7 @@ with open('requirements.txt', 'r') as f:
 
 setuptools.setup(
      name='urbanpy',
-     version='0.2',
+     version='0.2.1',
      author="Andres Regal, Claudio Ortega",
      author_email="a.regalludowieg@up.edu.pe",
      description="A library to download, process and visualize high resolution urban data.",
