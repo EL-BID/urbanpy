@@ -79,6 +79,7 @@ jobs:
         python-version: '3.x'
     - name: Autobump version
       run: |
+        export PATH=/home/runner/.local/bin/:$PATH
         VERSION=$( echo $GITHUB_REF | sed 's#.*/v##' )
         PLACEHOLDER='__version__'
         VERSION_FILE='setup.py'
@@ -110,6 +111,7 @@ jobs:
         python-version: '3.x'
     - name: Autobump version
       run: |
+        export PATH=/home/runner/.local/bin/:$PATH
         VERSION=$( echo $GITHUB_REF | sed 's#.*/v##' )
         PLACEHOLDER='__version__'
         VERSION_FILE='setup.py'
