@@ -105,7 +105,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Install apt packages
+    - name: Install apt packagesss
       run: |
         sudo apt-get -qq update
         sudo apt-get -qq install sep
