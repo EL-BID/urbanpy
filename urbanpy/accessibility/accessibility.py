@@ -19,7 +19,7 @@ def friction(dm, d0):
 
 def hu_access_map(units, pois, population_column, weight=1, d0=1250):
     '''
-    Create accessibility surface from Hu et al. 2019.
+    Create accessibility surface from Hu et al. 2019. The authors provide an accessibility to healthy foods indicator that contemplates both the catchment area of a store and the access from a city block/district/county (denoted as E2SFCA).
 
     Parameters
     ----------
@@ -30,7 +30,7 @@ def hu_access_map(units, pois, population_column, weight=1, d0=1250):
         Input points of interest for access calculations
 
     population_column: str
-                     Key for population values in each spatial unit
+        Key for population values in each spatial unit
 
     weight: int
         Weight for final indicator computation. Defaults to 1
@@ -50,6 +50,11 @@ def hu_access_map(units, pois, population_column, weight=1, d0=1250):
     >>> surface.head()
     geometry	 | place_id	 | osm_type	| osm_id     | display_name	| place_rank  |  category | type	       | importance	| icon
     MULTIPOLYGON | 235480647 | relation	| 1944670.0  | Lima, Peru	| 12	      |  boundary |	administrative | 0.703484	| https://nominatim.openstreetmap.org/images/map...
+
+    References
+    ----------
+
+    Hu, L., Zhao, C., Wang, M., Su, S., Weng, M., & Wang, W. (2020). Dynamic healthy food accessibility in a rapidly urbanizing metropolitan area: socioeconomic inequality and relative contribution of local factors. Cities, 105, 102819.
 
     '''
 
@@ -172,10 +177,10 @@ def pressure_map(blocks, pois, demand_column, operation='intersects', buffer_siz
 	59	   | 1.404762  |	POLYGON ((280125.735 8684068.209, 280098.318 8..
 
 
-    See also
-    --------
+    References
+    ----------
 
-    https://files.isec.pt/DOCUMENTOS/SERVICOS/BIBLIO/Documentos%20de%20acesso%20remoto/Accessibility-analysis-and-spatial-competition-effects-in-the-context-of-GIS-supported-service-location-planning.pdf
+    Van Eck, J. R., & de Jong, T. (1999). Accessibility analysis and spatial competition effects in the context of GIS-supported service location planning. Computers, environment and urban systems, 23(2), 75-89.
 
     '''
 
