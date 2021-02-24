@@ -104,12 +104,14 @@ jobs:
     needs: build-n-publish
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2    
-    - name: Autobump version
+    - uses: actions/checkout@v2
+    - name: Install apt packages
       run: |
         sudo apt-get -qq update
         sudo apt-get -qq install sep
-        
+    - name: Autobump version
+      run: |
+        echo $(which sed)
         VERSION=$( echo $GITHUB_REF | /bin/sed 's#.*/v##' )
         PLACEHOLDER='__version__'
         VERSION_FILE='setup.py'
