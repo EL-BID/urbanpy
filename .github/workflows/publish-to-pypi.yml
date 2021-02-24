@@ -1,5 +1,6 @@
 # This workflow will upload a Python Package using Twine when a release is created
 # For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
+# Change version from tags: https://github.com/grst/python-ci-versioneer
 
 name: Upload Python Package to PyPi
 
@@ -20,12 +21,13 @@ jobs:
         python-version: '3.x'
     - name: Autobump version
       run: |
+        sudo apt-get install sed
+
         VERSION=$(echo $GITHUB_REF | sed 's#.*/v##')
         PLACEHOLDER='__version__'
         VERSION_FILE='setup.py'
+        
         grep "$PLACEHOLDER" "$VERSION_FILE"
-
-        sudo apt-get install sed
         sed -i "s/$PLACEHOLDER/${VERSION}/" "$VERSION_FILE"
       shell: bash
     - name: Install dependencies
