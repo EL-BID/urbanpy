@@ -15,12 +15,12 @@ jobs:
         echo $(which sed)
         echo "hola mundo" | sed "s/hola/mundo/"
 
-        VERSION= $GITHUB_REF
+        VERSION=$GITHUB_REF
         PLACEHOLDER='__version__'
         VERSION_FILE='setup.py'
         
         grep "$PLACEHOLDER" "$VERSION_FILE"
-        sed "s/$PLACEHOLDER/${VERSION}/" "$VERSION_FILE"
+        sed "s/$PLACEHOLDER/prueba/" "$VERSION_FILE"
 
         
 
