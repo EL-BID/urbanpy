@@ -11,9 +11,16 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-      with:
-        ref: 'gh-pages'
+    - uses: actions/checkout@v2    
+    - name: Autobump version
+      run: |
+        VERSION=$(echo $GITHUB_REF | sed 's#.*/v##')
+        PLACEHOLDER='__version__'
+        VERSION_FILE='docs/source/conf.py'
+        grep "$PLACEHOLDER" "$VERSION_FILE"
+
+        sudo apt-get install sed
+        sed -i "s/$PLACEHOLDER/${VERSION}/" "$VERSION_FILE"
     - uses: ammaraskar/sphinx-action@master
       with:
         docs-folder: "docs/"
