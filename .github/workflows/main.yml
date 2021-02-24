@@ -82,6 +82,9 @@ jobs:
       run: |
         sudo apt-get -qq update
         sudo apt-get -qq install sed
+        export PATH="$HOME/bin:$PATH"
+        echo $(which sed)
+        echo "hola mundo" | sed "s/hola/mundo/"
 
         VERSION=$(echo $GITHUB_REF | sed 's#.*/v##')
         PLACEHOLDER='__version__'
@@ -111,6 +114,9 @@ jobs:
       run: |
         sudo apt-get -qq update
         sudo apt-get -qq install sed
+        export PATH="$HOME/bin:$PATH"
+        echo $(which sed)
+        echo "hola mundo" | sed "s/hola/mundo/"
 
         VERSION=$(echo $GITHUB_REF | sed 's#.*/v##')
         PLACEHOLDER='__version__'
