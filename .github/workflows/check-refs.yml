@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Print version from refs/tags
+    - name: Print tags 
       run: |
         echo ${{ github.ref }}
         echo ${{ github.event_name }}
