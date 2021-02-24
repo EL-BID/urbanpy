@@ -9,14 +9,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Test sed
       run: |
-        sudo apt-get -qq update
-        sudo apt-get -qq install sed
-        export PATH="$HOME/bin:$PATH"
-        echo $(which sed)
-        echo "hola mundo" | sed "s/hola/mundo/"
-
-        VERSION=$( $GITHUB_REF | sed 's#.*/v##')
-        echo $VERSION
+        VERSION=$( $GITHUB_REF | sed 's#.*/v##' )
         PLACEHOLDER='__version__'
         VERSION_FILE='setup.py'
         
