@@ -75,18 +75,12 @@ jobs:
     - uses: actions/checkout@v2
     - name: Autobump version
       run: |
-        sudo apt-get -qq update
-        sudo apt-get -qq install sed
-        export PATH="$HOME/bin:$PATH"
-
-        echo $(which sed)
-
-        VERSION=$( echo $GITHUB_REF | $HOME/bin/sed 's#.*/v##' )
+        VERSION=$( echo $GITHUB_REF | /usr/bin/sed 's#.*/v##' )
         PLACEHOLDER='__version__'
         VERSION_FILE='setup.py'
         
         grep "$PLACEHOLDER" "$VERSION_FILE"
-        $HOME/bin/sed -i "s/$PLACEHOLDER/${VERSION}/" "$VERSION_FILE"
+        /usr/bin/sed -i "s/$PLACEHOLDER/${VERSION}/" "$VERSION_FILE"
       shell: bash
     # - name: Set up Python
     #   uses: actions/setup-python@v2
@@ -111,18 +105,12 @@ jobs:
     - uses: actions/checkout@v2    
     - name: Autobump version
       run: |
-        sudo apt-get -qq update
-        sudo apt-get -qq install sed
-        export PATH="$HOME/bin:$PATH"
-
-        echo $(which sed)
-
-        VERSION=$( echo $GITHUB_REF | $HOME/bin/sed 's#.*/v##' )
+        VERSION=$( echo $GITHUB_REF | /usr/bin/sed 's#.*/v##' )
         PLACEHOLDER='__version__'
         VERSION_FILE='setup.py'
         
         grep "$PLACEHOLDER" "$VERSION_FILE"
-        $HOME/bin/sed -i "s/$PLACEHOLDER/${VERSION}/" "$VERSION_FILE"
+        /usr/bin/sed -i "s/$PLACEHOLDER/${VERSION}/" "$VERSION_FILE"
     # - uses: ammaraskar/sphinx-action@master
     #   with:
     #     docs-folder: "docs/"
