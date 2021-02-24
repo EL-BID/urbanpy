@@ -1,0 +1,142 @@
+# This workflow will:
+# 1. Build the docs using Sphinx and any errors in the build process are bubbled up as Github status checks
+# 2. Install Python dependencies, run tests and lint with a variety of Python versions
+# 3. If commit is tagged with "vX.Y.Z", create a release
+# 4. When release is created, upload Package using Twine
+# 5. When release is created, build docs using Sphinx and push changes to this project gh-pages branch
+
+# For more information see: 
+# 1. https://github.com/ammaraskar/sphinx-action
+# 2. https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+# 3. https://github.com/actions/create-release
+# 4. https://github.com/grst/python-ci-versioneer
+
+name: Main workflow to test, release, and publish
+
+on: push
+
+jobs:
+  test-docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ammaraskar/sphinx-action@master
+      with:
+        docs-folder: "docs/"
+
+  test-package:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8, 3.9]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install flake8 pytest
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Test with pytest
+      run: |
+        pytest
+
+  create-release:
+    needs: [docs, build]
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@latest
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is automatic
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+  build-n-publish:
+    needs: create-release
+    name: Build and publish Python distributions to PyPi
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Autobump version
+      run: |
+        sudo apt-get -qq update
+        sudo apt-get -qq install sed
+
+        VERSION=$(echo $GITHUB_REF | sed 's#.*/v##')
+        PLACEHOLDER='__version__'
+        VERSION_FILE='setup.py'
+        
+        grep "$PLACEHOLDER" "$VERSION_FILE"
+        sed -i "s/$PLACEHOLDER/${VERSION}/" "$VERSION_FILE"
+      shell: bash
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install setuptools wheel
+    - name: Build a binary wheel and a source tarball
+      run: |
+        python -m setup.py sdist wheel 
+    - name: Publish distribution to PyPi
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        password: ${{ secrets.PYPI_API_TOKEN }}
+
+  publish-docs:
+    needs: build-n-publish
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2    
+    - name: Autobump version
+      run: |
+        sudo apt-get -qq update
+        sudo apt-get -qq install sed
+
+        VERSION=$(echo $GITHUB_REF | sed 's#.*/v##')
+        PLACEHOLDER='__version__'
+        VERSION_FILE='docs/source/conf.py'
+        
+        grep "$PLACEHOLDER" "$VERSION_FILE"
+        sed -i "s/$PLACEHOLDER/${VERSION}/" "$VERSION_FILE"
+    - uses: ammaraskar/sphinx-action@master
+      with:
+        docs-folder: "docs/"
+    - name: Commit documentation changes
+      run: |
+        git clone https://github.com/EL-BID/urbanpy.git --branch gh-pages --single-branch gh-pages
+        cp -r docs/_build/html/* gh-pages/
+        cd gh-pages
+        git config --local user.email "claudio.rtega2701@gmail.com"
+        git config --local user.name "Claudio Ortega"
+        git add .
+        git commit -m "Update documentation" -a || true
+        # The above command will fail if no changes were present, so we ignore
+        # the return code.
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        branch: gh-pages
+        directory: gh-pages
+        github_token: ${{ secrets.GITHUB_TOKEN }}
