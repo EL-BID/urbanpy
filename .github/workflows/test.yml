@@ -12,7 +12,8 @@ jobs:
     steps:
     - name: SED
       run: |
-        sudo apt-get install sed sed-dev
+        sudo apt-get update
+        sudo apt-get install sed
         echo "hola mundo" | sed "s/hola/mundo/"
       shell: bash
 
