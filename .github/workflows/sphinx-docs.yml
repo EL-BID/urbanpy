@@ -1,3 +1,6 @@
+# This workflow will build the docs using Sphinx and any errors in the build process are bubbled up as Github status checks.
+# For more information see: https://github.com/ammaraskar/sphinx-action
+
 name: Docs Check
 
 on:
