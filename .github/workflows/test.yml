@@ -15,7 +15,8 @@ jobs:
         echo $(which sed)
         echo "hola mundo" | sed "s/hola/mundo/"
 
-        VERSION=$GITHUB_REF
+        VERSION=$( $GITHUB_REF | sed 's#.*/v##')
+        echo $VERSION
         PLACEHOLDER='__version__'
         VERSION_FILE='setup.py'
         
