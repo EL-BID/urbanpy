@@ -6,6 +6,7 @@ jobs:
   test-sed:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v2
     - name: Test sed
       run: |
         sudo apt-get -qq update
@@ -13,6 +14,13 @@ jobs:
         export PATH="$HOME/bin:$PATH"
         echo $(which sed)
         echo "hola mundo" | sed "s/hola/mundo/"
+
+        VERSION=$(echo $GITHUB_REF | sed 's#.*/v##')
+        PLACEHOLDER='__version__'
+        VERSION_FILE='setup.py'
+        
+        grep "$PLACEHOLDER" "$VERSION_FILE"
+        sed "s/$PLACEHOLDER/${VERSION}/" "$VERSION_FILE"
 
         
 
