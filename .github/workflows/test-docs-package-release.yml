@@ -1,12 +1,25 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions 
-# and create a release if commit is tagged with "vX.Y.Z"
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+# This workflow will:
+# 1. Build the docs using Sphinx and any errors in the build process are bubbled up as Github status checks.
+# 2. Install Python dependencies, run tests and lint with a variety of Python versions.
+# 3. If commit is tagged with "vX.Y.Z", create a release.
+# For more information see: 
+# 1. https://github.com/ammaraskar/sphinx-action
+# 2. https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+# 3. https://github.com/actions/create-release
 
 name: Python package
 
 on: push
 
 jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ammaraskar/sphinx-action@master
+      with:
+        docs-folder: "docs/"
+
   build:
     runs-on: ubuntu-latest
     strategy:
@@ -35,7 +48,7 @@ jobs:
         pytest
 
   create-release:
-    needs: build
+    needs: [docs, build]
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     runs-on: ubuntu-latest
     steps:
