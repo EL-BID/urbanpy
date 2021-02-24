@@ -113,13 +113,8 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
-    - name: Install apt packages
-      run: |
-        sudo apt-get -qq update
-        sudo apt-get -qq install sed
     - name: Autobump version
       run: |
-        export PATH="/bin:$PATH"
         VERSION=$( echo $GITHUB_REF | sed 's#.*/v##' )
         PLACEHOLDER='__version__'
         VERSION_FILE='setup.py'
