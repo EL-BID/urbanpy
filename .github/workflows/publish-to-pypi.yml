@@ -21,6 +21,7 @@ jobs:
         python-version: '3.x'
     - name: Autobump version
       run: |
+        sudo apt-get update
         sudo apt-get install sed
 
         VERSION=$(echo $GITHUB_REF | sed 's#.*/v##')
