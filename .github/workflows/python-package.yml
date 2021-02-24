@@ -10,6 +10,7 @@ on:
     tags: [ v*.*.* ]
   pull_request:
     branches: [ master ]
+    tags: [ v*.*.* ]
 
 
 jobs:
