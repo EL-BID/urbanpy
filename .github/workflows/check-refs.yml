@@ -1,0 +1,17 @@
+
+name: Check ref tags
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Print version from refs/tags
+      run: |
+        echo ${{ github.ref }}
+        echo ${{ github.event_name }}
