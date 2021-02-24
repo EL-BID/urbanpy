@@ -76,7 +76,7 @@ jobs:
     - name: Install apt packagesss
       run: |
         sudo apt-get -qq update
-        sudo apt-get -qq install sep
+        sudo apt-get -qq install sed
     - name: Autobump version
       run: |
         echo $(which sed)
@@ -110,7 +110,7 @@ jobs:
     - name: Install apt packagesss
       run: |
         sudo apt-get -qq update
-        sudo apt-get -qq install sep
+        sudo apt-get -qq install sed
     - name: Autobump version
       run: |
         echo $(which sed)
