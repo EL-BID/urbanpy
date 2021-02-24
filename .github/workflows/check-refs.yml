@@ -13,5 +13,5 @@ jobs:
     steps:
     - name: Print tags 
       run: |
-        echo ${{ github.ref }}
+        echo "$GITHUB_REF"
         echo ${{ github.event_name }}
