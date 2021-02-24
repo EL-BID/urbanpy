@@ -80,6 +80,8 @@ jobs:
     - name: Autobump version
       run: |
         export PATH=/home/runner/.local/bin/:$PATH
+        echo $(pwd)
+        echo $(which -a sed)
         VERSION=$( echo $GITHUB_REF | sed 's#.*/v##' )
         PLACEHOLDER='__version__'
         VERSION_FILE='setup.py'
@@ -112,6 +114,9 @@ jobs:
     - name: Autobump version
       run: |
         export PATH=/home/runner/.local/bin/:$PATH
+        echo $(pwd)
+        echo $(which -a sed)
+
         VERSION=$( echo $GITHUB_REF | sed 's#.*/v##' )
         PLACEHOLDER='__version__'
         VERSION_FILE='setup.py'
