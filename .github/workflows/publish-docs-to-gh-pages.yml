@@ -1,3 +1,6 @@
+# This workflow will build docs using Sphinx and push changes to this project gh-pages branch
+# For more information see: https://github.com/ammaraskar/sphinx-action
+
 name: Publish docs to gh-pages branch
 
 on: 
