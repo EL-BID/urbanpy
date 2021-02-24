@@ -1,3 +1,6 @@
+Modules
+=======
+
 .. toctree::
    :maxdepth: 6
 
