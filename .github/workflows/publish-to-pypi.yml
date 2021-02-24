@@ -1,0 +1,38 @@
+# This workflow will upload a Python Package using Twine when a release is created
+# For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
+
+name: Upload Python Package to PyPi
+
+on: 
+  release:
+    types: [created]
+    
+jobs:
+  build-n-publish:
+    name: Build and publish Python distributions to PyPi
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Autobump version
+      run: |
+        VERSION=$(echo $GITHUB_REF | sed 's#.*/v##')
+        PLACEHOLDER='__version__'
+        VERSION_FILE='setup.py'
+        grep "$PLACEHOLDER" "$VERSION_FILE"
+        sed -i "s/$PLACEHOLDER/${VERSION}/" "$VERSION_FILE"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install setuptools wheel
+    - name: Build a binary wheel and a source tarball
+      run: |
+        python -m setup.py sdist wheel 
+    - name: Publish distribution to PyPi
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        password: ${{ secrets.PYPI_API_TOKEN }}
