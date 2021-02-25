@@ -1,4 +1,5 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=EL-BID_urbanpy&metric=alert_status)](https://sonarcloud.io/dashboard?id=EL-BID_urbanpy)
+[![Test and deploy](https://github.com/EL-BID/urbanpy/actions/workflows/main.yml/badge.svg)](https://github.com/EL-BID/urbanpy/actions/workflows/main.yml)
 [![Analytics](https://gabeacon.irvinlim.com/UA-4677001-16/urbanpy/readme?useReferer)](https://github.com/EL-BID/urbanpy)
 [![Downloads](https://pepy.tech/badge/urbanpy)](https://pepy.tech/project/urbanpy)
 # Welcome to UrbanPy :city_sunrise:
