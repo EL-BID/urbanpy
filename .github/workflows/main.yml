@@ -98,7 +98,7 @@ jobs:
         python -m pip install setuptools wheel
     - name: Build a binary wheel and a source tarball
       run: |
-        python -m setup.py sdist bdist_wheel 
+        python setup.py sdist bdist_wheel 
     - name: Publish distribution to PyPi
       uses: pypa/gh-action-pypi-publish@master
       with:
