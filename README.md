@@ -50,7 +50,7 @@ If you plan to use the [OSRM Server](http://project-osrm.org/) route or distance
 
 ### Additional Dependecies Notes
 
-- It is important to note that for travel time computation, if needed, a method is implements the Open Source Routing Machine (OSRM). This method pulls, extracts and adds graph weights to the downloaded network and runs the routing server. Make sure to have docker installed for the library to work correctly.
+- It is important to note that for travel time computation, if needed, a method is implements the Open Source Routing Machine (OSRM). This method pulls, extracts and adds graph weights to the downloaded network and runs the routing server. Make sure to have docker installed for the library to work correctly. Also, verify in the docker settings that containers can use the necessary cpu cores and ram memory (it depends in the country size).
 
 - Urbanpy provides a simple approximation with nearest neighbor search using a BallTree and haversine distance, but the difference between real travel time and the approximation may vary from city to city.  
 
