@@ -44,7 +44,11 @@ $ pip install urbanpy
 
 Then use `import urbanpy` in your python scripts to use the library.
 
-If you plan to use the [OSRM Server](http://project-osrm.org/) route or distance matrix calculation functionalities* you must have Docker installed in your system, refer to Docker [Installation](https://www.docker.com/products/docker-desktop).
+If you plan to use the [OSRM Server](http://project-osrm.org/) route or distance matrix calculation functionalities* you must have Docker installed in your system, refer to Docker [Installation](https://www.docker.com/products/docker-desktop). For Windows users, make sure to run the following command in powershell to avoid execution errors.
+
+```powershell
+    Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
+```
 
 
 ### Additional Dependecies Notes

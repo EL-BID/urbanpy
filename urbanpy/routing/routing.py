@@ -67,7 +67,7 @@ def start_osrm_server(country, continent):
     '''
 
     # Download, process and run server command sequence
-    dwn_str = f'''
+    dwn_str_unix = f'''
     docker pull osrm/osrm-backend;
     mkdir -p ~/data/osrm/;
     cd ~/data/osrm/;
@@ -83,40 +83,41 @@ def start_osrm_server(country, continent):
 
     # Check platform
     if sys.platform in ['darwin', 'linux']:
-        # Check if container exists:
-        if subprocess.run(['docker', 'inspect', CONTAINER_NAME + f"_{continent}_{country}"]).returncode == 0:
-            if container_running:
-                print('Server is already running.')
-            else:
-                try:
-                    print('Starting server ...')
-                    subprocess.run(['docker', 'start', CONTAINER_NAME + f"_{continent}_{country}"], check=True)
-                    time.sleep(5) # Wait server to be prepared to receive requests
-                    print('Server was started succesfully')
-                except subprocess.CalledProcessError as error:
-                    print(f'Something went wrong. Please check if port 5000 is being used or check your docker installation.\nError: {error}')
+        container_check = ['docker', 'inspect', CONTAINER_NAME + f"_{continent}_{country}"]
+        container_start = ['docker', 'start', CONTAINER_NAME + f"_{continent}_{country}"]
+        download_command = dwn_str_unix
+    else:
+        container_check = ['powershell.exe', 'docker', 'inspect', CONTAINER_NAME + f"_{continent}_{country}"]
+        container_start = ['powershell.exe', 'docker', 'start', CONTAINER_NAME + f"_{continent}_{country}"]
+        download_command = ['powershell.exe', './download_script_windows.ps1', CONTAINER_NAME, country, continent]
 
+    # Check if container exists:
+    if subprocess.run(container_check).returncode == 0:
+        if container_running:
+            print('Server is already running.')
         else:
             try:
-                print('This is the first time you used this function.\nInitializing server setup. This may take several minutes...')
-                subprocess.Popen(dwn_str, shell=True)
-
-                # Verify container is running
-                while container_running == False:
-                    container_running = check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}")
-
-                print('Server was started succesfully')
+                print('Starting server ...')
+                subprocess.run(container_start, check=True)
                 time.sleep(5) # Wait server to be prepared to receive requests
-
+                print('Server was started succesfully')
             except subprocess.CalledProcessError as error:
-                print(f'Something went wrong. Please check your docker installation.\nError: {error}')
-
-    elif sys.platform == 'win32':
-        print('Still working on windows support')
-        #subprocess.Popen(dwn_str.replace(';', '&'))
+                print(f'Something went wrong. Please check if port 5000 is being used or check your docker installation.\nError: {error}')
 
     else:
-        print('Platform not supported')
+        try:
+            print('This is the first time you used this function.\nInitializing server setup. This may take several minutes...')
+            subprocess.Popen(download_command, shell=True)
+
+            # Verify container is running
+            while container_running == False:
+                container_running = check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}")
+
+            print('Server was started succesfully')
+            time.sleep(5) # Wait server to be prepared to receive requests
+
+        except subprocess.CalledProcessError as error:
+            print(f'Something went wrong. Please check your docker installation.\nError: {error}')
 
 def stop_osrm_server(country, continent):
     '''
@@ -140,27 +141,26 @@ def stop_osrm_server(country, continent):
 
     # Check platform
     if sys.platform in ['darwin', 'linux']:
-        # Check if container exists:
-        if subprocess.run(['docker', 'top', CONTAINER_NAME + f"_{continent}_{country}"]).returncode == 0:
-            if check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}") == True:
-                try:
-                    subprocess.run(['docker', 'stop', CONTAINER_NAME + f"_{continent}_{country}"], check=True)
-                    #subprocess.run(['docker', 'container', 'rm', 'osrm_routing_server'])
-                    print('Server was stoped succesfully')
-                except subprocess.CalledProcessError as error:
-                    print(f'Something went wrong. Please check your docker installation.\nError: {error}')
-            else:
-                print('Server is not running.')
+        docker_top = ['docker', 'top', CONTAINER_NAME + f"_{continent}_{country}"]
+        docker_stop = ['docker', 'stop', CONTAINER_NAME + f"_{continent}_{country}"]
+    else:
+        docker_top = ['powershell.exe', 'docker', 'top', CONTAINER_NAME + f"_{continent}_{country}"]
+        docker_stop = ['powershell.exe', 'docker', 'stop', CONTAINER_NAME + f"_{continent}_{country}"]
 
+    # Check if container exists:
+    if subprocess.run(docker_top).returncode == 0:
+        if self.check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}") == True:
+            try:
+                subprocess.run(docker_stop, check=True)
+                #subprocess.run(['docker', 'container', 'rm', 'osrm_routing_server'])
+                print('Server was stoped succesfully')
+            except subprocess.CalledProcessError as error:
+                print(f'Something went wrong. Please check your docker installation.\nError: {error}')
         else:
-            print('Server does not exist.')
-
-    elif sys.platform == 'win32':
-        print('Still working on windows support')
-        #subprocess.Popen(dwn_str.replace(';', '&'))
+            print('Server is not running.')
 
     else:
-        print('Platform not supported')
+        print('Server does not exist.')
 
 def osrm_route(origin, destination, profile):
     '''
