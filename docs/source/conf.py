@@ -26,10 +26,10 @@ import sphinx_rtd_theme
 
 project = 'urbanpy'
 copyright = '2020, IADB'
-author = 'Andres Regal, Claudio Ortega'
+author = 'Andres Regal, Claudio Ortega & Antonio Vasquez Brust'
 
 # The full version, including alpha/beta/rc tags
-release = '0.2'
+release = '__version__'
 
 
 # -- General configuration ---------------------------------------------------

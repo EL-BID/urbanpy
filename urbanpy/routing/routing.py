@@ -5,9 +5,10 @@ import requests
 import googlemaps
 import numpy as np
 import networkx as nx
+import osmnx as ox
 import geopandas as gpd
 from tqdm.auto import tqdm
-# from numba import jit
+from shapely.geometry import Point
 
 __all__ = [
     'start_osrm_server',
@@ -17,7 +18,9 @@ __all__ = [
     'ors_api',
     'compute_osrm_dist_matrix',
     'google_maps_dir_matrix',
-    'nx_route'
+    'nx_route',
+    'isochrone_from_api',
+    'isochrone_from_graph'
 ]
 
 CONTAINER_NAME = 'osrm_routing_server'
@@ -45,26 +48,32 @@ def check_container_is_running(container_name):
 
     return container_running
 
-def start_osrm_server(country, continent):
+def start_osrm_server(country, continent, profile):
     '''
-    Download data for OSRM, process it and start local osrm server
+    Download data for OSRM, process it and start a local osrm server
 
     Parameters
     ----------
 
     country: str
              Which country to download data from. Expected in lower case & dashes replace spaces.
+             
     continent: str
              Which continent of the given country. Expected in lower case & dashes replace spaces.
+             
+    profile: str. One of {'foot', 'car', 'bicycle'}
+             Travel mode to use when routing and estimating travel time.
 
     Examples
     --------
 
-    >>> urbanpy.routing.start_osrm_server('peru', 'south-america')
+    >>> urbanpy.routing.start_osrm_server('peru', 'south-america', 'foot')
     Starting server ...
     Server was started succesfully.
 
     '''
+
+    container_name = CONTAINER_NAME + f"_{continent}_{country}_{profile}"
 
     # Download, process and run server command sequence
     dwn_str_unix = f'''
@@ -72,14 +81,14 @@ def start_osrm_server(country, continent):
     mkdir -p ~/data/osrm/;
     cd ~/data/osrm/;
     wget https://download.geofabrik.de/{continent}/{country}-latest.osm.pbf;
-    docker run -t --name osrm_extract -v $(pwd):/data osrm/osrm-backend osrm-extract -p /opt/foot.lua /data/{country}-latest.osm.pbf;
+    docker run -t --name osrm_extract -v $(pwd):/data osrm/osrm-backend osrm-extract -p /opt/{profile}.lua /data/{country}-latest.osm.pbf;
     docker run -t --name osrm_partition -v $(pwd):/data osrm/osrm-backend osrm-partition /data/{country}-latest.osm.pbf;
     docker run -t --name osrm_customize -v $(pwd):/data osrm/osrm-backend osrm-customize /data/{country}-latest.osm.pbf;
     docker container rm osrm_extract osrm_partition osrm_customize;
-    docker run -t --name {CONTAINER_NAME}_{continent}_{country} -p 5000:5000 -v $(pwd):/data osrm/osrm-backend osrm-routed --algorithm mld /data/{country}-latest.osm.pbf;
+    docker run -t --name {CONTAINER_NAME}_{continent}_{country}_{profile} -p 5000:5000 -v $(pwd):/data osrm/osrm-backend osrm-routed --algorithm mld /data/{country}-latest.osm.pbf;
     '''
 
-    container_running = check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}")
+    container_running = check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}_{profile}")
 
     # Check platform
     if sys.platform in ['darwin', 'linux']:
@@ -119,7 +128,7 @@ def start_osrm_server(country, continent):
         except subprocess.CalledProcessError as error:
             print(f'Something went wrong. Please check your docker installation.\nError: {error}')
 
-def stop_osrm_server(country, continent):
+def stop_osrm_server(country, continent, profile):
     '''
     Run docker stop on the server's container.
 
@@ -127,17 +136,23 @@ def stop_osrm_server(country, continent):
     ----------
 
     country: str
-             Which country osrm to stop. Expected in lower case & dashes replace spaces.
+             Which country the osrm to stop is routing. Expected in lower case & dashes replace spaces.
+
     continent: str
-               Continent of the given country. Expected in lower case & dashes replace spaces.
+             Continent of the given country. Expected in lower case & dashes replace spaces.
+
+    profile: str. One of {'foot', 'car', 'bicycle'}
+             Travel mode to use when routing and estimating travel time.
 
     Examples
     --------
 
-    >>> urbanpy.routing.stop_osrm_server('peru', 'south-america')
+    >>> urbanpy.routing.stop_osrm_server('peru', 'south-america', 'foot')
     Server stopped succesfully
 
     '''
+
+    container_name = CONTAINER_NAME + f"_{continent}_{country}_{profile}"
 
     # Check platform
     if sys.platform in ['darwin', 'linux']:
@@ -162,10 +177,13 @@ def stop_osrm_server(country, continent):
     else:
         print('Server does not exist.')
 
-def osrm_route(origin, destination, profile):
+def osrm_route(origin, destination):
     '''
     Query an OSRM routing server for routes between an origin and a destination
     using a specified profile.
+
+    Travel mode ("foot", "bicycle", or "car") is determined by the profile
+    selected when starting the OSRM server
 
     Parameters
     ----------
@@ -176,8 +194,6 @@ def osrm_route(origin, destination, profile):
     destination: DataFrame with columns x and y or Point geometry
                  Input destination in lat lon pairs (y,x) to pass to the routing engine
 
-    profile: str. One of {'foot', 'car', 'bicycle'}
-             Behavior to use when routing and estimating travel time.
 
     Returns
     -------
@@ -190,7 +206,8 @@ def osrm_route(origin, destination, profile):
     '''
     orig = f'{origin.x},{origin.y}'
     dest = f'{destination.x},{destination.y}'
-    url = f'http://localhost:5000/route/v1/{profile}/{orig};{dest}' # Local osrm server
+    # If "profile" is passed in the url the default profile is used by the local osrm server
+    url = f'http://localhost:5000/route/v1/profile/{orig};{dest}'
     response = requests.get(url, params={'overview': 'false'})
 
     try:
@@ -338,8 +355,7 @@ def ors_api(locations, origin, destination, profile, metrics, api_key):
     else:
         return -1, -1
 
-#@jit(forceobj=True)
-def compute_osrm_dist_matrix(origins, destinations, profile):
+def compute_osrm_dist_matrix(origins, destinations):
     '''
     Compute distance and travel time origin-destination matrices
 
@@ -392,7 +408,7 @@ def compute_osrm_dist_matrix(origins, destinations, profile):
 
     for ix, row in tqdm(origins.iterrows(), total=origins.shape[0]):
         for i, r in tqdm(destinations.iterrows(), total=destinations.shape[0]):
-            dist, dur = osrm_route(row.geometry, r.geometry, profile)
+            dist, dur = osrm_route(row.geometry, r.geometry)
             dist_matrix[ix, i] = dist
             dur_matrix[ix, i] = dur
 
@@ -533,3 +549,173 @@ def nx_route(graph, source, target, weight, length=True):
         except:
             #If there is no path within the graph
             return -1
+
+def isochrone_from_api(locations, time_range, profile, api, api_key):
+    '''
+    Get isochrones from either the OpenRouteService or MapBox API
+
+    Parameters
+    ----------
+
+    locations: array_like (float, float)
+               Set of locations from which to calculate the isochrones in lon, lat pairs.
+               Larger sets may exceed API limits.
+
+    time_range: array_like (int)
+                Time intervals to compute i.e. the travel time ranges for the
+                isochrones. Depends on the API
+
+    profile: str. Depends on the API.
+             Mobility profile to compute the isochrones
+
+    api: str. One of {"ors", "mapbox"}
+         API to request the isochrones from.
+
+    api_key: str
+             API auth key
+
+    Returns
+    -------
+
+    isochrones: GeoDataFrame
+                GeoPandas GeoDataFrame containing the isochrone polygons with columns:
+                contour (time range), group index (isochrone-location matcher) and geometry
+
+    Examples
+    --------
+
+    >>> import urbanpy as up
+    >>> API_KEY = "some_key"
+    >>> up.routing.isochrone_from_api([[8.681495,49.41461],[8.686507,49.41943]], [300,900], 'foot-walking', 'ors', API_KEY)
+     contour |  group_index |                                           geometry
+       300.0 |           0  | POLYGON ((8.67640 49.41485, 8.67643 49.41461, ...
+       900.0 |           0  | POLYGON ((8.66750 49.41169, 8.66755 49.41164, ...
+       300.0 |           1  | POLYGON ((8.68103 49.41902, 8.68167 49.41815, ...
+       900.0 |           1  | POLYGON ((8.67108 49.41982, 8.67109 49.41946, ...
+    >>> up.routing.isochrone_from_api([[8.681495,49.41461],[8.686507,49.41943]], [5,10], 'driving', 'mapbox', API_KEY)
+    contour | group_index |                                            geometry
+       10   |         0   | POLYGON ((8.68149 49.43661, 8.68100 49.43461, ...
+        5   |         0   | POLYGON ((8.67850 49.42361, 8.67621 49.42190, ...
+       10   |         1   | POLYGON ((8.67258 49.44751, 8.67138 49.44743, ...
+        5   |         1   | POLYGON ((8.68265 49.42957, 8.68151 49.42846, ...
+
+    '''
+
+    if api == 'ors':
+        body = {
+            "locations": locations,
+            "range": time_range
+        }
+
+        headers = {
+            'Accept': 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8',
+            'Authorization': api_key,
+            'Content-Type': 'application/json; charset=utf-8'
+        }
+
+        call = requests.post(f'https://api.openrouteservice.org/v2/isochrones/{profile}', json=body, headers=headers)
+
+        if call.status_code == 200:
+            isochrones = gpd.GeoDataFrame.from_features(call.json())
+            isochrones.crs = 'EPSG:4326'
+            isochrones.rename(columns={'value': 'contour'}, inplace=True)
+            return isochrones[['contour', 'group_index', 'geometry']]
+        else:
+            print(f'Request error with HTTP code {call.status_code}: {call.reason}')
+
+    else:
+        contour_min = ','.join([str(time) for time in time_range])
+        features = {}
+        #There may be a better solution. Mapbox does not support multiple points in one go
+        for ix, (lon, lat) in enumerate(locations):
+            pair = ','.join([str(lon), str(lat)])
+            url = f'https://api.mapbox.com/isochrone/v1/mapbox/{profile}/{pair}?contours_minutes={contour_min}&polygons=true&access_token={api_key}'
+            call = requests.get(url)
+            if call.status_code == 200:
+                if features == {}:
+                    features_ = call.json()
+                    #Assing a group index for the request number (id for the location-contour match)
+                    for feature in features_['features']:
+                        feature['properties']['group_index'] = ix
+                    features = features_
+                else:
+                    features_ = call.json()['features']
+                    for feature in features_:
+                        feature['properties']['group_index'] = ix
+                    features['features'].extend(features_)
+            else:
+                pass
+
+        isochrones = gpd.GeoDataFrame.from_features(features)
+        isochrones.crs = 'EPSG:4326'
+
+        return isochrones[['contour', 'group_index', 'geometry']]
+
+def isochrone_from_graph(graph, locations, time_range, profile):
+    '''
+    Create isochrones from a network graph.
+
+    Parameters
+    ----------
+
+    graph: NetworkX or OSMnx graph.
+        Input graph to compute isochrones from.
+
+    locations: array_like
+        Locations (lon, lat) from which to trace the isochrones.
+
+    time_range: int
+        Travel time from which to construct the isochrones
+
+    profile: str or int
+        If str,  a default avg. speed will be used to compute the travel time.
+        If int, this value will be used as the avg. speed to compute the isochrones.
+
+    Returns
+    -------
+
+    isochrones: GeoDataFrame
+                GeoDataFrame containing the isochrones for the set of locations and time_ranges.
+
+    Examples
+    --------
+
+    >>> import urbanpy as up
+    >>> import osmnx as ox
+    >>> G = ox.graph_from_place('Berkeley, CA, USA', network_type='walking')
+    >>> up.routing.isochrone_from_graph(G, [[],[]], [5, 10], 'walking')
+
+
+    '''
+
+    profiles = {
+        'driving': 20,
+        'walking': 5,
+        'cycling': 10,
+    }
+
+    if profile not in profiles and type(profile) == int:
+        travel_speed = profile
+    else:
+        travel_speed = profiles[profile]
+
+    center_nodes = [ox.get_nearest_node(graph, (y, x)) for x, y in locations]
+    G = ox.project_graph(graph)
+
+    meters_per_minute = travel_speed * 1000 / 60 #km per hour to m per minute
+    for u, v, k, data in G.edges(data=True, keys=True):
+        data['time'] = data['length'] / meters_per_minute
+
+    data = []
+
+    for ix, center_node in enumerate(center_nodes):
+        for trip_time in sorted(time_range, reverse=True):
+            subgraph = nx.ego_graph(G, center_node, radius=trip_time, distance='time')
+            node_points = [Point((data['x'], data['y'])) for node, data in subgraph.nodes(data=True)]
+            bounding_poly = gpd.GeoSeries(node_points).unary_union.convex_hull
+            data.append([ix, trip_time, bounding_poly])
+
+    isochrones = gpd.GeoDataFrame(data, columns=['group_index', 'contour', 'geometry'])
+    isochrones.crs = 'EPSG:32718'
+
+    return isochrones
