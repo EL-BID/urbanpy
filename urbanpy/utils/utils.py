@@ -4,12 +4,10 @@ from h3 import h3
 from math import ceil
 from shapely.geometry import Polygon
 from sklearn.neighbors import BallTree
-#from numba import jit
 
 __all__ = [
     'swap_xy',
     'nn_search',
-    #'tuples_to_lists',
     'shell_from_geometry',
     'geo_boundary_to_polygon',
     'create_duration_labels'
@@ -194,39 +192,3 @@ def create_duration_labels(durations):
     custom_labels = default_labels[:ix]
 
     return custom_bins, custom_labels
-
-# @jit(forceobj=True)
-# def tuples_to_lists(json):
-#     '''
-#     Util function to convert the geo interface of a GeoDataFrame to PyDeck GeoJSON format.
-#
-#     Parameters
-#     ----------
-#
-#     json : GeoJSON from a GeoDataFrame.__geo_interface__
-#
-#
-#     Returns
-#     -------
-#
-#     json : dict
-#               GeoJSON with the corrected features
-#
-#     Examples
-#     --------
-#
-#     >>> json = { 'type': 'FeatureCollection', 'features': [{'id': 0, 'geometry': {'coordinates': (((-77, -12), (-77.1, -12.1)))}}]}
-#
-#     >>> tuples_to_lists(json)
-#
-#     {'type': 'FeatureCollection', 'features': [{'id': 0, 'geometry': {'coordinates': [[[-77, -12], [-77.1, -12.1]]]}}]}
-#
-#     '''
-#
-#     for i in range(len(json['features'])):
-#         t = [list(x) for x in json['features'][i]['geometry']['coordinates']]
-#         poly = [[list(x) for x in t[0]]]
-#
-#         json['features'][i]['geometry']['coordinates'] = poly
-#
-#     return json

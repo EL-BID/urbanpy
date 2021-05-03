@@ -8,13 +8,13 @@ with open('requirements.txt', 'r') as f:
 
 setuptools.setup(
      name='urbanpy',
-     version='0.2',
-     author="Andres Regal, Claudio Ortega",
+     version='__version__', # This will be replaced with the commit tag
+     author="Andres Regal, Claudio Ortega & Antonio Vasquez Brust",
      author_email="a.regalludowieg@up.edu.pe",
      description="A library to download, process and visualize high resolution urban data.",
      long_description=long_description,
      long_description_content_type="text/markdown",
-     url="https://github.com/IngenieriaUP/urbanpy",
+     url="https://github.com/EL-BID/urbanpy",
      packages=setuptools.find_packages(),
      classifiers=[
          "Programming Language :: Python :: 3",

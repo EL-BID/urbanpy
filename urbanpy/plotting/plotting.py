@@ -1,7 +1,7 @@
 # import pydeck as pdk
 import pandas as pd
 import plotly.express as px
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 # from urbanpy.utils import tuples_to_lists
 
 __all__ = [
