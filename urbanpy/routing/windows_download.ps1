@@ -16,5 +16,4 @@ docker run -t --name osrm_customize -v ${PWD}:/data osrm/osrm-backend osrm-custo
 docker container rm osrm_extract osrm_partition osrm_customize;
 docker run -t --name "$($CONTAINER_NAME)_$($continent)_$($country)" -p 5000:5000 -v ${PWD}:/data osrm/osrm-backend osrm-routed --algorithm mld /data/$country-latest.osm.pbf;
 
-
 # Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
