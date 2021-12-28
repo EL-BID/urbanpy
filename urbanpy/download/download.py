@@ -3,13 +3,18 @@ import geopandas as gpd
 import pandas as pd
 import numpy as np
 import osmnx as ox
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, MultiPolygon
+from typing import Optional, Union
+from pandas import DataFrame
+from geopandas import GeoDataFrame, GeoSeries
+from urbanpy.utils import to_overpass_query, overpass_to_gdf
 
 __all__ = [
     'nominatim_osm',
     'hdx_dataset',
     'hdx_fb_population',
     'overpass_pois',
+    'overpass',
     'osmnx_graph'
 ]
 
@@ -260,6 +265,56 @@ def overpass_pois(bounds, facilities=None, custom_query=None):
         response = requests.get(overpass_url, params={'data': custom_query, 'bbox': bbox_string})
         return response
 
+def overpass(type_of_data: str, query: dict, 
+             mask: Optional[Union[GeoDataFrame, GeoSeries, Polygon, MultiPolygon]] = None) -> tuple[GeoDataFrame, 
+             Optional[DataFrame]]:
+    '''
+    Download geographic data using Overpass API.
+
+    Parameters
+    ----------
+    type_of_data: str. One of {'node', 'way', 'relation', 'rel'}
+        OSM Data structure to be queried from Overpass API.
+    query: dict
+        Dict contaning OSM tag filters. Dict keys can take OSM tags 
+        and Dict values can be list of strings, str or None. 
+        Check keys [OSM Map Features](https://wiki.openstreetmap.org/wiki/Map_features).
+        Example: {
+            'key0': ['v0a', 'v0b','v0c'], 
+            'key1': 'v1', 
+            'key2': None
+        }
+    mask: 
+    
+    Returns
+    -------
+    gdf: GeoDataFrame
+        POIs from the selected type of facility.
+    df: DataFrame
+        Relations metadata such as ID and tags. Returns None if 'type_of_data' other than 'relation'. 
+    '''
+    minx, miny, maxx, maxy = mask.total_bounds
+    bbox_string = f'{minx},{miny},{maxx},{maxy}'
+    
+    # Request data
+    overpass_url = "http://overpass-api.de/api/interpreter"
+    params = {
+        'data': to_overpass_query(type_of_data, query), # Parse query dict to build Overpass QL query
+        'bbox': bbox_string
+    }
+    response = requests.get(overpass_url, params=params)
+    try:
+        data = response.json()
+    except Exception as e:
+        print(e)
+        print(response.status_code)
+        print(response.reason)
+        return response
+    
+    ov_keys = list(set(query.keys())) # get unique keys used in query (e.g. "amenity", "shop", etc)
+
+    return overpass_to_gdf(type_of_data, data, mask, ov_keys)
+
 def osmnx_graph(download_type, network_type='drive', query_str=None,
                 geom=None, distance=None, **kwargs):
     '''
@@ -295,15 +350,15 @@ def osmnx_graph(download_type, network_type='drive', query_str=None,
     
     '''
     if (download_type == 'polygon') and (geom is not None) and isinstance(geom, Polygon):
-        G = ox.graph_from_polygon(geom)
+        G = ox.graph_from_polygon(geom, network_type=network_type)
         return G
 
     elif (download_type == 'point') and (geom is not None) and (distance is not None):
-        G = ox.graph_from_point(geom, dist=distance)
+        G = ox.graph_from_point(geom, dist=distance, network_type=network_type)
         return G
 
     elif download_type == 'place' and query_str is not None:
-        G = ox.graph_from_place(query_str)
+        G = ox.graph_from_place(query_str, network_type=network_type)
         return G
 
     elif download_type == 'polygon' and geom is None:

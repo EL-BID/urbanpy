@@ -1,16 +1,23 @@
+import geopandas as gpd
 import pandas as pd
 import numpy as np
 from h3 import h3
 from math import ceil
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, MultiPolygon
+from shapely.validation import make_valid
 from sklearn.neighbors import BallTree
+from typing import Optional, Union
+from pandas import DataFrame
+from geopandas import GeoDataFrame, GeoSeries
 
 __all__ = [
     'swap_xy',
     'nn_search',
     'shell_from_geometry',
     'geo_boundary_to_polygon',
-    'create_duration_labels'
+    'create_duration_labels',
+    'to_overpass_query',
+    'overpass_to_gdf'
 ]
 
 def swap_xy(geom):
@@ -192,3 +199,167 @@ def create_duration_labels(durations):
     custom_labels = default_labels[:ix]
 
     return custom_bins, custom_labels
+
+def to_overpass_query(type_of_data: str, query: dict) -> str:
+    """
+    Parse query dict to build Overpass QL query.
+    
+    Parameters
+    ----------
+    type_of_data: str
+        OSM type of data (One of: relation, node, way).
+    query: dict
+        OSM keys and values to be queried
+    
+    Returns
+    -------
+    overpass_query: str
+        Formatted query string to be passed to Overpass QL.
+    """
+
+    if len(query) == 0:
+        ov_body = f"{type_of_data};"
+    else:
+        ov_body = ''
+
+        for key, values in query.items():
+            if type(values) == str:
+                operator = '='
+            if values is None:
+                operator = ''
+                values = ''
+            if type(values) == list:
+                n_values = len(values)
+
+                values = "|".join(v for v in values)
+                values = f'"{values}"'
+
+                if n_values == 0:
+                    operator = ''
+                    values = ''
+                if n_values == 1:
+                    operator = '='
+                if n_values > 1:
+                    operator = '~'
+
+            ov_body += f"""{type_of_data}[\"{key}\"{operator}{values}];\n"""
+    
+    overpass_query = f"""
+    [timeout:120][out:json][bbox];
+    (
+    {ov_body}
+    );
+    out body geom;
+    """
+        
+    return overpass_query
+
+def process_overpass_relations(data: dict, mask: Optional[Union[GeoDataFrame, GeoSeries, Polygon, MultiPolygon]] = None) -> tuple[DataFrame, GeoDataFrame]:
+    '''
+    Process relation data structure from an Overpass API response.
+    
+    Parameters
+    ----------
+    data: dict
+        Overpass API response payload.
+    mask: GeoDataFrame, GeoSeries, (Multi)Polygon
+        Polygon vector layer used to clip the final gdf. See geopandas.clip().
+    
+    Returns
+    -------
+    df_relations: DataFrame
+        Relations metadata such as ID and tags.
+    gdf_members: GeoDataFrame
+        All geometries from relations members with relation ID
+    '''
+    
+    df_relations = pd.DataFrame.from_dict(data['elements']).drop('members', axis=1)
+    
+    # Separete nodes from ways members
+    rels_nodes, rels_ways = [], []
+    for elem in data['elements']:
+        for mem in elem['members']:
+            mem['relation_id'] = elem['id'] # Set member-relation key
+            if mem['type'] == 'node':
+                rels_nodes.append(mem)
+            if mem['type'] == 'way':
+                rels_ways.append(mem)
+
+    # Process node members
+    df_nodes = pd.DataFrame.from_dict(rels_nodes)
+    df_nodes['geometry'] = gpd.points_from_xy(df_nodes['lon'], df_nodes['lat'])
+    gdf_nodes = gpd.GeoDataFrame(df_nodes, crs='EPSG:4326')
+
+    # Process way members
+    df_ways = pd.DataFrame.from_dict(rels_ways)
+    df_ways['shell'] = df_ways['geometry'].apply(shell_from_geometry)
+    df_ways = df_ways[df_ways['shell'].apply(len) > 2]
+    df_ways['geometry'] = df_ways['shell'].apply(Polygon)
+    gdf_ways = gpd.GeoDataFrame(df_ways, crs="EPSG:4326")
+    gdf_ways.geometry = gdf_ways.geometry.apply(make_valid) # buffer(0) is faster but shapely recommends make_valid()
+
+    # Merge members and return gdf
+    gdf_members = gpd.GeoDataFrame(pd.concat([gdf_nodes, gdf_ways]), crs='EPSG:4326')
+    if mask is not None:
+        gdf_members = gdf_members.clip(mask=mask) # Using hexs is ~100x faster than adm boundaries
+
+    return df_relations, gdf_members
+
+def overpass_to_gdf(type_of_data: str, data: dict, mask: Optional[Union[GeoDataFrame, GeoSeries, Polygon, MultiPolygon]] = None, ov_keys: Optional[list] = None) -> tuple[GeoDataFrame, Optional[DataFrame]]:
+    """
+    Process overpass response data according to type_of_data and clip to mask if given.
+
+    Parameters
+    ----------
+    type_of_data: str. One of {'node', 'way', 'relation', 'rel'}
+        OSM Data structure to be queried from Overpass API.
+    data: dict
+        Response object's json result from Overpass API.
+    mask: dict. Optional
+        Dict contaning OSM tag filters. Dict keys can take OSM tags 
+        and Dict values can be list of strings, str or None. 
+        Check keys [OSM Map Features](https://wiki.openstreetmap.org/wiki/Map_features).
+        Example: {
+            'key0': ['v0a', 'v0b','v0c'], 
+            'key1': 'v1', 
+            'key2': None
+        }
+    ov_keys: list. Optional
+        Unique OSM keys used in Overpass query (e.g. "amenity", "shop", etc) to fill "poi_type" df column.
+        
+    
+    Returns
+    -------
+    gdf: GeoDataFrame
+        POIs from the selected type of facility.
+    df: DataFrame. Optional
+        Relations metadata such as ID and tags. Returns None if 'type_of_data' other than 'relation'. 
+    """
+
+    if type_of_data == 'relation':
+        return process_overpass_relations(data, mask)
+    else:
+        df = pd.DataFrame.from_dict(data['elements'])
+
+        if type_of_data == 'node':
+            df['geometry']= gpd.points_from_xy(df['lon'], df['lat'])
+
+        if type_of_data == 'way':
+            df['geometry'] = df['geometry'].apply(lambda x: Polygon(shell_from_geometry(x)))
+
+        gdf = gpd.GeoDataFrame(df, crs=4326)
+        if mask is not None:
+            gdf = gdf.clip(mask=mask) 
+        
+        if ov_keys is not None:
+            # Extract relevant data from osm tags
+            gdf['poi_type'] = gdf['tags'].apply(lambda tag: tag[ov_keys[0]] if ov_keys[0] in tag.keys() else np.NaN)
+            for k in ov_keys:
+                # Use other keys to complete NaNs
+                gdf['poi_type'].fillna(
+                    value=gdf['tags'].apply(lambda tag: tag[k] if k in tag.keys() else np.NaN)
+                )
+                if gdf['poi_type'].isna().sum() == 0:
+                    break
+
+    return None, gdf
