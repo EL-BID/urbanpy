@@ -164,7 +164,7 @@ def stop_osrm_server(country, continent, profile):
 
     # Check if container exists:
     if subprocess.run(docker_top).returncode == 0:
-        if self.check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}") == True:
+        if check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}") == True:
             try:
                 subprocess.run(docker_stop, check=True)
                 #subprocess.run(['docker', 'container', 'rm', 'osrm_routing_server'])
