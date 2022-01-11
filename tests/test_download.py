@@ -10,10 +10,10 @@ class DownloadTests(unittest.TestCase):
     country = 'peru'
 
     def search_hdx_test(self):
-        datasets = up.download.search_hdx_dataset(country)
+        datasets = up.download.search_hdx_dataset(self.country)
         self.assertEqual(14, len(datasets))
     
-    def download_hdx_test(self):
+    # def download_hdx_test(self):
         # df = up.download.download_hdx_dataset(country, 0)
 
         # test_df = pd.DataFrame([\
