@@ -32,33 +32,34 @@ class RoutingTest(unittest.TestCase):
         gdf_1 = gpd.GeoDataFrame([], geometry=gpd.points_from_xy(lon_1, lat_1))
         gdf_2 = gpd.GeoDataFrame([], geometry=gpd.points_from_xy(lon_2, lat_2))
 
-
         #Start OSRM
         up.routing.start_osrm_server('peru', 'south-america', 'foot')
 
         #Test 3x3 matrix
         dur, dist = up.routing.compute_osrm_dist_matrix(gdf, gdf_1)
 
-        self.assertEqual(dist.all(), np.array([[   0. , 1973. , 3572.6],
-                                               [1973. ,    0. , 1768.3],
-                                               [3572.6, 1768.3,    0. ]]).all())
+        self.assertIsNone(np.testing.assert_allclose(
+            dur, np.array([[   0. , 1973. , 3572.6],
+                           [1973. ,    0. , 1768.3],
+                           [3572.6, 1768.3,    0. ]])))
 
-        self.assertEqual(dur.all(), np.array([[   0. , 1422.2, 2574.1],
-                                              [1422.2,    0. , 1273.2],
-                                              [2574.1, 1273.2,    0. ]]).all())
+        self.assertIsNone(np.testing.assert_allclose(
+            dist, np.array([[   0. , 1422.2, 2574.1],
+                            [1422.2,    0. , 1273.2],
+                            [2574.1, 1273.2,    0. ]])))
 
         #Testing with missing values
         dur, dist = up.routing.compute_osrm_dist_matrix(gdf, gdf_2)
 
-        self.assertEqual(dur.all(), np.array([
-                                       [np.nan, 18800.5, 18800.5],
-                                       [np.nan, 17608.9, 17608.9],
-                                       [np.nan, 17273.5, 17273.5]]).all())
+        self.assertIsNone(np.testing.assert_allclose(
+            dur, np.array([[np.nan, 26015.7, 26015.7],
+                           [np.nan, 24374.6, 24374.6],
+                           [np.nan, 23909.2, 23909.2]]), equal_nan=True))
 
-        self.assertEqual(dist.all(), np.array([
-                                       [np.nan, 26021.5, 26021.5],
-                                       [np.nan, 24374.1, 24374.1],
-                                       [np.nan, 23908.8, 23908.8]]).all())
+        self.assertIsNone(np.testing.assert_allclose(
+            dist, np.array([[np.nan, 18802.,  18802. ],
+                            [np.nan, 17611.3, 17611.3],
+                            [np.nan, 17275.9, 17275.9]]), equal_nan=True))
 
         #Close OSRM routing Server
         up.routing.stop_osrm_server('peru', 'south-america', 'foot')
