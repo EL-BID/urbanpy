@@ -5,11 +5,11 @@ import pandas as pd
 sys.path.append('../urbanpy')
 import urbanpy as up
 
-class DownloadTests(unittest.TestCase):
+class DownloadTest(unittest.TestCase):
     
     country = 'peru'
 
-    def search_hdx_test(self):
+    def test_search_hdx(self):
         datasets = up.download.search_hdx_dataset(self.country)
         self.assertEqual(14, len(datasets))
     
