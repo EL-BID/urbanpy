@@ -195,7 +195,13 @@ def osrm_route(origin, destination):
     dest = f'{destination.x},{destination.y}'
     # If "profile" is passed in the url the default profile is used by the local osrm server
     url = f'http://localhost:5000/route/v1/profile/{orig};{dest}'
-    response = requests.get(url, params={'overview': 'false'})
+
+    try:
+        response = requests.get(url, params={'overview': 'false'})
+    except requests.exceptions.ConnectionError as e:
+        print("Waiting for server to be ready ...")
+        time.sleep(5)
+        response = requests.get(url, params={'overview': 'false'})
 
     try:
         data = response.json()['routes'][0]
