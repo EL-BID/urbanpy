@@ -73,32 +73,19 @@ def start_osrm_server(country, continent, profile):
 
     '''
 
-    container_name = CONTAINER_NAME + f"_{continent}_{country}_{profile}"
+    container_name = f"{CONTAINER_NAME}_{continent}_{country}_{profile}"
 
-    # Download, process and run server command sequence
-    dwn_str_unix = f'''
-    docker pull osrm/osrm-backend;
-    mkdir -p ~/data/osrm/;
-    cd ~/data/osrm/;
-    wget https://download.geofabrik.de/{continent}/{country}-latest.osm.pbf;
-    docker run -t --name osrm_extract -v $(pwd):/data osrm/osrm-backend osrm-extract -p /opt/{profile}.lua /data/{country}-latest.osm.pbf;
-    docker run -t --name osrm_partition -v $(pwd):/data osrm/osrm-backend osrm-partition /data/{country}-latest.osm.pbf;
-    docker run -t --name osrm_customize -v $(pwd):/data osrm/osrm-backend osrm-customize /data/{country}-latest.osm.pbf;
-    docker container rm osrm_extract osrm_partition osrm_customize;
-    docker run -t --name {CONTAINER_NAME}_{continent}_{country}_{profile} -p 5000:5000 -v $(pwd):/data osrm/osrm-backend osrm-routed --algorithm mld /data/{country}-latest.osm.pbf;
-    '''
-
-    container_running = check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}_{profile}")
+    container_running = check_container_is_running(container_name)
 
     # Check platform
     if sys.platform in ['darwin', 'linux']:
-        container_check = ['docker', 'inspect', CONTAINER_NAME + f"_{continent}_{country}"]
-        container_start = ['docker', 'start', CONTAINER_NAME + f"_{continent}_{country}"]
-        download_command = dwn_str_unix
+        container_check = ['docker', 'inspect', container_name]
+        container_start = ['docker', 'start', container_name]
+        download_command = ['sh', './unix_download', CONTAINER_NAME, country, continent, profile]
     else:
-        container_check = ['powershell.exe', 'docker', 'inspect', CONTAINER_NAME + f"_{continent}_{country}"]
-        container_start = ['powershell.exe', 'docker', 'start', CONTAINER_NAME + f"_{continent}_{country}"]
-        download_command = ['powershell.exe', './download_script_windows.ps1', CONTAINER_NAME, country, continent]
+        container_check = ['powershell.exe', 'docker', 'inspect', container_name]
+        container_start = ['powershell.exe', 'docker', 'start', container_name]
+        download_command = ['powershell.exe', './windows_download.ps1', CONTAINER_NAME, country, continent, profile]
 
     # Check if container exists:
     if subprocess.run(container_check).returncode == 0:
@@ -120,10 +107,10 @@ def start_osrm_server(country, continent, profile):
 
             # Verify container is running
             while container_running == False:
-                container_running = check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}")
-
-            print('Server was started succesfully')
+                container_running = check_container_is_running(container_name)
+            
             time.sleep(5) # Wait server to be prepared to receive requests
+            print('Server was started succesfully')
 
         except subprocess.CalledProcessError as error:
             print(f'Something went wrong. Please check your docker installation.\nError: {error}')
@@ -152,19 +139,19 @@ def stop_osrm_server(country, continent, profile):
 
     '''
 
-    container_name = CONTAINER_NAME + f"_{continent}_{country}_{profile}"
+    container_name = f"{CONTAINER_NAME}_{continent}_{country}_{profile}"
 
     # Check platform
     if sys.platform in ['darwin', 'linux']:
-        docker_top = ['docker', 'top', CONTAINER_NAME + f"_{continent}_{country}"]
-        docker_stop = ['docker', 'stop', CONTAINER_NAME + f"_{continent}_{country}"]
+        docker_top = ['docker', 'top', container_name]
+        docker_stop = ['docker', 'stop', container_name]
     else:
-        docker_top = ['powershell.exe', 'docker', 'top', CONTAINER_NAME + f"_{continent}_{country}"]
-        docker_stop = ['powershell.exe', 'docker', 'stop', CONTAINER_NAME + f"_{continent}_{country}"]
+        docker_top = ['powershell.exe', 'docker', 'top', container_name]
+        docker_stop = ['powershell.exe', 'docker', 'stop', container_name]
 
     # Check if container exists:
     if subprocess.run(docker_top).returncode == 0:
-        if check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}") == True:
+        if check_container_is_running(container_name) == True:
             try:
                 subprocess.run(docker_stop, check=True)
                 #subprocess.run(['docker', 'container', 'rm', 'osrm_routing_server'])
@@ -208,7 +195,13 @@ def osrm_route(origin, destination):
     dest = f'{destination.x},{destination.y}'
     # If "profile" is passed in the url the default profile is used by the local osrm server
     url = f'http://localhost:5000/route/v1/profile/{orig};{dest}'
-    response = requests.get(url, params={'overview': 'false'})
+
+    try:
+        response = requests.get(url, params={'overview': 'false'})
+    except requests.exceptions.ConnectionError as e:
+        print("Waiting for server to be ready ...")
+        time.sleep(5)
+        response = requests.get(url, params={'overview': 'false'})
 
     try:
         data = response.json()['routes'][0]
