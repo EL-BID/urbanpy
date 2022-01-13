@@ -266,7 +266,7 @@ def overpass_pois(bounds, facilities=None, custom_query=None):
         return response
 
 def overpass(type_of_data: str, query: dict, 
-             mask: Optional[Union[GeoDataFrame, GeoSeries, Polygon, MultiPolygon]] = None) -> tuple[GeoDataFrame, 
+             mask: Union[GeoDataFrame, GeoSeries, Polygon, MultiPolygon]) -> tuple[GeoDataFrame, 
              Optional[DataFrame]]:
     '''
     Download geographic data using Overpass API.
