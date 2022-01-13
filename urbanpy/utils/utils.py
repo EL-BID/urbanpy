@@ -223,34 +223,29 @@ def to_overpass_query(type_of_data: str, query: dict) -> str:
         ov_body = ''
 
         for key, values in query.items():
-            if type(values) == str:
-                operator = '='
             if values is None:
                 operator = ''
-                values = ''
+                values_str = ''
+
+            if type(values) == str:
+                operator = '='
+                values_str = f'"{values}"'
+
             if type(values) == list:
                 n_values = len(values)
 
-                values = "|".join(v for v in values)
-                values = f'"{values}"'
-
                 if n_values == 0:
                     operator = ''
-                    values = ''
-                if n_values == 1:
-                    operator = '='
-                if n_values > 1:
+                    values_str = ''
+                if n_values >= 1:
                     operator = '~'
-
-            ov_body += f"""{type_of_data}[\"{key}\"{operator}{values}];\n"""
+                    values_str = f'"{"|".join(v for v in values)}"'
+                    
+            ov_body += f"""{type_of_data}[\"{key}\"{operator}{values_str}];\n"""
     
-    overpass_query = f"""
-    [timeout:120][out:json][bbox];
-    (
-    {ov_body}
-    );
-    out body geom;
-    """
+    overpass_query = f"""[timeout:120][out:json][bbox];
+    ({ov_body});
+    out body geom;"""
         
     return overpass_query
 
@@ -267,10 +262,10 @@ def process_overpass_relations(data: dict, mask: Optional[Union[GeoDataFrame, Ge
     
     Returns
     -------
-    df_relations: DataFrame
-        Relations metadata such as ID and tags.
     gdf_members: GeoDataFrame
         All geometries from relations members with relation ID
+    df_relations: DataFrame
+        Relations metadata such as ID and tags.
     '''
     
     df_relations = pd.DataFrame.from_dict(data['elements']).drop('members', axis=1)
@@ -303,7 +298,7 @@ def process_overpass_relations(data: dict, mask: Optional[Union[GeoDataFrame, Ge
     if mask is not None:
         gdf_members = gdf_members.clip(mask=mask) # Using hexs is ~100x faster than adm boundaries
 
-    return df_relations, gdf_members
+    return gdf_members, df_relations
 
 def overpass_to_gdf(type_of_data: str, data: dict, mask: Optional[Union[GeoDataFrame, GeoSeries, Polygon, MultiPolygon]] = None, ov_keys: Optional[list] = None) -> tuple[GeoDataFrame, Optional[DataFrame]]:
     """
@@ -362,4 +357,4 @@ def overpass_to_gdf(type_of_data: str, data: dict, mask: Optional[Union[GeoDataF
                 if gdf['poi_type'].isna().sum() == 0:
                     break
 
-    return None, gdf
+        return gdf, None
