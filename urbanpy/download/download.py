@@ -1,9 +1,11 @@
-import requests
+import requests 
 import geopandas as gpd
 import pandas as pd
 import numpy as np
 import osmnx as ox
 from shapely.geometry import Polygon, MultiPolygon
+from hdx.api.configuration import Configuration
+from hdx.data.dataset import Dataset
 from typing import Optional, Union
 from pandas import DataFrame
 from geopandas import GeoDataFrame, GeoSeries
@@ -15,8 +17,12 @@ __all__ = [
     'hdx_fb_population',
     'overpass_pois',
     'overpass',
-    'osmnx_graph'
+    'osmnx_graph',
+    'search_hdx_dataset',
+    'download_hdx_dataset'
 ]
+
+hdx_config = Configuration.create(hdx_site='prod', user_agent='urbanpy', hdx_read_only=True)
 
 def nominatim_osm(query, expected_position=0):
     """
@@ -352,7 +358,6 @@ def osmnx_graph(download_type, network_type='drive', query_str=None,
     if (download_type == 'polygon') and (geom is not None) and isinstance(geom, Polygon):
         G = ox.graph_from_polygon(geom, network_type=network_type)
         return G
-
     elif (download_type == 'point') and (geom is not None) and (distance is not None):
         G = ox.graph_from_point(geom, dist=distance, network_type=network_type)
         return G
@@ -371,5 +376,67 @@ def osmnx_graph(download_type, network_type='drive', query_str=None,
         if distance is None and download_type == 'point':
             print('Please provide a distance buffer for the point download')
 
-        if geom is None and distance is not None:
-            print('Please provide a Point geometry.')
+        if geom is None and distance is not None: print('Please provide a Point geometry.')
+
+def search_hdx_dataset(country, repository="high-resolution-population-density-maps-demographic-estimates"):
+    '''
+    Dataset search within HDX repositories. Defaults to population density maps.
+
+    Parameters
+    ----------
+
+    country: str
+             Country to search datasets
+
+    resource: str
+              Resource type within the HDX database
+
+    Returns
+    -------
+
+    datasets: list
+              List of available datasets within HDX
+
+    Examples
+    --------
+
+    '''
+    #Get dataset list
+    datasets = Dataset.search_in_hdx(f"title:{country.lower()}-{repository}")
+
+    return Dataset.get_all_resources(datasets)
+
+def download_hdx_dataset(country: str, dataset_id=None, resource="high-resolution-population-density-maps-demographic-estimates"):
+    '''
+    HDX dataset download.
+    
+    Parameters
+    ----------
+
+    country: str
+             The country to download the dataset from.
+
+    dataset_id: int
+                Position of the dataset in the search list (see search_hdx_dataset)
+
+
+    Returns
+    -------
+
+    data: pd.DataFrame
+          The corresponding datset in DataFrame format
+
+    Examples
+    --------
+
+
+    '''
+
+    if dataset_id is None:
+        print('Please run a seach for the hdx dataset you need and pass the correct dataset_id')
+
+    else:
+        datasets = search_hdx_dataset(country)
+        data = pd.read_csv(datasets[dataset_id]['url'])
+
+        return data
