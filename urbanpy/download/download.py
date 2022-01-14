@@ -6,7 +6,7 @@ import osmnx as ox
 from shapely.geometry import Polygon, MultiPolygon
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
-from typing import Optional, Union
+from typing import Optional, Union, Tuple
 from pandas import DataFrame
 from geopandas import GeoDataFrame, GeoSeries
 from urbanpy.utils import to_overpass_query, overpass_to_gdf
@@ -272,7 +272,7 @@ def overpass_pois(bounds, facilities=None, custom_query=None):
         return response
 
 def overpass(type_of_data: str, query: dict, 
-             mask: Union[GeoDataFrame, GeoSeries, Polygon, MultiPolygon]) -> tuple[GeoDataFrame, 
+             mask: Union[GeoDataFrame, GeoSeries, Polygon, MultiPolygon]) -> Tuple[GeoDataFrame, 
              Optional[DataFrame]]:
     '''
     Download geographic data using Overpass API.
