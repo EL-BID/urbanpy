@@ -233,7 +233,7 @@ def overpass_pois(bounds, facilities=None, custom_query=None):
 
     bbox_string = f'{minx},{miny},{maxx},{maxy}'
 
-    overpass_url = "http://overpass-api.de/api/interpreter"
+    overpass_url = "https://overpass-api.de/api/interpreter"
 
     facilities_opt = {
         'food': 'node["amenity"="marketplace"];\nnode["shop"~"supermarket|kiosk|mall|convenience|butcher|greengrocer"];',
@@ -303,7 +303,7 @@ def overpass(type_of_data: str, query: dict,
     bbox_string = f'{minx},{miny},{maxx},{maxy}'
     
     # Request data
-    overpass_url = "http://overpass-api.de/api/interpreter"
+    overpass_url = "https://overpass-api.de/api/interpreter"
     params = {
         'data': to_overpass_query(type_of_data, query), # Parse query dict to build Overpass QL query
         'bbox': bbox_string
