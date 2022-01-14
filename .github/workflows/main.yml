@@ -48,7 +48,9 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        pytest
+        # OSRM routing is too expensive to test on Github Actions. 
+        # please test this function locally.
+        pytest -k 'not test_osrm_matrix'
 
   release:
     needs: [docs, build]
