@@ -6,7 +6,7 @@ from math import ceil
 from shapely.geometry import Polygon, MultiPolygon
 from shapely.validation import make_valid
 from sklearn.neighbors import BallTree
-from typing import Optional, Union
+from typing import Optional, Union, Tuple
 from pandas import DataFrame
 from geopandas import GeoDataFrame, GeoSeries
 
@@ -249,7 +249,7 @@ def to_overpass_query(type_of_data: str, query: dict) -> str:
         
     return overpass_query
 
-def process_overpass_relations(data: dict, mask: Optional[Union[GeoDataFrame, GeoSeries, Polygon, MultiPolygon]] = None) -> tuple[DataFrame, GeoDataFrame]:
+def process_overpass_relations(data: dict, mask: Optional[Union[GeoDataFrame, GeoSeries, Polygon, MultiPolygon]] = None) -> Tuple[DataFrame, GeoDataFrame]:
     '''
     Process relation data structure from an Overpass API response.
     
@@ -300,7 +300,7 @@ def process_overpass_relations(data: dict, mask: Optional[Union[GeoDataFrame, Ge
 
     return gdf_members, df_relations
 
-def overpass_to_gdf(type_of_data: str, data: dict, mask: Optional[Union[GeoDataFrame, GeoSeries, Polygon, MultiPolygon]] = None, ov_keys: Optional[list] = None) -> tuple[GeoDataFrame, Optional[DataFrame]]:
+def overpass_to_gdf(type_of_data: str, data: dict, mask: Optional[Union[GeoDataFrame, GeoSeries, Polygon, MultiPolygon]] = None, ov_keys: Optional[list] = None) -> Tuple[GeoDataFrame, Optional[DataFrame]]:
     """
     Process overpass response data according to type_of_data and clip to mask if given.
 
