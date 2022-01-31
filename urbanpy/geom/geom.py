@@ -4,6 +4,7 @@ import osmnx as ox
 from h3 import h3
 from tqdm import tqdm
 from urbanpy.utils import geo_boundary_to_polygon
+from typing import Sequence, Union
 
 __all__ = [
     'merge_geom_downloads',
@@ -16,7 +17,7 @@ __all__ = [
     'osmnx_coefficient_computation',
 ]
 
-def merge_geom_downloads(gdfs):
+def merge_geom_downloads(gdfs: Sequence[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
     '''
     Merge several GeoDataFrames from OSM download_osm
 
@@ -48,7 +49,7 @@ def merge_geom_downloads(gdfs):
     concat = gpd.GeoDataFrame(geometry=[pd.concat(gdfs).unary_union])
     return concat
 
-def filter_population(pop_df, polygon_gdf):
+def filter_population(pop_df: pd.DataFrame, polygon_gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     '''
     Filter an HDX database download to the polygon bounds
 
@@ -93,7 +94,7 @@ def filter_population(pop_df, polygon_gdf):
 
     return filtered_points_gdf
 
-def remove_features(gdf, bounds):
+def remove_features(gdf: gpd.GeoDataFrame, bounds: Sequence[float]) -> gpd.GeoDataFrame:
     '''
     Remove a set of features based on bounds
 
@@ -127,7 +128,7 @@ def remove_features(gdf, bounds):
 
     return gdf.drop(drop_ix)
 
-def gen_hexagons(resolution, city):
+def gen_hexagons(resolution: int, city: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     '''
     Converts an input multipolygon layer to H3 hexagons given a resolution.
 
@@ -180,7 +181,7 @@ def gen_hexagons(resolution, city):
 
     return city_hexagons
 
-def merge_shape_hex(hexs, shape, agg, how='inner', op='intersects'):
+def merge_shape_hex(hexs: gpd.GeoDataFrame, shape: gpd.GeoDataFrame, agg: dict, how='inner', op='intersects') -> gpd.GeoDataFrame:
     '''
     Merges a H3 hexagon GeoDataFrame with a Point GeoDataFrame and aggregates the
     point gdf data.
@@ -244,7 +245,7 @@ def merge_shape_hex(hexs, shape, agg, how='inner', op='intersects'):
 
     return ret_hex
 
-def overlay_polygons_hexs(polygons, hexs, hex_col, columns):
+def overlay_polygons_hexs(polygons: gpd.GeoDataFrame, hexs: gpd.GeoDataFrame, hex_col: str, columns: Sequence[str]) -> gpd.GeoDataFrame:
     '''
     Overlays a Polygon GeoDataFrame with a H3 hexagon GeoDataFrame and divide the 'columns' the values proportionally to the overlayed area.
 
@@ -300,7 +301,7 @@ def overlay_polygons_hexs(polygons, hexs, hex_col, columns):
 
     return hex_gdf
 
-def resolution_downsampling(gdf, hex_col, coarse_resolution, agg):
+def resolution_downsampling(gdf: gpd.GeoDataFrame, hex_col: str, coarse_resolution: int, agg: dict) -> gpd.GeoDataFrame:
     '''
     Downsample hexagon resolution aggregating indicated metrics (e.g. Transform hexagon resolution from 9 to 6).
 
