@@ -6,7 +6,7 @@ import osmnx as ox
 from shapely.geometry import Polygon, MultiPolygon
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
-from typing import Optional, Union, Tuple
+from typing import Optional, Union, Tuple, Sequence
 from pandas import DataFrame
 from geopandas import GeoDataFrame, GeoSeries
 from urbanpy.utils import to_overpass_query, overpass_to_gdf
@@ -22,7 +22,7 @@ __all__ = [
 
 hdx_config = Configuration.create(hdx_site='prod', user_agent='urbanpy', hdx_read_only=True)
 
-def nominatim_osm(query, expected_position=0):
+def nominatim_osm(query:str, expected_position=0) -> GeoDataFrame:
     """
     Download OpenStreetMaps data for a specific city.
 
@@ -191,7 +191,7 @@ def overpass(type_of_data: str, query: dict,
 
     return overpass_to_gdf(type_of_data, data, mask, ov_keys)
 
-def osmnx_graph(download_type, network_type='drive', query_str=None,
+def osmnx_graph(download_type:str, network_type='drive', query_str=None,
                 geom=None, distance=None, **kwargs):
     '''
     Download a graph from OSM using osmnx.
@@ -248,7 +248,7 @@ def osmnx_graph(download_type, network_type='drive', query_str=None,
 
         if geom is None and distance is not None: print('Please provide a Point geometry.')
 
-def search_hdx_dataset(country, repository="high-resolution-population-density-maps-demographic-estimates"):
+def search_hdx_dataset(country:str, repository="high-resolution-population-density-maps-demographic-estimates"):
     '''
     Dataset search within HDX repositories. Defaults to population density maps.
 
@@ -276,7 +276,7 @@ def search_hdx_dataset(country, repository="high-resolution-population-density-m
 
     return Dataset.get_all_resources(datasets)
 
-def download_hdx_dataset(country: str, dataset_id=None, resource="high-resolution-population-density-maps-demographic-estimates"):
+def download_hdx_dataset(country: str, dataset_id=None, resource="high-resolution-population-density-maps-demographic-estimates") -> Union[pd.DataFrame, None]:
     '''
     HDX dataset download.
     
