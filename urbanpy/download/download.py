@@ -7,7 +7,6 @@ from shapely.geometry import Polygon
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
 
-
 __all__ = [
     'nominatim_osm',
     'hdx_dataset',
@@ -17,7 +16,6 @@ __all__ = [
     'search_hdx_dataset',
     'download_hdx_dataset'
 ]
-
 
 hdx_config = Configuration.create(hdx_site='prod', user_agent='urbanpy', hdx_read_only=True)
 
@@ -325,8 +323,6 @@ def osmnx_graph(download_type, network_type='drive', query_str=None,
 
         if geom is None and distance is not None: print('Please provide a Point geometry.')
 
-
-
 def search_hdx_dataset(country, repository="high-resolution-population-density-maps-demographic-estimates"):
     '''
     Dataset search within HDX repositories. Defaults to population density maps.
@@ -354,7 +350,6 @@ def search_hdx_dataset(country, repository="high-resolution-population-density-m
     datasets = Dataset.search_in_hdx(f"title:{country.lower()}-{repository}")
 
     return Dataset.get_all_resources(datasets)
-
 
 def download_hdx_dataset(country: str, dataset_id=None, resource="high-resolution-population-density-maps-demographic-estimates"):
     '''
