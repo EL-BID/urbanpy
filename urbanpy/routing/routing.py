@@ -10,7 +10,7 @@ import osmnx as ox
 import geopandas as gpd
 from tqdm.auto import tqdm
 from shapely.geometry import Point
-from typing import Sequence, Union, Tuple
+from typing import Union, Tuple
 
 __all__ = [
     'start_osrm_server',
@@ -44,7 +44,7 @@ def check_container_is_running(container_name: str) -> bool:
         True if container is running, False otherwise.
 
     '''
-    completed_process = subprocess.run(['docker', 'ps'], check=True, capture_output=True)
+    completed_process = subprocess.run(['docker', 'ps'], capture_output=True, check=True)
     stdout_str = completed_process.stdout.decode('utf-8')
     container_running = container_name in stdout_str
 
@@ -90,13 +90,13 @@ def start_osrm_server(country: str, continent: str, profile: str) -> None:
         download_command = ['powershell.exe', './windows_download.ps1', CONTAINER_NAME, country, continent, profile]
 
     # Check if container exists:
-    if subprocess.run(container_check).returncode == 0:
+    if subprocess.run(container_check, capture_output=True).returncode == 0:
         if container_running:
             print('Server is already running.')
         else:
             try:
                 print('Starting server ...')
-                subprocess.run(container_start, check=True)
+                subprocess.run(container_start, capture_output=True, check=True)
                 time.sleep(5) # Wait server to be prepared to receive requests
                 print('Server was started succesfully')
             except subprocess.CalledProcessError as error:
@@ -105,7 +105,7 @@ def start_osrm_server(country: str, continent: str, profile: str) -> None:
     else:
         try:
             print('This is the first time you used this function.\nInitializing server setup. This may take several minutes...')
-            subprocess.Popen(download_command, shell=True)
+            subprocess.Popen(download_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
             # Verify container is running
             while container_running == False:
@@ -152,10 +152,10 @@ def stop_osrm_server(country: str, continent: str, profile: str) -> None:
         docker_stop = ['powershell.exe', 'docker', 'stop', container_name]
 
     # Check if container exists:
-    if subprocess.run(docker_top).returncode == 0:
+    if subprocess.run(docker_top, capture_output=True).returncode == 0:
         if check_container_is_running(container_name) == True:
             try:
-                subprocess.run(docker_stop, check=True)
+                subprocess.run(docker_stop, capture_output=True, check=True)
                 #subprocess.run(['docker', 'container', 'rm', 'osrm_routing_server'])
                 print('Server was stoped succesfully')
             except subprocess.CalledProcessError as error:
