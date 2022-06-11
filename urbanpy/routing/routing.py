@@ -3,12 +3,14 @@ import subprocess
 import sys
 import requests
 import googlemaps
+import pandas as pd
 import numpy as np
 import networkx as nx
 import osmnx as ox
 import geopandas as gpd
 from tqdm.auto import tqdm
 from shapely.geometry import Point
+from typing import Sequence, Union, Tuple
 
 __all__ = [
     'start_osrm_server',
@@ -25,7 +27,7 @@ __all__ = [
 
 CONTAINER_NAME = 'osrm_routing_server'
 
-def check_container_is_running(container_name):
+def check_container_is_running(container_name: str) -> bool:
     '''
     Checks if a container is running
 
@@ -48,7 +50,7 @@ def check_container_is_running(container_name):
 
     return container_running
 
-def start_osrm_server(country, continent, profile):
+def start_osrm_server(country: str, continent: str, profile: str) -> None:
     '''
     Download data for OSRM, process it and start a local osrm server
 
@@ -115,7 +117,7 @@ def start_osrm_server(country, continent, profile):
         except subprocess.CalledProcessError as error:
             print(f'Something went wrong. Please check your docker installation.\nError: {error}')
 
-def stop_osrm_server(country, continent, profile):
+def stop_osrm_server(country: str, continent: str, profile: str) -> None:
     '''
     Run docker stop on the server's container.
 
@@ -164,7 +166,7 @@ def stop_osrm_server(country, continent, profile):
     else:
         print('Server does not exist.')
 
-def osrm_route(origin, destination):
+def osrm_route(origin: Union[pd.DataFrame, gpd.GeoDataFrame], destination: Union[pd.DataFrame, gpd.GeoDataFrame]) -> Union[Tuple[float, float], Tuple[np.nan, np.nan]]:
     '''
     Query an OSRM routing server for routes between an origin and a destination
     using a specified profile.
@@ -211,7 +213,7 @@ def osrm_route(origin, destination):
         #print(err)
         return np.nan, np.nan
 
-def google_maps_dist_matrix(origin, destination, mode, api_key, **kwargs):
+def google_maps_dist_matrix(origin, destination, mode: str, api_key: str, **kwargs) -> Tuple[int,int]:
     '''
     Google Maps distance matrix support.
 
