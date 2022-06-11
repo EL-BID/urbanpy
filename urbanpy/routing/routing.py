@@ -166,7 +166,7 @@ def stop_osrm_server(country: str, continent: str, profile: str) -> None:
     else:
         print('Server does not exist.')
 
-def osrm_route(origin: Union[pd.DataFrame, gpd.GeoDataFrame], destination: Union[pd.DataFrame, gpd.GeoDataFrame]) -> Union[Tuple[float, float], Tuple[np.nan, np.nan]]:
+def osrm_route(origin: Union[pd.DataFrame, gpd.GeoDataFrame], destination: Union[pd.DataFrame, gpd.GeoDataFrame]) -> Tuple[float, float]:
     '''
     Query an OSRM routing server for routes between an origin and a destination
     using a specified profile.
