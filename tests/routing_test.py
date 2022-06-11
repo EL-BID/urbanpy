@@ -1,7 +1,6 @@
 import unittest
 import geopandas as gpd
 import numpy as np
-import networkx as nx
 
 import sys
 sys.path.append('../urbanpy')
@@ -78,14 +77,13 @@ class RoutingTest(unittest.TestCase):
         G = up.download.osmnx_graph('point', geom=(41.255676, -95.931338), distance=500)
 
         #Path exists
-        source = 7199103694
-        target = 134104548
-
+        source, target = 6564221455, 134104548
+        
         #Test path length
-        self.assertEqual(up.routing.nx_route(G, source, target, 'length'), 714.627)
+        self.assertEqual(up.routing.nx_route(G, source, target, 'length'), 642.385)
 
         #Test number of nodes in path
-        self.assertEqual(up.routing.nx_route(G, source, target, None), 12)
+        self.assertEqual(up.routing.nx_route(G, source, target, None), 5)
 
         #Test with no path
         source, target = 1418626943, 1985246159
