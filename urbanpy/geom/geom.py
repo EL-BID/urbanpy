@@ -166,7 +166,7 @@ def gen_hexagons(resolution: int, city: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     h3_indexes = list()
 
     # Get every polygon in Multipolygon shape
-    city_poly = city.explode().reset_index(drop=True)
+    city_poly = city.explode(index_parts=True).reset_index(drop=True)
 
     for _, geo in city_poly.iterrows():
         hexagons = h3.polyfill(geo['geometry'].__geo_interface__, res=resolution, geo_json_conformant=True)
@@ -181,7 +181,7 @@ def gen_hexagons(resolution: int, city: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
 
     return city_hexagons
 
-def merge_shape_hex(hexs: gpd.GeoDataFrame, shape: gpd.GeoDataFrame, agg: dict, how='inner', op='intersects') -> gpd.GeoDataFrame:
+def merge_shape_hex(hexs: gpd.GeoDataFrame, shape: gpd.GeoDataFrame, agg: dict, how='inner', predicate='intersects') -> gpd.GeoDataFrame:
     '''
     Merges a H3 hexagon GeoDataFrame with a Point GeoDataFrame and aggregates the
     point gdf data.
@@ -232,7 +232,7 @@ def merge_shape_hex(hexs: gpd.GeoDataFrame, shape: gpd.GeoDataFrame, agg: dict, 
 
     '''
 
-    joined = gpd.sjoin(shape, hexs, how=how, op=op)
+    joined = gpd.sjoin(shape, hexs, how=how, predicate=predicate)
 
     #Uses index right based on the order of points and hex. Right takes hex index
     hex_merge = joined.groupby('index_right').agg(agg)
