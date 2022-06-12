@@ -11,7 +11,7 @@ class DownloadTest(unittest.TestCase):
 
     def test_search_hdx(self):
         datasets = up.download.search_hdx_dataset(self.country)
-        self.assertEqual(14, len(datasets))
+        self.assertEqual(7, len(datasets))
     
     # def download_hdx_test(self):
         # df = up.download.download_hdx_dataset(country, 0)
