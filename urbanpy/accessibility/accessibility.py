@@ -3,10 +3,13 @@ import pandas as pd
 import numpy as np
 from osmnx import project_gdf
 from tqdm.auto import tqdm
+from urbanpy.routing import osrm_route
+from urbanpy.utils import nn_search, create_duration_labels
 
 __all__ = [
     'pressure_map',
     'hu_access_map',
+    'travel_times',
 ]
 
 #Gaussian friction function for distance decay
@@ -152,19 +155,18 @@ def pressure_map(blocks, pois, demand_column, operation='intersects', buffer_siz
         Input points of interest for pressure calculations
 
     demand_column: str
-                   Key for demand values in each spatial unit.
+        Key for demand values in each spatial unit.
 
     operation: str
-               Spatial operation to use. One of the operations supported by GeoPandas
+        Spatial operation to use. One of the operations supported by GeoPandas
 
     buffer_size: int
-                 Buffer size. Defaults to 1250
-
+        Buffer size. Defaults to 1250
 
     Returns
     -------
     blocks: GeoDataFrame
-            Input blocks dataframe with pressure values (ds). Unaggregated, if grouped into a higher resolution, sum 'ds'.
+        Input blocks dataframe with pressure values (ds). Unaggregated, if grouped into a higher resolution, sum 'ds'.
 
     Examples
     --------
@@ -180,11 +182,8 @@ def pressure_map(blocks, pois, demand_column, operation='intersects', buffer_siz
 
     References
     ----------
-
     Van Eck, J. R., & de Jong, T. (1999). Accessibility analysis and spatial competition effects in the context of GIS-supported service location planning. Computers, environment and urban systems, 23(2), 75-89.
-
     '''
-
     if not pois.crs.is_projected:
         pois_proj = project_gdf(pois)
 
@@ -205,3 +204,53 @@ def pressure_map(blocks, pois, demand_column, operation='intersects', buffer_siz
     blocks['ds'] = blocks[demand_column] / (blocks_proj['nj'] + 1)
 
     return blocks
+
+
+def travel_times(inputs, pois, col_label='poi', nearest_neighbor_dist='haversine'):
+    '''
+    Calculate travel times (durations) and distances from each input geometry to the nearest poi with an active osrm server.
+
+    Parameters
+    ----------
+    inputs: GeoDataFrame
+        Input grid-spatial units to calculate pressure.
+
+    pois: GeoDataFrame
+        Input points of interest for travel distance and durations calculations
+
+    Returns
+    -------
+    gdf: GeoDataFrame
+        Input geodataframe with travel distances and durantions to nearest poi.
+    '''
+    gdf = inputs.copy()
+    # Calculate the Nearest Facility for each Hexagon
+    gdf['lon'] = gdf.geometry.centroid.x
+    gdf['lat'] = gdf.geometry.centroid.y
+    
+    dists, ixs = nn_search(
+        tree_features=pois[['lat', 'lon']].values,
+        query_features=gdf[['lat', 'lon']].values,
+        metric=nearest_neighbor_dist
+    )
+    
+    gdf[f"nearest_{col_label}_ix"] = ixs
+    
+    # Calculate travel times and distances
+    distance_duration = gdf.progress_apply(
+        lambda row: osrm_route(
+            origin=row.geometry.centroid, 
+            destination = pois.iloc[row[f'nearest_{col_label}_ix']]['geometry']
+        ),
+        result_type='expand',
+        axis=1,
+    )
+    
+    # Add columns to dataframe
+    gdf[f'distance_to_nearest_{col_label}'] =  distance_duration[0] / 1000 # meters to km
+    gdf[f'duration_to_nearest_{col_label}'] = distance_duration[1] / 60 # seconds to minutes
+    
+    custom_bins, custom_labels = create_duration_labels(gdf[f'duration_to_nearest_{col_label}'])
+    gdf[f'duration_to_nearest_{col_label}_label'] = pd.cut(gdf[f'duration_to_nearest_{col_label}'], bins=custom_bins, labels=custom_labels)
+        
+    return gdf
