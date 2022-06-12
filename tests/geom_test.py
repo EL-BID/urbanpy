@@ -40,7 +40,8 @@ class GeomTest(unittest.TestCase):
         '''
 
         # Example test values
-        pop_df = up.download.download_hdx_dataset('bolivia', 0)
+        datasets_df = up.download.search_hdx_dataset('bolivia')
+        pop_df = up.download.get_hdx_dataset(datasets_df, 0)
         polygon_gdf = up.download.nominatim_osm('La Paz, Bolivia', 1)
 
         # Filter pop
@@ -67,7 +68,8 @@ class GeomTest(unittest.TestCase):
 
         # Example test values
         bounds = polygon_gdf.geometry.centroid.buffer(0.1).total_bounds
-        pop_df = up.download.download_hdx_dataset('bolivia', 0)
+        datasets_df = up.download.search_hdx_dataset('bolivia')
+        pop_df = up.download.get_hdx_dataset(datasets_df, 0)
         filtered_points_gdf = up.geom.filter_population(pop_df, polygon_gdf)
 
         # Remove features from bounding box
@@ -111,7 +113,8 @@ class GeomTest(unittest.TestCase):
         polygon_gdf = up.download.nominatim_osm('La Paz, Bolivia', 1)
 
         # Example test values
-        pop_df = up.download.download_hdx_dataset('bolivia', 0)
+        datasets_df = up.download.search_hdx_dataset('bolivia')
+        pop_df = up.download.get_hdx_dataset(datasets_df, 0)
         filtered_points_gdf = up.geom.filter_population(pop_df, polygon_gdf)
         hex_gdf = up.geom.gen_hexagons(resolution=6, city=polygon_gdf)
 
@@ -145,7 +148,8 @@ class GeomTest(unittest.TestCase):
         polygon_gdf = up.download.nominatim_osm('La Paz, Bolivia', 1)
 
         # Example test values
-        pop_df = up.download.download_hdx_dataset('bolivia', 0)
+        datasets_df = up.download.search_hdx_dataset('bolivia')
+        pop_df = up.download.get_hdx_dataset(datasets_df, 0)
         filtered_points_gdf = up.geom.filter_population(pop_df, polygon_gdf)
         hex_gdf = up.geom.gen_hexagons(resolution=6, city=polygon_gdf)
 
