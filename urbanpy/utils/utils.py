@@ -77,6 +77,7 @@ def swap_xy(geom):
     else:
         raise ValueError('Type %r not recognized' % geom.type)
 
+
 def nn_search(tree_features, query_features, metric='haversine'):
     '''
     Build a BallTree for nearest neighbor search based on selected distance.
@@ -130,6 +131,7 @@ def nn_search(tree_features, query_features, metric='haversine'):
         dist, ind = tree.query(query_features)
         return dist, ind
 
+
 def shell_from_geometry(geometry):
     '''
     Util function for park and pitch processing.
@@ -139,6 +141,7 @@ def shell_from_geometry(geometry):
     for record in geometry:
         shell.append([record['lon'], record['lat']])
     return shell
+
 
 def geo_boundary_to_polygon(x):
     '''
@@ -158,6 +161,7 @@ def geo_boundary_to_polygon(x):
 
     '''
     return Polygon([bound[::-1] for bound in h3.h3_to_geo_boundary(x)]) # format as x,y (lon, lat)
+
 
 def create_duration_labels(durations):
     '''
@@ -199,6 +203,7 @@ def create_duration_labels(durations):
     custom_labels = default_labels[:ix]
 
     return custom_bins, custom_labels
+
 
 def to_overpass_query(type_of_data: str, query: dict) -> str:
     """
@@ -248,6 +253,7 @@ def to_overpass_query(type_of_data: str, query: dict) -> str:
     out body geom;"""
         
     return overpass_query
+
 
 def process_overpass_relations(data: dict, mask: Optional[Union[GeoDataFrame, GeoSeries, Polygon, MultiPolygon]] = None) -> Tuple[DataFrame, GeoDataFrame]:
     '''
@@ -299,6 +305,7 @@ def process_overpass_relations(data: dict, mask: Optional[Union[GeoDataFrame, Ge
         gdf_members = gdf_members.clip(mask=mask) # Using hexs is ~100x faster than adm boundaries
 
     return gdf_members, df_relations
+
 
 def overpass_to_gdf(type_of_data: str, data: dict, mask: Optional[Union[GeoDataFrame, GeoSeries, Polygon, MultiPolygon]] = None, ov_keys: Optional[list] = None) -> Tuple[GeoDataFrame, Optional[DataFrame]]:
     """

@@ -137,7 +137,6 @@ class RoutingServer(object):
         else:
             print('Server does not exist.')
 
-
     def get_distance(self, origin, destination, profile):
         '''
         Query an OSRM routing server for routes between an origin and a destination
@@ -200,7 +199,6 @@ class RoutingServer(object):
         container_running = container_name in stdout_str
 
         return container_running
-
 
 if __name__ == '__main__':
     print('Hello')
