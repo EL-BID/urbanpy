@@ -6,7 +6,7 @@ import osmnx as ox
 from shapely.geometry import Polygon, MultiPolygon
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
-from typing import Optional, Union, Tuple, Sequence
+from typing import Optional, Union, Tuple
 from pandas import DataFrame
 from geopandas import GeoDataFrame, GeoSeries
 from urbanpy.utils import to_overpass_query, overpass_to_gdf
@@ -17,7 +17,7 @@ __all__ = [
     'overpass',
     'osmnx_graph',
     'search_hdx_dataset',
-    'download_hdx_dataset'
+    'get_hdx_dataset'
 ]
 
 hdx_config = Configuration.create(hdx_site='prod', user_agent='urbanpy', hdx_read_only=True)
@@ -256,65 +256,108 @@ def search_hdx_dataset(country:str, repository="high-resolution-population-densi
 
     Parameters
     ----------
-
     country: str
-             Country to search datasets
+        Country to search datasets
 
     resource: str
-              Resource type within the HDX database
+        Resource type within the HDX database
 
     Returns
     -------
-
-    datasets: list
-              List of available datasets within HDX
+    datasets: DataFrame
+        DataFrame of available datasets within HDX
 
     Examples
     --------
-
+    >>> resources_df = urbanpy.download.search_hdx_dataset('peru')
+    >>> resources_df
+       | created	| name	                                            | population	                            | size_mb |	url
+    id |			| 	                                                |                                           |         |
+    0  | 2019-06-11	| population_per_2018-10-01.csv.zip	                | Overall population density	            | 19.36	  | https://data.humdata.org/dataset/4e74db39-87f1...
+    2  | 2019-06-11	| PER_children_under_five_2019-06-01_csv.zip	    | Children (ages 0-5)	                    | 16.60	  | https://data.humdata.org/dataset/4e74db39-87f1...
+    4  | 2019-06-11	| PER_elderly_60_plus_2019-06-01_csv.zip	        | Elderly (ages 60+)	                    | 16.59	  | https://data.humdata.org/dataset/4e74db39-87f1...
+    6  | 2019-06-11	| PER_men_2019-06-01_csv.zip	                    | Men	                                    | 16.64	  | https://data.humdata.org/dataset/4e74db39-87f1...
+    8  | 2019-06-11	| PER_women_2019-06-01_csv.zip	                    | Women	                                    | 16.63	  | https://data.humdata.org/dataset/4e74db39-87f1...
+    10 | 2019-06-11	| PER_women_of_reproductive_age_15_49_2019-06-01... | Women of reproductive age (ages 15-49)    | 16.62	  | https://data.humdata.org/dataset/4e74db39-87f1...
+    12 | 2019-06-11	| PER_youth_15_24_2019-06-01_csv.zip	            | Youth (ages 15-24)	                    | 16.61	  | https://data.humdata.org/dataset/4e74db39-87f1...
     '''
-    #Get dataset list
+    # Get dataset list
     datasets = Dataset.search_in_hdx(f"title:{country.lower()}-{repository}")
 
-    return Dataset.get_all_resources(datasets)
+    resources_records = Dataset.get_all_resources(datasets)
 
-def download_hdx_dataset(country: str, dataset_id=None, resource="high-resolution-population-density-maps-demographic-estimates") -> Union[DataFrame, None]:
+    resources_df = pd.DataFrame.from_records(resources_records)
+
+    if resources_df.shape[0] == 0:
+        print("No datasets found")
+
+    else:
+        resources_csv_df = resources_df.query("format == 'CSV'")    
+
+        def get_label(name):
+            population_types = {
+                'overall': 'Overall population density',
+                'women': 'Women',
+                '_men_': 'Men',
+                'children': 'Children (ages 0-5)',
+                'youth': 'Youth (ages 15-24) ',
+                'elderly': 'Elderly (ages 60+)',
+                'women_of_reproductive_age': 'Women of reproductive age (ages 15-49)'
+            }
+
+            for keys, labels in population_types.items():
+                if keys in name:
+                    if keys == 'women':
+                        if 'reproductive' in name: continue
+                    
+                    return labels
+                
+            return population_types['overall']
+            
+        resources_csv_df = resources_csv_df.assign(
+            created=pd.to_datetime(resources_csv_df['created']).dt.date,
+            size_mb=(resources_csv_df['size'] / 2**20).round(2),
+            population=resources_csv_df['name'].apply(get_label)
+        )
+
+        resources_csv_df.index.name = 'id'
+
+        return resources_csv_df[['created', 'name', 'population', 'size_mb', 'url']]
+
+
+def get_hdx_dataset(resources_df: DataFrame, ids: Union[int, list]) -> DataFrame:
     '''
     HDX dataset download.
     
     Parameters
     ----------
+    resources_df: pd.DataFrame
+        Resources dataframe from returned by search_hdx_dataset
 
-    country: str
-             The country to download the dataset from.
-
-    dataset_id: int
-                Position of the dataset in the search list (see search_hdx_dataset)
-
+    ids: int or list
+        IDs in the resources dataframe
 
     Returns
     -------
-
     data: pd.DataFrame
-          The corresponding datset in DataFrame format
+          The corresponding dataset in DataFrame format
 
     Examples
     --------
-    >>> urbanpy.download.download_hdx_dataset('peru', 0)
+    >>> resources_df = urbanpy.download.search_hdx_dataset('peru')
+    >>> population_df = urbanpy.download.get_hdx_dataset(resources_df, 0)
+    >>> population_df
     latitude   | longitude  | population_2015 |	population_2020
     -18.339306 | -70.382361 | 11.318147	      | 12.099885
     -18.335694 | -70.393750 | 11.318147	      | 12.099885
     -18.335694 | -70.387361	| 11.318147	      | 12.099885
     -18.335417 | -70.394028	| 11.318147	      | 12.099885
     -18.335139 | -70.394306	| 11.318147	      | 12.099885
-
     '''
 
-    if dataset_id is None:
-        print('Please run a seach for the hdx dataset you need and pass the correct dataset_id')
+    urls = resources_df.loc[ids, 'url']
 
+    if isinstance(ids, list):
+        return pd.concat([pd.read_csv(url) for url in urls])
     else:
-        datasets = search_hdx_dataset(country)
-        data = pd.read_csv(datasets[dataset_id]['url'])
-
-        return data
+        return pd.read_csv(urls)
