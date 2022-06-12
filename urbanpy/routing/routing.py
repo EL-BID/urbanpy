@@ -1,6 +1,7 @@
 import time
 import subprocess
 import sys
+import pathlib
 import requests
 import googlemaps
 import pandas as pd
@@ -25,6 +26,7 @@ __all__ = [
     'isochrone_from_graph'
 ]
 
+ROUTING_MODUEL_DIR = pathlib.Path(__file__).parent.resolve()
 CONTAINER_NAME = 'osrm_routing_server'
 
 def check_container_is_running(container_name: str) -> bool:
@@ -53,7 +55,7 @@ def check_container_is_running(container_name: str) -> bool:
 
 def start_osrm_server(country: str, continent: str, profile: str) -> None:
     '''
-    Download data for OSRM, process it and start a local osrm server
+    Download data for OSRM, process it and start a local osrm server fdhgdfshgrdfhgfdhdf
 
     Parameters
     ----------
@@ -84,11 +86,11 @@ def start_osrm_server(country: str, continent: str, profile: str) -> None:
     if sys.platform in ['darwin', 'linux']:
         container_check = ['docker', 'inspect', container_name]
         container_start = ['docker', 'start', container_name]
-        download_command = ['sh', './unix_download', CONTAINER_NAME, country, continent, profile]
+        download_command = ['sh', str(pathlib.PosixPath(ROUTING_MODUEL_DIR, 'unix_download.sh')), CONTAINER_NAME, country, continent, profile]
     else:
         container_check = ['powershell.exe', 'docker', 'inspect', container_name]
         container_start = ['powershell.exe', 'docker', 'start', container_name]
-        download_command = ['powershell.exe', './windows_download.ps1', CONTAINER_NAME, country, continent, profile]
+        download_command = ['powershell.exe', str(pathlib.WindowsPath(ROUTING_MODUEL_DIR, 'windows_download.ps1')), CONTAINER_NAME, country, continent, profile]
 
     # Check if container exists:
     if subprocess.run(container_check, capture_output=True).returncode == 0:
@@ -97,26 +99,27 @@ def start_osrm_server(country: str, continent: str, profile: str) -> None:
         else:
             try:
                 print('Starting server ...')
-                subprocess.run(container_start, capture_output=True, check=True)
+                subprocess.run(container_start, check=True)
                 time.sleep(5) # Wait server to be prepared to receive requests
                 print('Server was started succesfully')
             except subprocess.CalledProcessError as error:
-                print(f'Something went wrong. Please check if port 5000 is being used or check your docker installation.\nError: {error}')
-
+                print('Something went wrong. Please check if port 5000 is being used or check your docker installation.')
+                print(f'Error: {error}')
     else:
         try:
-            print('This is the first time you used this function.\nInitializing server setup. This may take several minutes...')
-            subprocess.Popen(download_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-
-            # Verify container is running
-            while container_running == False:
-                container_running = check_container_is_running(container_name)
+            print(f'This is the first time you initialized a server for {country} on {profile}.')
+            print('Initializing server setup. This may take several minutes ...')
+            print('To view the detailed logs run the following command from terminal:')
+            print(f'$ watch -n 5 tail -20 ~/data/osrm/{continent}/{country}/logs/{profile}.txt')
             
+            subprocess.run(download_command, check=True)
             time.sleep(5) # Wait server to be prepared to receive requests
+            
             print('Server was started succesfully')
-
+            
         except subprocess.CalledProcessError as error:
-            print(f'Something went wrong. Please check your docker installation.\nError: {error}')
+            print('Something went wrong. Please check if port 5000 is being used or your docker installation.')
+            print(f'Error: {error}')
 
 
 def stop_osrm_server(country: str, continent: str, profile: str) -> None:
