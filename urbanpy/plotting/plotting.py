@@ -10,7 +10,6 @@ __all__ = [
     'choropleth_map',
 ]
 
-
 # def gen_pydeck_layer(layer_type, data, **kwargs):
 #     if layer_type == 'H3HexagonLayer':
 #         return pdk.Layer("H3HexagonLayer", data, **kwargs)

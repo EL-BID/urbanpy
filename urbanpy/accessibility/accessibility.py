@@ -138,6 +138,7 @@ def hu_access_map(units, pois, population_column, weight=1, d0=1250):
 
     return access_map
 
+
 def pressure_map(blocks, pois, demand_column, operation='intersects', buffer_size=1250):
     '''
     Create the unaggregated pressure map from Ritsema van Eck & de Jong, 1999.

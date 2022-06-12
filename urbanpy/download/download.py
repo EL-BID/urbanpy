@@ -61,6 +61,7 @@ def nominatim_osm(query:str, expected_position=0) -> GeoDataFrame:
 
     return city
 
+
 def overpass_pois(bounds, facilities=None, custom_query=None):
     '''
     Download POIs using Overpass API.
@@ -140,6 +141,7 @@ def overpass_pois(bounds, facilities=None, custom_query=None):
         response = requests.get(overpass_url, params={'data': custom_query, 'bbox': bbox_string})
         return response
 
+
 def overpass(type_of_data: str, query: dict, 
              mask: Union[GeoDataFrame, GeoSeries, Polygon, MultiPolygon]) -> Tuple[GeoDataFrame, Optional[DataFrame]]:
     '''
@@ -188,6 +190,7 @@ def overpass(type_of_data: str, query: dict,
     ov_keys = list(set(query.keys())) # get unique keys used in query (e.g. "amenity", "shop", etc)
 
     return overpass_to_gdf(type_of_data, data, mask, ov_keys)
+
 
 def osmnx_graph(download_type:str, network_type='drive', query_str=None,
                 geom=None, distance=None, **kwargs):
@@ -245,6 +248,7 @@ def osmnx_graph(download_type:str, network_type='drive', query_str=None,
             print('Please provide a distance buffer for the point download')
 
         if geom is None and distance is not None: print('Please provide a Point geometry.')
+
 
 def search_hdx_dataset(country:str, repository="high-resolution-population-density-maps-demographic-estimates"):
     '''

@@ -49,6 +49,7 @@ def merge_geom_downloads(gdfs: Sequence[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
     concat = gpd.GeoDataFrame(geometry=[pd.concat(gdfs).unary_union])
     return concat
 
+
 def filter_population(pop_df: pd.DataFrame, polygon_gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     '''
     Filter an HDX database download to the polygon bounds
@@ -94,6 +95,7 @@ def filter_population(pop_df: pd.DataFrame, polygon_gdf: gpd.GeoDataFrame) -> gp
 
     return filtered_points_gdf
 
+
 def remove_features(gdf: gpd.GeoDataFrame, bounds: Sequence[float]) -> gpd.GeoDataFrame:
     '''
     Remove a set of features based on bounds
@@ -127,6 +129,7 @@ def remove_features(gdf: gpd.GeoDataFrame, bounds: Sequence[float]) -> gpd.GeoDa
     drop_ix = gdf.cx[minx:maxx, miny:maxy].index
 
     return gdf.drop(drop_ix)
+
 
 def gen_hexagons(resolution: int, city: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     '''
@@ -180,6 +183,7 @@ def gen_hexagons(resolution: int, city: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     city_hexagons = city_hexagons.rename(columns={0: 'hex'}) # Format column name for readability
 
     return city_hexagons
+
 
 def merge_shape_hex(hexs: gpd.GeoDataFrame, shape: gpd.GeoDataFrame, agg: dict, how='inner', predicate='intersects') -> gpd.GeoDataFrame:
     '''
@@ -245,6 +249,7 @@ def merge_shape_hex(hexs: gpd.GeoDataFrame, shape: gpd.GeoDataFrame, agg: dict, 
 
     return ret_hex
 
+
 def overlay_polygons_hexs(polygons: gpd.GeoDataFrame, hexs: gpd.GeoDataFrame, hex_col: str, columns: Sequence[str]) -> gpd.GeoDataFrame:
     '''
     Overlays a Polygon GeoDataFrame with a H3 hexagon GeoDataFrame and divide the 'columns' the values proportionally to the overlayed area.
@@ -301,6 +306,7 @@ def overlay_polygons_hexs(polygons: gpd.GeoDataFrame, hexs: gpd.GeoDataFrame, he
 
     return hex_gdf
 
+
 def resolution_downsampling(gdf: gpd.GeoDataFrame, hex_col: str, coarse_resolution: int, agg: dict) -> gpd.GeoDataFrame:
     '''
     Downsample hexagon resolution aggregating indicated metrics (e.g. Transform hexagon resolution from 9 to 6).
@@ -332,6 +338,7 @@ def resolution_downsampling(gdf: gpd.GeoDataFrame, hex_col: str, coarse_resoluti
     gdfc_geometry = dfc[coarse_hex_col].apply(geo_boundary_to_polygon)
 
     return gpd.GeoDataFrame(dfc, geometry=gdfc_geometry, crs=gdf.crs)
+
 
 def osmnx_coefficient_computation(gdf, net_type, basic_stats, extended_stats, connectivity=False, anc=False, ecc=False, bc=False, cc=False):
     '''

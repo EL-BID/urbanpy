@@ -50,6 +50,7 @@ def check_container_is_running(container_name: str) -> bool:
 
     return container_running
 
+
 def start_osrm_server(country: str, continent: str, profile: str) -> None:
     '''
     Download data for OSRM, process it and start a local osrm server
@@ -117,6 +118,7 @@ def start_osrm_server(country: str, continent: str, profile: str) -> None:
         except subprocess.CalledProcessError as error:
             print(f'Something went wrong. Please check your docker installation.\nError: {error}')
 
+
 def stop_osrm_server(country: str, continent: str, profile: str) -> None:
     '''
     Run docker stop on the server's container.
@@ -166,6 +168,7 @@ def stop_osrm_server(country: str, continent: str, profile: str) -> None:
     else:
         print('Server does not exist.')
 
+
 def osrm_route(origin: Union[pd.DataFrame, gpd.GeoDataFrame], destination: Union[pd.DataFrame, gpd.GeoDataFrame]) -> Tuple[float, float]:
     '''
     Query an OSRM routing server for routes between an origin and a destination
@@ -212,6 +215,7 @@ def osrm_route(origin: Union[pd.DataFrame, gpd.GeoDataFrame], destination: Union
     except Exception as err:
         #print(err)
         return np.nan, np.nan
+
 
 def google_maps_dist_matrix(origin, destination, mode: str, api_key: str, **kwargs) -> Tuple[int,int]:
     '''
@@ -285,6 +289,7 @@ def google_maps_dist_matrix(origin, destination, mode: str, api_key: str, **kwar
 
     return dist, dur
 
+
 def ors_api(locations, origin, destination, profile, metrics, api_key):
     '''
     Interface with OpenRoute Service API for distance matrix computation.
@@ -350,6 +355,7 @@ def ors_api(locations, origin, destination, profile, metrics, api_key):
     else:
         return -1, -1
 
+
 def compute_osrm_dist_matrix(origins, destinations):
     '''
     Compute distance and travel time origin-destination matrices
@@ -408,6 +414,7 @@ def compute_osrm_dist_matrix(origins, destinations):
             dur_matrix[ix, i] = dur
 
     return dist_matrix, dur_matrix
+
 
 def google_maps_dir_matrix(origin, destination, mode, api_key, **kwargs):
     '''
@@ -478,6 +485,7 @@ def google_maps_dir_matrix(origin, destination, mode, api_key, **kwargs):
 
     return dist, dur
 
+
 def nx_route(graph, source, target, weight, length=True):
     '''
     Compute shortest path from a source and target node.
@@ -544,6 +552,7 @@ def nx_route(graph, source, target, weight, length=True):
         except:
             #If there is no path within the graph
             return -1
+
 
 def isochrone_from_api(locations, time_range, profile, api, api_key):
     '''
@@ -645,6 +654,7 @@ def isochrone_from_api(locations, time_range, profile, api, api_key):
         isochrones.crs = 'EPSG:4326'
 
         return isochrones[['contour', 'group_index', 'geometry']]
+
 
 def isochrone_from_graph(graph, locations, time_range, profile):
     '''
