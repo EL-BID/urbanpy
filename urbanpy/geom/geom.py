@@ -23,29 +23,24 @@ def merge_geom_downloads(gdfs: Sequence[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
 
     Parameters
     ----------
-
     dfs: array_like
-             Array of GeoDataFrames to merge
+        Array of GeoDataFrames to merge
 
     Returns
     -------
 
     concat: GeoDataFrame
-                Output from concatenation and unary union of geometries, providing
-                a single geometry database for the city
+        Output from concatenation and unary union of geometries, providing a single geometry database for the city
 
     Examples
     --------
-
     >>> lima = urbanpy.download.nominatim_osm("Lima, Peru", 2)
     >>> callao = urbanpy.download.nominatim_osm("Callao, Peru", 1)
     >>> lima = urbanpy.geom.merge_geom_downloads([lima, callao])
     >>> lima.head()
     geometry
     MULTIPOLYGON (((-76.80277 -12.47562, -76.80261...)))
-
     '''
-
     concat = gpd.GeoDataFrame(geometry=[pd.concat(gdfs).unary_union])
     return concat
 
@@ -56,22 +51,19 @@ def filter_population(pop_df: pd.DataFrame, polygon_gdf: gpd.GeoDataFrame) -> gp
 
     Parameters
     ----------
-
     pop_df: DataFrame
-            Result from download_hdx
+        Result from download_hdx
 
     polygon_gdf: GeoDataFrame
-                 Result from download_osm or merge_geom_downloads
+        Result from download_osm or merge_geom_downloads
 
     Returns
     -------
-
     filtered_points_gdf: GeoDataFrame
-                         Population DataFrame filtered to polygon bounds
+        Population DataFrame filtered to polygon bounds
 
     Examples
     --------
-
     >>> lima = urbanpy.download.nominatim_osm("Lima, Peru", 2)
     >>> callao = urbanpy.download.nominatim_osm("Callao, Peru", 1)
     >>> lima = urbanpy.geom.merge_geom_downloads([lima, callao])
@@ -83,9 +75,7 @@ def filter_population(pop_df: pd.DataFrame, polygon_gdf: gpd.GeoDataFrame) -> gp
     -12.519861 | -76.745694 | 2.633668        | 2.644757        | POINT (-76.74569 -12.51986)
     -12.519861 | -76.742639 | 2.633668        | 2.644757        | POINT (-76.74264 -12.51986)
     -12.519861 | -76.741250 | 2.633668        | 2.644757        | POINT (-76.74125 -12.51986)
-
     '''
-
     minx, miny, maxx, maxy = polygon_gdf.geometry.total_bounds
     limits_filter = pop_df['longitude'].between(minx, maxx) & pop_df['latitude'].between(miny, maxy)
     filtered_points = pop_df[limits_filter]
@@ -102,23 +92,19 @@ def remove_features(gdf: gpd.GeoDataFrame, bounds: Sequence[float]) -> gpd.GeoDa
 
     Parameters
     ----------
-
     gdf: GeoDataFrame
-             Input GeoDataFrame containing the point features filtered with filter_population
+        Input GeoDataFrame containing the point features filtered with filter_population
 
     bounds: array_like
-                Array input following [minx, miny, maxx, maxy] for filtering (GeoPandas total_bounds method output)
-
+        Array input following [minx, miny, maxx, maxy] for filtering (GeoPandas total_bounds method output)
 
     Returns
     -------
-
     gdf: GeoDataFrame
-             Input DataFrame but without the desired features
+        Input DataFrame but without the desired features
 
     Examples
     --------
-
     >>> lima = urbanpy.geom.filter_population(pop_lima, poly_lima)
     >>> removed = urbanpy.geom.remove_features(lima, [-12.2,-12, -77.2,-77.17]) #Remove San Lorenzo Island
     >>> print(lima.shape, removed.shape)
@@ -137,22 +123,19 @@ def gen_hexagons(resolution: int, city: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
 
     Parameters
     ----------
-
     resolution: int, 0:15
-                    Hexagon resolution, higher values create smaller hexagons.
+        Hexagon resolution, higher values create smaller hexagons.
 
     city: GeoDataFrame
-              Input city polygons to transform into hexagons.
+        Input city polygons to transform into hexagons.
 
     Returns
     -------
-
     city_hexagons: GeoDataFrame
-                       Hexagon geometry GeoDataFrame (hex_id, geom).
+        Hexagon geometry GeoDataFrame (hex_id, geom).
 
     Examples
     --------
-
     >>> lima = urbanpy.geom.filter_population(pop_lima, poly_lima)
     >>> lima_hex = urbanpy.geom.gen_hexagons(8, lima)
     hex	            | geometry
@@ -161,9 +144,7 @@ def gen_hexagons(resolution: int, city: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     888e62c851fffff | POLYGON ((-77.20708 -12.08484, -77.21140 -12.0...))
     888e62c841fffff | POLYGON ((-77.22689 -12.07104, -77.23122 -12.0...))
     888e62c847fffff | POLYGON ((-77.23072 -12.07929, -77.23504 -12.0...))
-
     '''
-
     # Polyfill the city boundaries
     h3_polygons = list()
     h3_indexes = list()
@@ -192,36 +173,33 @@ def merge_shape_hex(hexs: gpd.GeoDataFrame, shape: gpd.GeoDataFrame, agg: dict, 
 
     Parameters
     ----------
-
     hexs: GeoDataFrame
-          Input GeoDataFrame containing hexagon geometries
+        Input GeoDataFrame containing hexagon geometries
 
     shape: GeoDataFrame
-           Input GeoDataFrame containing points and features to be aggregated
+        Input GeoDataFrame containing points and features to be aggregated
 
     agg: dict
-         A dictionary with column names as keys and values as aggregation
-         operations. The aggregation must be one of {'sum', 'min', 'max'}.
+        A dictionary with column names as keys and values as aggregation
+        operations. The aggregation must be one of {'sum', 'min', 'max'}.
 
     how: str. One of {'inner', 'left', 'right'}. Default 'inner'.
-         Determines how to merge data:
-             'left' uses keys from left and only retains geometry from left
-             'right' uses keys from right and only retains geometry from right
-             'inner': use intersection of keys from both dfs; retain only left geometry column
+        Determines how to merge data:
+            'left' uses keys from left and only retains geometry from left
+            'right' uses keys from right and only retains geometry from right
+            'inner': use intersection of keys from both dfs; retain only left geometry column
 
     op: str. One of {'intersects', 'contains', 'within'}. Default 'intersects'
         Determines how geometries are queried for merging.
 
     Returns
     -------
-
     hexs: GeoDataFrame
-          Result of a spatial join within hex and points. All features are aggregated
-          based on the input parameters
+        Result of a spatial join within hex and points. All features are aggregated
+        based on the input parameters
 
     Examples
     --------
-
     >>> lima = urbanpy.download.nominatim_osm('Lima, Peru', 2)
     >>> pop_lima = urbanpy.download.hdx_fb_population('peru', 'full')
     >>> pop_df = urbanpy.filter_population(pop_lima, lima)
@@ -233,9 +211,7 @@ def merge_shape_hex(hexs: gpd.GeoDataFrame, shape: gpd.GeoDataFrame, agg: dict, 
     888e62132bfffff | POLYGON ((-76.84736 -12.17523, -76.85167 -12.1... | 608.312696
     888e628debfffff | POLYGON ((-76.67982 -12.18998, -76.68413 -12.1... | NaN
     888e6299b3fffff | POLYGON ((-76.78876 -11.97286, -76.79307 -11.9... | 3225.658803
-
     '''
-
     joined = gpd.sjoin(shape, hexs, how=how, predicate=predicate)
 
     #Uses index right based on the order of points and hex. Right takes hex index
@@ -313,24 +289,20 @@ def resolution_downsampling(gdf: gpd.GeoDataFrame, hex_col: str, coarse_resoluti
 
     Parameters
     ----------
-
     gdf: GeoDataFrame
-         GeoDataFrame with hexagon geometries (output from gen_hexagons).
+        GeoDataFrame with hexagon geometries (output from gen_hexagons).
 
     hex_col: str
-             Determines the column with the hex id.
+        Determines the column with the hex id.
 
     coarse_resolution: int, 0:15
-                       Hexagon resolution lower than gdf actual resolution (higher values create smaller hexagons).
+        Hexagon resolution lower than gdf actual resolution (higher values create smaller hexagons).
 
     Returns
     -------
-
     gdfc: GeoDataFrame
-          GeoDataFrame with lower resolution hexagons geometry and metrics aggregated as indicated.
-
+        GeoDataFrame with lower resolution hexagons geometry and metrics aggregated as indicated.
     '''
-
     gdf_coarse = gdf.copy()
     coarse_hex_col = 'hex_{}'.format(coarse_resolution)
     gdf_coarse[coarse_hex_col] = gdf_coarse[hex_col].apply(lambda x: h3.h3_to_parent(x,coarse_resolution))
@@ -349,25 +321,25 @@ def osmnx_coefficient_computation(gdf, net_type, basic_stats, extended_stats, co
     ----------
 
     gdf: GeoDataFrame
-         GeoDataFrame with geometries to download graphs contained within them.
+        GeoDataFrame with geometries to download graphs contained within them.
 
     net_type: str
-              Network type to download. One of {'drive', 'drive_service', 'walk', 'bike', 'all', 'all_private'}
+        Network type to download. One of {'drive', 'drive_service', 'walk', 'bike', 'all', 'all_private'}
 
     basic_stats: list
-                 List of basic stats to compute from downloaded graph
+        List of basic stats to compute from downloaded graph
 
     extended_stats: list
-                    List of extended stats to compute from graph
+        List of extended stats to compute from graph
 
     connectivity: bool. Default False.
-                  Compute node and edge connectivity
+        Compute node and edge connectivity
 
     anc: bool. Default False.
-         Compute avg node connectivity
+        Compute avg node connectivity
 
     ecc: bool. Default False.
-         Compute shortest paths, eccentricity and topological metric
+        Compute shortest paths, eccentricity and topological metric
 
     bc: bool. Default False.
         Compute node betweeness centrality
@@ -379,12 +351,11 @@ def osmnx_coefficient_computation(gdf, net_type, basic_stats, extended_stats, co
 
     Returns
     -------
-
-    gdf: Input GeoDataFrame with updated columns containing the selected metrics
+    gdf: GeoDataFrame
+        Input GeoDataFrame with updated columns containing the selected metrics
 
     Examples
     --------
-
     >>> hexagons = urbanpy.geom.gen_hexagons(8, lima)
     >>> urbanpy.geom.osmnx_coefficient_computation(hexagons.head(), 'walk', ['circuity_avg'], [])
     On record 1:  There are no nodes within the requested geometry
@@ -395,9 +366,7 @@ def osmnx_coefficient_computation(gdf, net_type, basic_stats, extended_stats, co
 	888e62d333fffff	| POLYGON ((-77.09253 -11.83762, -77.09685 -11.8... | 1.025313
 	888e666c2dfffff	| POLYGON ((-76.93109 -11.79031, -76.93540 -11.7... | NaN
 	888e62d4b3fffff	| POLYGON ((-76.87935 -12.03688, -76.88366 -12.0... | 1.044654
-
     '''
-
     #May be a lengthy download depending on the amount of features
     for index, row in tqdm(gdf.iterrows()):
         try:
