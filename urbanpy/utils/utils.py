@@ -17,7 +17,8 @@ __all__ = [
     'geo_boundary_to_polygon',
     'create_duration_labels',
     'to_overpass_query',
-    'overpass_to_gdf'
+    'overpass_to_gdf',
+    'isnotebook'
 ]
 
 def swap_xy(geom):
@@ -365,3 +366,17 @@ def overpass_to_gdf(type_of_data: str, data: dict, mask: Optional[Union[GeoDataF
                     break
 
         return gdf, None
+
+
+def isnotebook():
+    # From https://stackoverflow.com/a/39662359/13523354
+    try:
+        shell = get_ipython().__class__.__name__
+        if shell == 'ZMQInteractiveShell':
+            return True   # Jupyter notebook or qtconsole
+        elif shell == 'TerminalInteractiveShell':
+            return False  # Terminal running IPython
+        else:
+            return False  # Other type (?)
+    except NameError:
+        return False      # Probably standard Python interpreter
