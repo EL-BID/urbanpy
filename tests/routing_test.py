@@ -38,27 +38,27 @@ class RoutingTest(unittest.TestCase):
         dur, dist = up.routing.compute_osrm_dist_matrix(gdf, gdf_1)
 
         self.assertIsNone(np.testing.assert_allclose(
-            dur, np.array([[   0. , 1973. , 3572.6],
-                           [1973. ,    0. , 1768.3],
-                           [3572.6, 1768.3,    0. ]])))
+            dur, np.array([[   0. , 1977.5, 3576.3],
+                           [1977.5,    0. , 1761.7],
+                           [3576.3, 1761.7,    0. ]])))
 
         self.assertIsNone(np.testing.assert_allclose(
-            dist, np.array([[   0. , 1422.2, 2574.1],
-                            [1422.2,    0. , 1273.2],
-                            [2574.1, 1273.2,    0. ]])))
+            dist, np.array([[   0. , 1425.2, 2576.5],
+                            [1425.2,    0. , 1268.6],
+                            [2576.5, 1268.6,    0. ]])))
 
         #Testing with missing values
         dur, dist = up.routing.compute_osrm_dist_matrix(gdf, gdf_2)
 
         self.assertIsNone(np.testing.assert_allclose(
-            dur, np.array([[np.nan, 26015.7, 26015.7],
-                           [np.nan, 24374.6, 24374.6],
-                           [np.nan, 23909.2, 23909.2]]), equal_nan=True))
+            dur, np.array([[np.nan, 26017.3, 26017.3],
+                           [np.nan, 24372.5, 24372.5],
+                           [np.nan, 23895.9, 23895.9]]), equal_nan=True))
 
         self.assertIsNone(np.testing.assert_allclose(
-            dist, np.array([[np.nan, 18802.,  18802. ],
-                            [np.nan, 17611.3, 17611.3],
-                            [np.nan, 17275.9, 17275.9]]), equal_nan=True))
+            dist, np.array([[np.nan, 18803.7, 18803.7],
+                            [np.nan, 17619.8, 17619.8],
+                            [np.nan, 17274.7, 17274.7]]), equal_nan=True))
 
         #Close OSRM routing Server
         up.routing.stop_osrm_server('peru', 'south-america', 'foot')

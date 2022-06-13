@@ -9,9 +9,11 @@ import numpy as np
 import networkx as nx
 import osmnx as ox
 import geopandas as gpd
+from urbanpy.utils import isnotebook
 from tqdm.auto import tqdm
 from shapely.geometry import Point
 from typing import Union, Tuple
+
 
 __all__ = [
     'start_osrm_server',
@@ -361,7 +363,7 @@ def ors_api(locations, origin, destination, profile, metrics, api_key):
 
 def compute_osrm_dist_matrix(origins, destinations):
     '''
-    Compute distance and travel time origin-destination matrices
+    Compute distance and travel time origin-destination matrices kahsgfhjasdgfkasjdhjhsdg
 
     Parameters
     ----------
@@ -401,8 +403,8 @@ def compute_osrm_dist_matrix(origins, destinations):
 
     '''
 
-    dist_matrix = np.zeros_like([], shape=(origins.shape[0], destinations.shape[0]))
-    dur_matrix = np.zeros_like([], shape=(origins.shape[0], destinations.shape[0]))
+    dist_matrix = np.zeros(shape=(origins.shape[0], destinations.shape[0]))
+    dur_matrix = np.zeros(shape=(origins.shape[0], destinations.shape[0]))
 
     if type(origins) == gpd.GeoSeries:
         origins = origins.to_frame()
@@ -410,11 +412,28 @@ def compute_osrm_dist_matrix(origins, destinations):
     if type(destinations) == gpd.GeoSeries:
         destinations = destinations.to_frame()
 
-    for ix, row in tqdm(origins.iterrows(), total=origins.shape[0]):
-        for i, r in tqdm(destinations.iterrows(), total=destinations.shape[0]):
-            dist, dur = osrm_route(row.geometry, r.geometry)
-            dist_matrix[ix, i] = dist
-            dur_matrix[ix, i] = dur
+    if isnotebook():
+        # Initialize progress bar outside for to avoid instanciating several objects
+        pb_orig = tqdm(origins.iterrows(), total=origins.shape[0], desc='Origins', leave=True)
+        pb_dest = tqdm(destinations, desc='Destinations', leave=True)
+
+        for i, orig in pb_orig:
+            for j, dest in destinations.iterrows():
+                dist, dur = osrm_route(orig.geometry, dest.geometry)
+                dist_matrix[i, j] = dist
+                dur_matrix[i, j] = dur
+                pb_dest.update() # Update step
+            pb_dest.refresh() # Force display
+
+            # Reset 2nd progress bar if it is not the last iteration of outer loop
+            if i != origins.shape[0]-1: pb_dest.reset(total=destinations.shape[0])
+        pb_dest.close()
+    else:
+        for i, orig in tqdm(origins.iterrows(), total=origins.shape[0], desc='Origins'):
+            for j, dest in tqdm(destinations.iterrows(), total=destinations.shape[0], desc='Destinations', leave=False):
+                dist, dur = osrm_route(orig.geometry, dest.geometry)
+                dist_matrix[i, j] = dist
+                dur_matrix[i, j] = dur
 
     return dist_matrix, dur_matrix
 
