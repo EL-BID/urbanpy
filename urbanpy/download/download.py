@@ -45,7 +45,6 @@ def nominatim_osm(query:str, expected_position=0) -> GeoDataFrame:
     >>> lima.head()
     geometry	 | place_id	 | osm_type	| osm_id     | display_name	| place_rank  |  category | type	       | importance	| icon
     MULTIPOLYGON | 235480647 | relation	| 1944670.0  | Lima, Peru	| 12	      |  boundary |	administrative | 0.703484	| https://nominatim.openstreetmap.org/images/map...
-
     """
     osm_url = 'https://nominatim.openstreetmap.org/search.php'
     osm_parameters = {
@@ -56,7 +55,7 @@ def nominatim_osm(query:str, expected_position=0) -> GeoDataFrame:
 
     response = requests.get(osm_url, params=osm_parameters)
     all_results = response.json()
-    gdf = gpd.GeoDataFrame.from_features(all_results['features'])
+    gdf = gpd.GeoDataFrame.from_features(all_results['features'], crs='EPSG:4326')
     city = gdf.iloc[expected_position:expected_position+1, :]
 
     return city
@@ -97,7 +96,6 @@ def overpass_pois(bounds, facilities=None, custom_query=None):
     node |	367830065 |	-0.954012 |	-80.741554 | {'amenity': 'hospital', 'name': 'Clínica del S... | POINT (-80.74155 -0.95401)	| hospital
     node |	367830072 |	-0.953488 |	-80.740739 | {'amenity': 'hospital', 'name': 'Clínica Cente... | POINT (-80.74074 -0.95349)	| hospital
     node |	3206491590|	-1.040708 |	-80.665107 | {'amenity': 'hospital', 'name': 'Clínica Monte... | POINT (-80.66511 -1.04071)	| hospital
-
     '''
     minx, miny, maxx, maxy = bounds
 
@@ -126,7 +124,7 @@ def overpass_pois(bounds, facilities=None, custom_query=None):
         data = response.json()
         df = pd.DataFrame.from_dict(data['elements'])
         df_geom = gpd.points_from_xy(df['lon'], df['lat'])
-        gdf = gpd.GeoDataFrame(df, geometry=df_geom)
+        gdf = gpd.GeoDataFrame(df, geometry=df_geom, crs='EPSG:4326')
 
         gdf['poi_type'] = gdf['tags'].apply(lambda tag: tag['amenity'] if 'amenity' in tag.keys() else np.NaN)
 
@@ -224,7 +222,6 @@ def osmnx_graph(download_type:str, network_type='drive', query_str=None,
     >>> G = urbanpy.download.osmnx_graph('polygon', geom=lima.loc[0,'geometry'])
     >>> G
     <networkx.classes.multidigraph.MultiDiGraph at 0x1a2ba08150>
-    
     '''
     if (download_type == 'polygon') and (geom is not None) and isinstance(geom, Polygon):
         G = ox.graph_from_polygon(geom, network_type=network_type)
@@ -340,7 +337,7 @@ def get_hdx_dataset(resources_df: DataFrame, ids: Union[int, list]) -> DataFrame
     Returns
     -------
     data: pd.DataFrame
-          The corresponding dataset in DataFrame format
+        The corresponding dataset in DataFrame format
 
     Examples
     --------
@@ -354,7 +351,6 @@ def get_hdx_dataset(resources_df: DataFrame, ids: Union[int, list]) -> DataFrame
     -18.335417 | -70.394028	| 11.318147	      | 12.099885
     -18.335139 | -70.394306	| 11.318147	      | 12.099885
     '''
-
     urls = resources_df.loc[ids, 'url']
 
     if isinstance(ids, list):
