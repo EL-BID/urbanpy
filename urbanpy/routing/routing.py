@@ -702,7 +702,7 @@ def isochrone_from_graph(graph, locations, time_range, profile):
     -------
 
     isochrones: GeoDataFrame
-                GeoDataFrame containing the isochrones for the set of locations and time_ranges.
+        GeoDataFrame containing the isochrones for the set of locations and time_ranges.
 
     Examples
     --------
@@ -711,8 +711,6 @@ def isochrone_from_graph(graph, locations, time_range, profile):
     >>> import osmnx as ox
     >>> G = ox.graph_from_place('Berkeley, CA, USA', network_type='walking')
     >>> up.routing.isochrone_from_graph(G, [[],[]], [5, 10], 'walking')
-
-
     '''
 
     profiles = {
@@ -726,7 +724,7 @@ def isochrone_from_graph(graph, locations, time_range, profile):
     else:
         travel_speed = profiles[profile]
 
-    center_nodes = [ox.get_nearest_node(graph, (y, x)) for x, y in locations]
+    center_nodes = [ox.nearest_nodes(graph, x, y) for x, y in locations]
     G = ox.project_graph(graph)
 
     meters_per_minute = travel_speed * 1000 / 60 #km per hour to m per minute
@@ -738,11 +736,11 @@ def isochrone_from_graph(graph, locations, time_range, profile):
     for ix, center_node in enumerate(center_nodes):
         for trip_time in sorted(time_range, reverse=True):
             subgraph = nx.ego_graph(G, center_node, radius=trip_time, distance='time')
-            node_points = [Point((data['x'], data['y'])) for node, data in subgraph.nodes(data=True)]
+            node_points = [Point((data['lon'], data['lat'])) for node, data in subgraph.nodes(data=True)]
             bounding_poly = gpd.GeoSeries(node_points).unary_union.convex_hull
             data.append([ix, trip_time, bounding_poly])
 
     isochrones = gpd.GeoDataFrame(data, columns=['group_index', 'contour', 'geometry'])
-    isochrones.crs = 'EPSG:32718'
+    isochrones.crs = 'EPSG:4326'
 
     return isochrones
