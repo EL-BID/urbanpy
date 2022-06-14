@@ -78,7 +78,7 @@ Since `boundaries` is a GeoDataFrame it can be easily plotted with the method `.
 hexs, hexs_centroids = up.geom.gen_hexagons(resolution=9, city=boundaries)
 ```
 
-Also check our [example notebooks](/notebooks), and if you have examples or visualizations of your own, we encourage you to share contribute.
+Also check our [example notebooks](https://nbviewer.ipython.org/github/EL-BID/urbanpy/tree/master/notebooks/), and if you have examples or visualizations of your own, we encourage you to share contribute.
 
 ### For developers
 
