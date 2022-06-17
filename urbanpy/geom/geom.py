@@ -2,7 +2,6 @@ import pandas as pd
 import geopandas as gpd
 import osmnx as ox
 from h3 import h3
-from tqdm import tqdm
 from rich.progress import track
 from urbanpy.utils import geo_boundary_to_polygon
 from typing import Sequence, Union
