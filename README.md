@@ -113,3 +113,27 @@ UrbanPy's original authors are Claudio Ortega ([socials](https://www.linkedin.co
 uphold this code.**
 
 *Current support is tested on Linux Ubuntu 18.04 & Mac OS Catalina, coming soon we will test and support Windows 10.
+
+## Citation
+
+If you use this library or find the documentation useful for your research, please consider citing:
+
+```
+@InProceedings{urbanpy,
+    author="Regal, Andres and Ortega, Claudio and Vazquez Brust, Antonio and Rodriguez, Michelle and Zambrano-Barragan, Patricio",
+    title="UrbanPy: A Library to Download, Process and Visualize High Resolution Urban Data to Support Transportation and Urban Planning Decisions",
+    booktitle="Production and Operations Management",
+    year="2022",
+    publisher="Springer International Publishing",
+    address="Cham",
+    pages="463--473",
+    isbn="978-3-031-06862-1"
+    url="https://doi.org/10.1007/978-3-031-06862-1_34"
+}
+```
+
+## Contributors
+
+<a href="https://github.com/EL-BID/urbanpy/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=EL-BID/urbanpy" />
+</a>
