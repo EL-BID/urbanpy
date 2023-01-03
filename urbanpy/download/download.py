@@ -1,19 +1,28 @@
-import requests
+import requests 
 import geopandas as gpd
 import pandas as pd
 import numpy as np
 import osmnx as ox
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, MultiPolygon
+from hdx.api.configuration import Configuration
+from hdx.data.dataset import Dataset
+from typing import Optional, Union, Tuple
+from pandas import DataFrame
+from geopandas import GeoDataFrame, GeoSeries
+from urbanpy.utils import to_overpass_query, overpass_to_gdf
 
 __all__ = [
     'nominatim_osm',
-    'hdx_dataset',
-    'hdx_fb_population',
     'overpass_pois',
-    'osmnx_graph'
+    'overpass',
+    'osmnx_graph',
+    'search_hdx_dataset',
+    'get_hdx_dataset'
 ]
 
-def nominatim_osm(query, expected_position=0):
+hdx_config = Configuration.create(hdx_site='prod', user_agent='urbanpy', hdx_read_only=True)
+
+def nominatim_osm(query:str, expected_position=0) -> GeoDataFrame:
     """
     Download OpenStreetMaps data for a specific city.
 
@@ -36,7 +45,6 @@ def nominatim_osm(query, expected_position=0):
     >>> lima.head()
     geometry	 | place_id	 | osm_type	| osm_id     | display_name	| place_rank  |  category | type	       | importance	| icon
     MULTIPOLYGON | 235480647 | relation	| 1944670.0  | Lima, Peru	| 12	      |  boundary |	administrative | 0.703484	| https://nominatim.openstreetmap.org/images/map...
-
     """
     osm_url = 'https://nominatim.openstreetmap.org/search.php'
     osm_parameters = {
@@ -47,139 +55,11 @@ def nominatim_osm(query, expected_position=0):
 
     response = requests.get(osm_url, params=osm_parameters)
     all_results = response.json()
-    gdf = gpd.GeoDataFrame.from_features(all_results['features'])
+    gdf = gpd.GeoDataFrame.from_features(all_results['features'], crs='EPSG:4326')
     city = gdf.iloc[expected_position:expected_position+1, :]
 
     return city
 
-def hdx_dataset(resource):
-    """
-    Download a dataset from HDX. The allowed formats are CSV (.csv) and zipped
-    CSV (.csv.zip).
-
-    Parameters
-    ----------
-    resource: str
-        Specific address to the HDX dataset resource. Since every dataset is
-        referenced to a diferent resource id, only the base url can be provided
-        by this library.
-
-    Returns
-    -------
-    dataset: DataFrame
-        Contains the requested HDX dataset resource.
-
-    Examples
-    --------
-    >>> hdx_data = hdx_dataset('4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/317f1c39-8417-4bde-a076-99bd37feefce/download/population_per_2018-10-01.csv.zip')
-    >>> hdx_data.head()
-    latitude   | longitude  | population_2015 |	population_2020
-    -18.339306 | -70.382361 | 11.318147	      | 12.099885
-    -18.335694 | -70.393750 | 11.318147	      | 12.099885
-    -18.335694 | -70.387361	| 11.318147	      | 12.099885
-    -18.335417 | -70.394028	| 11.318147	      | 12.099885
-    -18.335139 | -70.394306	| 11.318147	      | 12.099885
-
-    """
-    hdx_url = f'https://data.humdata.org/dataset/{resource}'
-    dataset = pd.read_csv(hdx_url)
-    return dataset
-
-def hdx_fb_population(country, map_type):
-    '''
-    Download population density maps from Facebook HDX.
-
-    Parameters
-    ----------
-    country: str. One of {'argentina', 'bolivia', 'brazil', 'chile', 'colombia', 'ecuador', 'paraguay', 'peru', 'uruguay'}
-        Input country to download data from.
-    map_type: str. One of {'full', 'children', 'youth', 'elderly'}
-        Input population map to download.
-
-    Returns
-    -------
-    population: DataFrame
-        DataFrame with lat, lon, and population columns. Coordinates are in
-        EPSG 4326.
-
-    Examples
-    --------
-    >>> urbanpy.download.hdx_fb_population('peru', 'full')
-    latitude   | longitude  | population_2015 |	population_2020
-    -18.339306 | -70.382361 | 11.318147	      | 12.099885
-    -18.335694 | -70.393750 | 11.318147	      | 12.099885
-    -18.335694 | -70.387361	| 11.318147	      | 12.099885
-    -18.335417 | -70.394028	| 11.318147	      | 12.099885
-    -18.335139 | -70.394306	| 11.318147	      | 12.099885
-
-    '''
-    dataset_dict = {
-        'argentina': {
-            'full': 'https://data.humdata.org/dataset/6cf49080-1226-4eda-8700-a0093cbdfe4d/resource/5737d87f-e17f-4c82-b1bd-d589ed631318/download/population_arg_2018-10-01.csv.zip',
-            'children': 'https://data.humdata.org/dataset/6cf49080-1226-4eda-8700-a0093cbdfe4d/resource/1795ad97-e06a-4ca4-83aa-32ab612f55ba/download/arg_children_under_five_2019-06-01_csv.zip',
-            'youth': 'https://data.humdata.org/dataset/6cf49080-1226-4eda-8700-a0093cbdfe4d/resource/dff11b02-a356-4a4f-948c-5a7722ad7365/download/arg_youth_15_24_2019-06-01_csv.zip',
-            'elderly':'https://data.humdata.org/dataset/6cf49080-1226-4eda-8700-a0093cbdfe4d/resource/8f1d9473-90f0-441f-b464-c76960e9e130/download/arg_elderly_60_plus_2019-06-01_csv.zip'
-        },
-        'bolivia': {
-            'full': 'https://data.humdata.org/dataset/64f916a6-2f35-4399-8971-25e18fdb09bd/resource/d5fc8980-f3f2-4523-ac4d-f188201518d5/download/population_bol_2018-10-01.csv.zip',
-            'children': 'https://data.humdata.org/dataset/64f916a6-2f35-4399-8971-25e18fdb09bd/resource/4fe96e38-3895-4f5e-b3f9-df6317a9752f/download/bol_children_under_five_2019-06-01_csv.zip',
-            'youth': 'https://data.humdata.org/dataset/64f916a6-2f35-4399-8971-25e18fdb09bd/resource/7c5fba5b-cdb6-49f2-8ae5-5337734444d2/download/bol_youth_15_24_2019-06-01_csv.zip',
-            'elderly': 'https://data.humdata.org/dataset/64f916a6-2f35-4399-8971-25e18fdb09bd/resource/8acccec8-a1a4-42d7-b301-fb734324960e/download/bol_elderly_60_plus_2019-06-01_csv.zip'
-        },
-        'brazil': {
-            'full': [
-                'https://data.humdata.org/dataset/c17003d1-47f4-4ec5-8229-2f77aeb114be/resource/957218ee-c740-44c0-88e5-7faeef813a0c/download/population_bra_northeast_2018-10-01.csv.zip',
-                'https://data.humdata.org/dataset/c17003d1-47f4-4ec5-8229-2f77aeb114be/resource/1e1f271b-1055-4365-b391-f6fdf3093fe2/download/population_bra_northwest_2018-10-01.csv.zip',
-                'https://data.humdata.org/dataset/c17003d1-47f4-4ec5-8229-2f77aeb114be/resource/eb17516f-3c84-4626-95e4-df1f342f3d82/download/population_bra_southeast_2018-10-01.csv.zip',
-                'https://data.humdata.org/dataset/c17003d1-47f4-4ec5-8229-2f77aeb114be/resource/5cb55d1a-9f11-4004-82f3-0c27e878495a/download/population_bra_southwest_2018-10-01.csv.zip'
-            ],
-            'children': 'https://data.humdata.org/dataset/c17003d1-47f4-4ec5-8229-2f77aeb114be/resource/54964df0-8d6a-4f65-ac10-bcf11499a9fe/download/bra_children_under_five_2019-06-01_csv.zip',
-            'youth': 'https://data.humdata.org/dataset/c17003d1-47f4-4ec5-8229-2f77aeb114be/resource/0e4af4ff-e4e5-4686-a17c-c8b326d98d76/download/bra_youth_15_24_2019-06-01_csv.zip',
-            'elderly':'https://data.humdata.org/dataset/c17003d1-47f4-4ec5-8229-2f77aeb114be/resource/6d6f1ea3-c8d3-4dc0-b0ea-af9c92b14b48/download/bra_elderly_60_plus_2019-06-01_csv.zip'
-        },
-        'chile': {
-            'full': 'https://data.humdata.org/dataset/dd47e052-02cc-4a3f-972a-421d600b3d85/resource/bb560451-9c50-4d57-8ff3-872fa260c102/download/population_chl_2018-10-01.csv.zip',
-            'children': 'https://data.humdata.org/dataset/dd47e052-02cc-4a3f-972a-421d600b3d85/resource/33b43b9a-9f47-4f25-8bdc-568e8850fde8/download/chl_children_under_five_2019-06-01_csv.zip',
-            'youth': 'https://data.humdata.org/dataset/dd47e052-02cc-4a3f-972a-421d600b3d85/resource/2c4083b5-e682-4ae5-8df8-b2934c4eef9c/download/chl_youth_15_24_2019-06-01_csv.zip',
-            'elderly': 'https://data.humdata.org/dataset/dd47e052-02cc-4a3f-972a-421d600b3d85/resource/056a5832-1490-41e4-8ee1-7c90ff1389ff/download/chl_elderly_60_plus_2019-06-01_csv.zip'
-        },
-        'colombia': {
-            'full': 'https://data.humdata.org/dataset/2f865527-b7bf-466c-b620-c12b8d07a053/resource/357c91e0-c5fb-4ae2-ad9d-00805e5a075d/download/population_col_2018-10-01.csv.zip',
-            'children': 'https://data.humdata.org/dataset/2f865527-b7bf-466c-b620-c12b8d07a053/resource/e8422e0d-0c1a-4aff-b790-76fffa8e09a6/download/col_children_under_five_2019-06-01_csv.zip',
-            'youth': 'https://data.humdata.org/dataset/2f865527-b7bf-466c-b620-c12b8d07a053/resource/f458dcfc-3441-4bec-b45f-d91081801501/download/col_youth_15_24_2019-06-01_csv.zip',
-            'elderly': 'https://data.humdata.org/dataset/2f865527-b7bf-466c-b620-c12b8d07a053/resource/3e871e9d-d9fa-4d52-af47-43cae54c7a6d/download/col_elderly_60_plus_2019-06-01_csv.zip'
-        },
-        'ecuador': {
-            'full': 'https://data.humdata.org/dataset/58c3ac3f-febd-4222-8969-59c0fe0e7a0d/resource/c05a3c81-a78c-4e6c-ac05-de1316d4ba12/download/population_ecu_2018-10-01.csv.zip',
-            'children': 'https://data.humdata.org/dataset/58c3ac3f-febd-4222-8969-59c0fe0e7a0d/resource/80e46cf3-1906-41a9-a779-8f501cab48a5/download/ecu_children_under_five_2019-06-01_csv.zip',
-            'youth': 'https://data.humdata.org/dataset/58c3ac3f-febd-4222-8969-59c0fe0e7a0d/resource/57362a78-e2fa-4f71-8876-1a6d67e27fe5/download/ecu_youth_15_24_2019-06-01_csv.zip',
-            'elderly': 'https://data.humdata.org/dataset/58c3ac3f-febd-4222-8969-59c0fe0e7a0d/resource/904d8988-d18d-41a5-a7f7-22668204cefe/download/ecu_elderly_60_plus_2019-06-01_csv.zip'
-        },
-        'paraguay': {
-            'full': 'https://data.humdata.org/dataset/318c589b-9091-4aa4-b384-351208be71e9/resource/6c21c73c-05ba-4818-9574-cb56fa04b210/download/population_pry_2018-10-01.csv.zip',
-            'children': 'https://data.humdata.org/dataset/318c589b-9091-4aa4-b384-351208be71e9/resource/7ff05dd3-61f0-40a5-90ee-7262b4190ac2/download/pry_children_under_five_2019-06-01_csv.zip',
-            'youth': 'https://data.humdata.org/dataset/318c589b-9091-4aa4-b384-351208be71e9/resource/226e0efe-73b1-4d4b-96f1-06cb3ffd165a/download/pry_youth_15_24_2019-06-01_csv.zip',
-            'elderly': 'https://data.humdata.org/dataset/318c589b-9091-4aa4-b384-351208be71e9/resource/8cb53c32-b8f9-4f6f-9d22-50478040fafc/download/pry_elderly_60_plus_2019-06-01_csv.zip'
-        },
-        'peru': {
-            'full': 'https://data.humdata.org/dataset/4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/317f1c39-8417-4bde-a076-99bd37feefce/download/population_per_2018-10-01.csv.zip',
-            'children': 'https://data.humdata.org/dataset/4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/ed2712e7-4668-45a2-b76f-eb819df9e0c1/download/per_children_under_five_2019-06-01_csv.zip',
-            'youth': 'https://data.humdata.org/dataset/4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/86daf899-8e63-4262-be92-15934e59cabf/download/per_youth_15_24_2019-06-01_csv.zip',
-            'elderly': 'https://data.humdata.org/dataset/4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/8cc100cf-68a4-4fda-a8e6-a63b99ad5b00/download/per_elderly_60_plus_2019-06-01_csv.zip'
-        },
-        'uruguay': {
-            'full': 'https://data.humdata.org/dataset/61e8075b-5c42-495a-98eb-01b3e819dcb5/resource/69900b71-8d0b-49d5-a235-f9b5cc5b820a/download/population_ury_2018-10-01.csv.zip',
-            'children': 'https://data.humdata.org/dataset/61e8075b-5c42-495a-98eb-01b3e819dcb5/resource/90d47ee3-5e5f-4aa5-a999-69b1f3e82061/download/ury_children_under_five_2019-06-01_csv.zip',
-            'youth': 'https://data.humdata.org/dataset/61e8075b-5c42-495a-98eb-01b3e819dcb5/resource/8ed64dfe-449c-4026-9b48-0416f67c3f38/download/ury_youth_15_24_2019-06-01_csv.zip',
-            'elderly': 'https://data.humdata.org/dataset/61e8075b-5c42-495a-98eb-01b3e819dcb5/resource/b9cfa194-b097-4611-a96e-254014990d8a/download/ury_elderly_60_plus_2019-06-01_csv.zip'
-        }
-    }
-
-    #Brazil is split into 4 maps
-    if isinstance(type(dataset_dict[country][map_type]), list):
-        return pd.concat([pd.read_csv(file) for file in dataset_dict[country][map_type]])
-    else:
-        return pd.read_csv(dataset_dict[country][map_type])
 
 def overpass_pois(bounds, facilities=None, custom_query=None):
     '''
@@ -216,13 +96,12 @@ def overpass_pois(bounds, facilities=None, custom_query=None):
     node |	367830065 |	-0.954012 |	-80.741554 | {'amenity': 'hospital', 'name': 'Clínica del S... | POINT (-80.74155 -0.95401)	| hospital
     node |	367830072 |	-0.953488 |	-80.740739 | {'amenity': 'hospital', 'name': 'Clínica Cente... | POINT (-80.74074 -0.95349)	| hospital
     node |	3206491590|	-1.040708 |	-80.665107 | {'amenity': 'hospital', 'name': 'Clínica Monte... | POINT (-80.66511 -1.04071)	| hospital
-
     '''
     minx, miny, maxx, maxy = bounds
 
     bbox_string = f'{minx},{miny},{maxx},{maxy}'
 
-    overpass_url = "http://overpass-api.de/api/interpreter"
+    overpass_url = "https://overpass-api.de/api/interpreter"
 
     facilities_opt = {
         'food': 'node["amenity"="marketplace"];\nnode["shop"~"supermarket|kiosk|mall|convenience|butcher|greengrocer"];',
@@ -245,7 +124,7 @@ def overpass_pois(bounds, facilities=None, custom_query=None):
         data = response.json()
         df = pd.DataFrame.from_dict(data['elements'])
         df_geom = gpd.points_from_xy(df['lon'], df['lat'])
-        gdf = gpd.GeoDataFrame(df, geometry=df_geom)
+        gdf = gpd.GeoDataFrame(df, geometry=df_geom, crs='EPSG:4326')
 
         gdf['poi_type'] = gdf['tags'].apply(lambda tag: tag['amenity'] if 'amenity' in tag.keys() else np.NaN)
 
@@ -260,7 +139,58 @@ def overpass_pois(bounds, facilities=None, custom_query=None):
         response = requests.get(overpass_url, params={'data': custom_query, 'bbox': bbox_string})
         return response
 
-def osmnx_graph(download_type, network_type='drive', query_str=None,
+
+def overpass(type_of_data: str, query: dict, 
+             mask: Union[GeoDataFrame, GeoSeries, Polygon, MultiPolygon]) -> Tuple[GeoDataFrame, Optional[DataFrame]]:
+    '''
+    Download geographic data using Overpass API.
+
+    Parameters
+    ----------
+    type_of_data: str. One of {'node', 'way', 'relation', 'rel'}
+        OSM Data structure to be queried from Overpass API.
+    query: dict
+        Dict contaning OSM tag filters. Dict keys can take OSM tags 
+        and Dict values can be list of strings, str or None. 
+        Check keys [OSM Map Features](https://wiki.openstreetmap.org/wiki/Map_features).
+        Example: {
+            'key0': ['v0a', 'v0b','v0c'], 
+            'key1': 'v1', 
+            'key2': None
+        }
+    mask: 
+    
+    Returns
+    -------
+    gdf: GeoDataFrame
+        POIs from the selected type of facility.
+    df: DataFrame
+        Relations metadata such as ID and tags. Returns None if 'type_of_data' other than 'relation'. 
+    '''
+    minx, miny, maxx, maxy = mask.total_bounds
+    bbox_string = f'{minx},{miny},{maxx},{maxy}'
+    
+    # Request data
+    overpass_url = "https://overpass-api.de/api/interpreter"
+    params = {
+        'data': to_overpass_query(type_of_data, query), # Parse query dict to build Overpass QL query
+        'bbox': bbox_string
+    }
+    response = requests.get(overpass_url, params=params)
+    try:
+        data = response.json()
+    except Exception as e:
+        print(e)
+        print(response.status_code)
+        print(response.reason)
+        return response
+    
+    ov_keys = list(set(query.keys())) # get unique keys used in query (e.g. "amenity", "shop", etc)
+
+    return overpass_to_gdf(type_of_data, data, mask, ov_keys)
+
+
+def osmnx_graph(download_type:str, network_type='drive', query_str=None,
                 geom=None, distance=None, **kwargs):
     '''
     Download a graph from OSM using osmnx.
@@ -292,18 +222,16 @@ def osmnx_graph(download_type, network_type='drive', query_str=None,
     >>> G = urbanpy.download.osmnx_graph('polygon', geom=lima.loc[0,'geometry'])
     >>> G
     <networkx.classes.multidigraph.MultiDiGraph at 0x1a2ba08150>
-    
     '''
     if (download_type == 'polygon') and (geom is not None) and isinstance(geom, Polygon):
-        G = ox.graph_from_polygon(geom)
+        G = ox.graph_from_polygon(geom, network_type=network_type)
         return G
-
     elif (download_type == 'point') and (geom is not None) and (distance is not None):
-        G = ox.graph_from_point(geom, dist=distance)
+        G = ox.graph_from_point(geom, dist=distance, network_type=network_type)
         return G
 
     elif download_type == 'place' and query_str is not None:
-        G = ox.graph_from_place(query_str)
+        G = ox.graph_from_place(query_str, network_type=network_type)
         return G
 
     elif download_type == 'polygon' and geom is None:
@@ -316,5 +244,116 @@ def osmnx_graph(download_type, network_type='drive', query_str=None,
         if distance is None and download_type == 'point':
             print('Please provide a distance buffer for the point download')
 
-        if geom is None and distance is not None:
-            print('Please provide a Point geometry.')
+        if geom is None and distance is not None: print('Please provide a Point geometry.')
+
+
+def search_hdx_dataset(country:str, repository="high-resolution-population-density-maps-demographic-estimates"):
+    '''
+    Dataset search within HDX repositories. Defaults to population density maps.
+
+    Parameters
+    ----------
+    country: str
+        Country to search datasets
+
+    resource: str
+        Resource type within the HDX database
+
+    Returns
+    -------
+    datasets: DataFrame
+        DataFrame of available datasets within HDX
+
+    Examples
+    --------
+    >>> resources_df = urbanpy.download.search_hdx_dataset('peru')
+    >>> resources_df
+       | created	| name	                                            | population	                            | size_mb |	url
+    id |			| 	                                                |                                           |         |
+    0  | 2019-06-11	| population_per_2018-10-01.csv.zip	                | Overall population density	            | 19.36	  | https://data.humdata.org/dataset/4e74db39-87f1...
+    2  | 2019-06-11	| PER_children_under_five_2019-06-01_csv.zip	    | Children (ages 0-5)	                    | 16.60	  | https://data.humdata.org/dataset/4e74db39-87f1...
+    4  | 2019-06-11	| PER_elderly_60_plus_2019-06-01_csv.zip	        | Elderly (ages 60+)	                    | 16.59	  | https://data.humdata.org/dataset/4e74db39-87f1...
+    6  | 2019-06-11	| PER_men_2019-06-01_csv.zip	                    | Men	                                    | 16.64	  | https://data.humdata.org/dataset/4e74db39-87f1...
+    8  | 2019-06-11	| PER_women_2019-06-01_csv.zip	                    | Women	                                    | 16.63	  | https://data.humdata.org/dataset/4e74db39-87f1...
+    10 | 2019-06-11	| PER_women_of_reproductive_age_15_49_2019-06-01... | Women of reproductive age (ages 15-49)    | 16.62	  | https://data.humdata.org/dataset/4e74db39-87f1...
+    12 | 2019-06-11	| PER_youth_15_24_2019-06-01_csv.zip	            | Youth (ages 15-24)	                    | 16.61	  | https://data.humdata.org/dataset/4e74db39-87f1...
+    '''
+    # Get dataset list
+    datasets = Dataset.search_in_hdx(f"title:{country.lower()}-{repository}")
+
+    resources_records = Dataset.get_all_resources(datasets)
+
+    resources_df = pd.DataFrame.from_records(resources_records)
+
+    if resources_df.shape[0] == 0:
+        print("No datasets found")
+
+    else:
+        resources_csv_df = resources_df.query("format == 'CSV'")    
+
+        def get_label(name):
+            population_types = {
+                'overall': 'Overall population density',
+                'women': 'Women',
+                '_men_': 'Men',
+                'children': 'Children (ages 0-5)',
+                'youth': 'Youth (ages 15-24) ',
+                'elderly': 'Elderly (ages 60+)',
+                'women_of_reproductive_age': 'Women of reproductive age (ages 15-49)'
+            }
+
+            for keys, labels in population_types.items():
+                if keys in name:
+                    if keys == 'women':
+                        if 'reproductive' in name: continue
+                    
+                    return labels
+                
+            return population_types['overall']
+            
+        resources_csv_df = resources_csv_df.assign(
+            created=pd.to_datetime(resources_csv_df['created']).dt.date,
+            size_mb=(resources_csv_df['size'] / 2**20).round(2),
+            population=resources_csv_df['name'].apply(get_label)
+        )
+
+        resources_csv_df.index.name = 'id'
+
+        return resources_csv_df[['created', 'name', 'population', 'size_mb', 'url']]
+
+
+def get_hdx_dataset(resources_df: DataFrame, ids: Union[int, list]) -> DataFrame:
+    '''
+    HDX dataset download.
+    
+    Parameters
+    ----------
+    resources_df: pd.DataFrame
+        Resources dataframe from returned by search_hdx_dataset
+
+    ids: int or list
+        IDs in the resources dataframe
+
+    Returns
+    -------
+    data: pd.DataFrame
+        The corresponding dataset in DataFrame format
+
+    Examples
+    --------
+    >>> resources_df = urbanpy.download.search_hdx_dataset('peru')
+    >>> population_df = urbanpy.download.get_hdx_dataset(resources_df, 0)
+    >>> population_df
+    latitude   | longitude  | population_2015 |	population_2020
+    -18.339306 | -70.382361 | 11.318147	      | 12.099885
+    -18.335694 | -70.393750 | 11.318147	      | 12.099885
+    -18.335694 | -70.387361	| 11.318147	      | 12.099885
+    -18.335417 | -70.394028	| 11.318147	      | 12.099885
+    -18.335139 | -70.394306	| 11.318147	      | 12.099885
+    '''
+    urls = resources_df.loc[ids, 'url']
+
+    if isinstance(ids, list):
+        return pd.concat([pd.read_csv(url) for url in urls])
+    else:
+        return pd.read_csv(urls)

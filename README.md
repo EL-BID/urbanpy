@@ -1,6 +1,8 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=EL-BID_urbanpy&metric=alert_status)](https://sonarcloud.io/dashboard?id=EL-BID_urbanpy)
-[![Analytics](https://gabeacon.irvinlim.com/UA-4677001-16/urbanpy/readme?useReferer)](https://github.com/EL-BID/urbanpy)
+[![Test and deploy](https://github.com/EL-BID/urbanpy/actions/workflows/main.yml/badge.svg)](https://github.com/EL-BID/urbanpy/actions/workflows/main.yml)
 [![Downloads](https://pepy.tech/badge/urbanpy)](https://pepy.tech/project/urbanpy)
+![analytics image (flat)](https://raw.githubusercontent.com/vitr/google-analytics-beacon/master/static/badge.svg)
+![analytics](https://www.google-analytics.com/collect?v=1&cid=555&t=pageview&ec=repo&ea=open&dp=/urbanpy/readme&dt=&tid=UA-4677001-16)
 # Welcome to UrbanPy :city_sunrise:
 
 **A library to download, process and visualize high resolution urban data in an easy and fast way.**
@@ -44,12 +46,16 @@ $ pip install urbanpy
 
 Then use `import urbanpy` in your python scripts to use the library.
 
-If you plan to use the [OSRM Server](http://project-osrm.org/) route or distance matrix calculation functionalities* you must have Docker installed in your system, refer to Docker [Installation](https://www.docker.com/products/docker-desktop).
+If you plan to use the [OSRM Server](http://project-osrm.org/) route or distance matrix calculation functionalities* you must have Docker installed in your system, refer to Docker [Installation](https://www.docker.com/products/docker-desktop). For Windows users, make sure to run the following command in powershell to avoid execution errors.
+
+```powershell
+    Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
+```
 
 
 ### Additional Dependecies Notes
 
-- It is important to note that for travel time computation, if needed, a method is implements the Open Source Routing Machine (OSRM). This method pulls, extracts and adds graph weights to the downloaded network and runs the routing server. Make sure to have docker installed for the library to work correctly.
+- It is important to note that for travel time computation, if needed, a method is implements the Open Source Routing Machine (OSRM). This method pulls, extracts and adds graph weights to the downloaded network and runs the routing server. Make sure to have docker installed for the library to work correctly. Also, verify in the docker settings that containers can use the necessary cpu cores and ram memory (it depends in the country size).
 
 - Urbanpy provides a simple approximation with nearest neighbor search using a BallTree and haversine distance, but the difference between real travel time and the approximation may vary from city to city.  
 
@@ -72,7 +78,7 @@ Since `boundaries` is a GeoDataFrame it can be easily plotted with the method `.
 hexs, hexs_centroids = up.geom.gen_hexagons(resolution=9, city=boundaries)
 ```
 
-Also check our [example notebooks](/notebooks), and if you have examples or visualizations of your own, we encourage you to share contribute.
+Also check our [example notebooks](https://nbviewer.ipython.org/github/EL-BID/urbanpy/tree/master/notebooks/), and if you have examples or visualizations of your own, we encourage you to share contribute.
 
 ### For developers
 
@@ -107,3 +113,27 @@ UrbanPy's original authors are Claudio Ortega ([socials](https://www.linkedin.co
 uphold this code.**
 
 *Current support is tested on Linux Ubuntu 18.04 & Mac OS Catalina, coming soon we will test and support Windows 10.
+
+## Citation
+
+If you use this library or find the documentation useful for your research, please consider citing:
+
+```
+@InProceedings{urbanpy,
+    author="Regal, Andres and Ortega, Claudio and Vazquez Brust, Antonio and Rodriguez, Michelle and Zambrano-Barragan, Patricio",
+    title="UrbanPy: A Library to Download, Process and Visualize High Resolution Urban Data to Support Transportation and Urban Planning Decisions",
+    booktitle="Production and Operations Management",
+    year="2022",
+    publisher="Springer International Publishing",
+    address="Cham",
+    pages="463--473",
+    isbn="978-3-031-06862-1"
+    url="https://doi.org/10.1007/978-3-031-06862-1_34"
+}
+```
+
+## Contributors
+
+<a href="https://github.com/EL-BID/urbanpy/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=EL-BID/urbanpy" />
+</a>

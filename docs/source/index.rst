@@ -153,3 +153,15 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+
+.. toctree::
+   :caption: Table of Contents
+   :maxdepth: 4
+
+   usage/installation
+   usage/quickstart
+   urbanpy
+   license
+   contributing
+   code_of_conduct
