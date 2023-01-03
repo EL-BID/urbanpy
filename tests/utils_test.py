@@ -3,7 +3,7 @@ import numpy as np
 from shapely.geometry import Point, Polygon, LineString
 
 import sys
-sys.path.append('..')
+sys.path.append('../urbanpy')
 import urbanpy as up
 
 class UtilTest(unittest.TestCase):

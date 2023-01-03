@@ -1,6 +1,8 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=EL-BID_urbanpy&metric=alert_status)](https://sonarcloud.io/dashboard?id=EL-BID_urbanpy)
-[![Analytics](https://gabeacon.irvinlim.com/UA-4677001-16/urbanpy/readme?useReferer)](https://github.com/EL-BID/urbanpy)
+[![Test and deploy](https://github.com/EL-BID/urbanpy/actions/workflows/main.yml/badge.svg)](https://github.com/EL-BID/urbanpy/actions/workflows/main.yml)
 [![Downloads](https://pepy.tech/badge/urbanpy)](https://pepy.tech/project/urbanpy)
+![analytics image (flat)](https://raw.githubusercontent.com/vitr/google-analytics-beacon/master/static/badge-flat.gif)
+![analytics](https://www.google-analytics.com/collect?v=1&cid=555&t=pageview&ec=repo&ea=open&dp=/urbanpy/readme&dt=&tid=UA-4677001-16)
 # Welcome to UrbanPy :city_sunrise:
 
 **A library to download, process and visualize high resolution urban data in an easy and fast way.**
@@ -44,12 +46,16 @@ $ pip install urbanpy
 
 Then use `import urbanpy` in your python scripts to use the library.
 
-If you plan to use the [OSRM Server](http://project-osrm.org/) route or distance matrix calculation functionalities* you must have Docker installed in your system, refer to Docker [Installation](https://www.docker.com/products/docker-desktop).
+If you plan to use the [OSRM Server](http://project-osrm.org/) route or distance matrix calculation functionalities* you must have Docker installed in your system, refer to Docker [Installation](https://www.docker.com/products/docker-desktop). For Windows users, make sure to run the following command in powershell to avoid execution errors.
+
+```powershell
+    Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
+```
 
 
 ### Additional Dependecies Notes
 
-- It is important to note that for travel time computation, if needed, a method is implements the Open Source Routing Machine (OSRM). This method pulls, extracts and adds graph weights to the downloaded network and runs the routing server. Make sure to have docker installed for the library to work correctly.
+- It is important to note that for travel time computation, if needed, a method is implements the Open Source Routing Machine (OSRM). This method pulls, extracts and adds graph weights to the downloaded network and runs the routing server. Make sure to have docker installed for the library to work correctly. Also, verify in the docker settings that containers can use the necessary cpu cores and ram memory (it depends in the country size).
 
 - Urbanpy provides a simple approximation with nearest neighbor search using a BallTree and haversine distance, but the difference between real travel time and the approximation may vary from city to city.  
 

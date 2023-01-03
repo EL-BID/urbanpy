@@ -11,6 +11,7 @@ Modules Description
 -  plotting: Visualization wrappers for plotly interactive choropleth
    maps
 -  routing: Distance matrix computations (may require your own API keys)
+-  accesibility: Spatial accesibility metrics
 -  utils: Data handling helpers
 
 Modules Reference
@@ -22,4 +23,5 @@ Modules Reference
    urbanpy.geom
    urbanpy.plotting
    urbanpy.routing
+   urbanpy.accessibility
    urbanpy.utils

@@ -48,80 +48,87 @@ def check_container_is_running(container_name):
 
     return container_running
 
-def start_osrm_server(country, continent):
+def start_osrm_server(country, continent, profile):
     '''
-    Download data for OSRM, process it and start local osrm server
+    Download data for OSRM, process it and start a local osrm server
 
     Parameters
     ----------
 
     country: str
              Which country to download data from. Expected in lower case & dashes replace spaces.
+             
     continent: str
              Which continent of the given country. Expected in lower case & dashes replace spaces.
+             
+    profile: str. One of {'foot', 'car', 'bicycle'}
+             Travel mode to use when routing and estimating travel time.
 
     Examples
     --------
 
-    >>> urbanpy.routing.start_osrm_server('peru', 'south-america')
+    >>> urbanpy.routing.start_osrm_server('peru', 'south-america', 'foot')
     Starting server ...
     Server was started succesfully.
 
     '''
 
+    container_name = CONTAINER_NAME + f"_{continent}_{country}_{profile}"
+
     # Download, process and run server command sequence
-    dwn_str = f'''
+    dwn_str_unix = f'''
     docker pull osrm/osrm-backend;
     mkdir -p ~/data/osrm/;
     cd ~/data/osrm/;
     wget https://download.geofabrik.de/{continent}/{country}-latest.osm.pbf;
-    docker run -t --name osrm_extract -v $(pwd):/data osrm/osrm-backend osrm-extract -p /opt/foot.lua /data/{country}-latest.osm.pbf;
+    docker run -t --name osrm_extract -v $(pwd):/data osrm/osrm-backend osrm-extract -p /opt/{profile}.lua /data/{country}-latest.osm.pbf;
     docker run -t --name osrm_partition -v $(pwd):/data osrm/osrm-backend osrm-partition /data/{country}-latest.osm.pbf;
     docker run -t --name osrm_customize -v $(pwd):/data osrm/osrm-backend osrm-customize /data/{country}-latest.osm.pbf;
     docker container rm osrm_extract osrm_partition osrm_customize;
-    docker run -t --name {CONTAINER_NAME}_{continent}_{country} -p 5000:5000 -v $(pwd):/data osrm/osrm-backend osrm-routed --algorithm mld /data/{country}-latest.osm.pbf;
+    docker run -t --name {CONTAINER_NAME}_{continent}_{country}_{profile} -p 5000:5000 -v $(pwd):/data osrm/osrm-backend osrm-routed --algorithm mld /data/{country}-latest.osm.pbf;
     '''
 
-    container_running = check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}")
+    container_running = check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}_{profile}")
 
     # Check platform
     if sys.platform in ['darwin', 'linux']:
-        # Check if container exists:
-        if subprocess.run(['docker', 'inspect', CONTAINER_NAME + f"_{continent}_{country}"]).returncode == 0:
-            if container_running:
-                print('Server is already running.')
-            else:
-                try:
-                    print('Starting server ...')
-                    subprocess.run(['docker', 'start', CONTAINER_NAME + f"_{continent}_{country}"], check=True)
-                    time.sleep(5) # Wait server to be prepared to receive requests
-                    print('Server was started succesfully')
-                except subprocess.CalledProcessError as error:
-                    print(f'Something went wrong. Please check if port 5000 is being used or check your docker installation.\nError: {error}')
+        container_check = ['docker', 'inspect', CONTAINER_NAME + f"_{continent}_{country}"]
+        container_start = ['docker', 'start', CONTAINER_NAME + f"_{continent}_{country}"]
+        download_command = dwn_str_unix
+    else:
+        container_check = ['powershell.exe', 'docker', 'inspect', CONTAINER_NAME + f"_{continent}_{country}"]
+        container_start = ['powershell.exe', 'docker', 'start', CONTAINER_NAME + f"_{continent}_{country}"]
+        download_command = ['powershell.exe', './download_script_windows.ps1', CONTAINER_NAME, country, continent]
 
+    # Check if container exists:
+    if subprocess.run(container_check).returncode == 0:
+        if container_running:
+            print('Server is already running.')
         else:
             try:
-                print('This is the first time you used this function.\nInitializing server setup. This may take several minutes...')
-                subprocess.Popen(dwn_str, shell=True)
-
-                # Verify container is running
-                while container_running == False:
-                    container_running = check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}")
-
-                print('Server was started succesfully')
+                print('Starting server ...')
+                subprocess.run(container_start, check=True)
                 time.sleep(5) # Wait server to be prepared to receive requests
-
+                print('Server was started succesfully')
             except subprocess.CalledProcessError as error:
-                print(f'Something went wrong. Please check your docker installation.\nError: {error}')
-
-    elif sys.platform == 'win32':
-        print('Still working on windows support')
-        #subprocess.Popen(dwn_str.replace(';', '&'))
+                print(f'Something went wrong. Please check if port 5000 is being used or check your docker installation.\nError: {error}')
 
     else:
-        print('Platform not supported')
+        try:
+            print('This is the first time you used this function.\nInitializing server setup. This may take several minutes...')
+            subprocess.Popen(download_command, shell=True)
 
-def stop_osrm_server(country, continent):
+            # Verify container is running
+            while container_running == False:
+                container_running = check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}")
+
+            print('Server was started succesfully')
+            time.sleep(5) # Wait server to be prepared to receive requests
+
+        except subprocess.CalledProcessError as error:
+            print(f'Something went wrong. Please check your docker installation.\nError: {error}')
+
+def stop_osrm_server(country, continent, profile):
     '''
     Run docker stop on the server's container.
 
@@ -129,46 +136,54 @@ def stop_osrm_server(country, continent):
     ----------
 
     country: str
-             Which country osrm to stop. Expected in lower case & dashes replace spaces.
+             Which country the osrm to stop is routing. Expected in lower case & dashes replace spaces.
+
     continent: str
-               Continent of the given country. Expected in lower case & dashes replace spaces.
+             Continent of the given country. Expected in lower case & dashes replace spaces.
+
+    profile: str. One of {'foot', 'car', 'bicycle'}
+             Travel mode to use when routing and estimating travel time.
 
     Examples
     --------
 
-    >>> urbanpy.routing.stop_osrm_server('peru', 'south-america')
+    >>> urbanpy.routing.stop_osrm_server('peru', 'south-america', 'foot')
     Server stopped succesfully
 
     '''
 
+    container_name = CONTAINER_NAME + f"_{continent}_{country}_{profile}"
+
     # Check platform
     if sys.platform in ['darwin', 'linux']:
-        # Check if container exists:
-        if subprocess.run(['docker', 'top', CONTAINER_NAME + f"_{continent}_{country}"]).returncode == 0:
-            if check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}") == True:
-                try:
-                    subprocess.run(['docker', 'stop', CONTAINER_NAME + f"_{continent}_{country}"], check=True)
-                    #subprocess.run(['docker', 'container', 'rm', 'osrm_routing_server'])
-                    print('Server was stoped succesfully')
-                except subprocess.CalledProcessError as error:
-                    print(f'Something went wrong. Please check your docker installation.\nError: {error}')
-            else:
-                print('Server is not running.')
+        docker_top = ['docker', 'top', CONTAINER_NAME + f"_{continent}_{country}"]
+        docker_stop = ['docker', 'stop', CONTAINER_NAME + f"_{continent}_{country}"]
+    else:
+        docker_top = ['powershell.exe', 'docker', 'top', CONTAINER_NAME + f"_{continent}_{country}"]
+        docker_stop = ['powershell.exe', 'docker', 'stop', CONTAINER_NAME + f"_{continent}_{country}"]
 
+    # Check if container exists:
+    if subprocess.run(docker_top).returncode == 0:
+        if self.check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}") == True:
+            try:
+                subprocess.run(docker_stop, check=True)
+                #subprocess.run(['docker', 'container', 'rm', 'osrm_routing_server'])
+                print('Server was stoped succesfully')
+            except subprocess.CalledProcessError as error:
+                print(f'Something went wrong. Please check your docker installation.\nError: {error}')
         else:
-            print('Server does not exist.')
-
-    elif sys.platform == 'win32':
-        print('Still working on windows support')
-        #subprocess.Popen(dwn_str.replace(';', '&'))
+            print('Server is not running.')
 
     else:
-        print('Platform not supported')
+        print('Server does not exist.')
 
-def osrm_route(origin, destination, profile):
+def osrm_route(origin, destination):
     '''
     Query an OSRM routing server for routes between an origin and a destination
     using a specified profile.
+
+    Travel mode ("foot", "bicycle", or "car") is determined by the profile
+    selected when starting the OSRM server
 
     Parameters
     ----------
@@ -179,8 +194,6 @@ def osrm_route(origin, destination, profile):
     destination: DataFrame with columns x and y or Point geometry
                  Input destination in lat lon pairs (y,x) to pass to the routing engine
 
-    profile: str. One of {'foot', 'car', 'bicycle'}
-             Behavior to use when routing and estimating travel time.
 
     Returns
     -------
@@ -193,7 +206,8 @@ def osrm_route(origin, destination, profile):
     '''
     orig = f'{origin.x},{origin.y}'
     dest = f'{destination.x},{destination.y}'
-    url = f'http://localhost:5000/route/v1/{profile}/{orig};{dest}' # Local osrm server
+    # If "profile" is passed in the url the default profile is used by the local osrm server
+    url = f'http://localhost:5000/route/v1/profile/{orig};{dest}'
     response = requests.get(url, params={'overview': 'false'})
 
     try:
@@ -341,7 +355,7 @@ def ors_api(locations, origin, destination, profile, metrics, api_key):
     else:
         return -1, -1
 
-def compute_osrm_dist_matrix(origins, destinations, profile):
+def compute_osrm_dist_matrix(origins, destinations):
     '''
     Compute distance and travel time origin-destination matrices
 
@@ -394,7 +408,7 @@ def compute_osrm_dist_matrix(origins, destinations, profile):
 
     for ix, row in tqdm(origins.iterrows(), total=origins.shape[0]):
         for i, r in tqdm(destinations.iterrows(), total=destinations.shape[0]):
-            dist, dur = osrm_route(row.geometry, r.geometry, profile)
+            dist, dur = osrm_route(row.geometry, r.geometry)
             dist_matrix[ix, i] = dist
             dur_matrix[ix, i] = dur
 

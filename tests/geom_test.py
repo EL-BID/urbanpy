@@ -5,7 +5,7 @@ import networkx as nx
 from shapely.geometry import Polygon
 
 import sys
-sys.path.append('..')
+sys.path.append('../urbanpy')
 import urbanpy as up
 
 class GeomTest(unittest.TestCase):
@@ -149,7 +149,7 @@ class GeomTest(unittest.TestCase):
         merged_hex = up.geom.merge_shape_hex(hex_gdf, filtered_points_gdf, agg={'population_2020':'sum'})
 
         # Downsample data
-        hex_downsampled = aperture_downsampling(merged_hex, 'hex', 5, {'population_2020':'sum'})
+        hex_downsampled = up.geom.resolution_downsampling(merged_hex, 'hex', 5, {'population_2020':'sum'})
 
         # Test the number of hexagons and indicators generated
         self.assertEqual((14, 3), hex_downsampled.shape)
