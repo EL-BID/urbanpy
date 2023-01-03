@@ -4,7 +4,7 @@ import numpy as np
 import networkx as nx
 
 import sys
-sys.path.append('..')
+sys.path.append('../urbanpy')
 import urbanpy as up
 
 class RoutingTest(unittest.TestCase):
@@ -34,10 +34,10 @@ class RoutingTest(unittest.TestCase):
 
 
         #Start OSRM
-        up.routing.start_osrm_server('peru', 'south-america')
+        up.routing.start_osrm_server('peru', 'south-america', 'foot')
 
         #Test 3x3 matrix
-        dur, dist = up.routing.compute_osrm_dist_matrix(gdf, gdf_1, 'walking')
+        dur, dist = up.routing.compute_osrm_dist_matrix(gdf, gdf_1)
 
         self.assertEqual(dist.all(), np.array([[   0. , 1973. , 3572.6],
                                                [1973. ,    0. , 1768.3],
@@ -48,7 +48,7 @@ class RoutingTest(unittest.TestCase):
                                               [2574.1, 1273.2,    0. ]]).all())
 
         #Testing with missing values
-        dur, dist = up.routing.compute_osrm_dist_matrix(gdf, gdf_2, 'walking')
+        dur, dist = up.routing.compute_osrm_dist_matrix(gdf, gdf_2)
 
         self.assertEqual(dur.all(), np.array([
                                        [np.nan, 18800.5, 18800.5],
@@ -61,7 +61,7 @@ class RoutingTest(unittest.TestCase):
                                        [np.nan, 23908.8, 23908.8]]).all())
 
         #Close OSRM routing Server
-        up.routing.stop_osrm_server('peru', 'south-america')
+        up.routing.stop_osrm_server('peru', 'south-america', 'foot')
 
     def test_nx_route(self):
         '''
@@ -84,7 +84,7 @@ class RoutingTest(unittest.TestCase):
         self.assertEqual(up.routing.nx_route(G, source, target, 'length'), 714.627)
 
         #Test number of nodes in path
-        self.assertEqual(up.routing.nx_route(G, source, target, None), 11)
+        self.assertEqual(up.routing.nx_route(G, source, target, None), 12)
 
         #Test with no path
         source, target = 1418626943, 1985246159
