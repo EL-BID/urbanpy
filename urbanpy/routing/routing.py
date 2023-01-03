@@ -412,7 +412,7 @@ def compute_osrm_dist_matrix(origins, destinations):
     
     with Progress() as progress:
         pb_orig = progress.add_task(total=origins.shape[0], description='[red]Origins processed')
-        pb_dest = progress.add_task(total=destinations.iterrows(), description='[blue]Destinations')
+        pb_dest = progress.add_task(total=destinations.shape[0], description='[blue]Destinations')
 
         for i, orig in origins.iterrows():
             for j, dest in destinations.iterrows():
