@@ -697,7 +697,7 @@ def isochrone_from_graph(graph, locations, time_range, profile):
     for ix, center_node in enumerate(center_nodes):
         for trip_time in sorted(time_range, reverse=True):
             subgraph = nx.ego_graph(G, center_node, radius=trip_time, distance='time')
-            node_points = [Point((data['x'], data['y'])) for node, data in subgraph.nodes(data=True)]
+            node_points = [Point((data['lon'], data['lat'])) for node, data in subgraph.nodes(data=True)]
             bounding_poly = gpd.GeoSeries(node_points).unary_union.convex_hull
             data.append([ix, trip_time, bounding_poly])
 
