@@ -1,7 +1,7 @@
 # import pydeck as pdk
 import pandas as pd
 import plotly.express as px
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 # from urbanpy.utils import tuples_to_lists
 
 __all__ = [
@@ -9,7 +9,6 @@ __all__ = [
     # 'gen_pydeck_layer',
     'choropleth_map',
 ]
-
 
 # def gen_pydeck_layer(layer_type, data, **kwargs):
 #     if layer_type == 'H3HexagonLayer':

@@ -2,6 +2,7 @@ import sys
 sys.path.append('..')
 import urbanpy as up
 import geopandas as gpd
+import numpy as np
 
 lima = up.download.download_osm(2, "Lima, Peru")
 
