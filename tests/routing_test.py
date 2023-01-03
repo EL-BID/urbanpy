@@ -1,7 +1,6 @@
 import unittest
 import geopandas as gpd
 import numpy as np
-import networkx as nx
 
 import sys
 sys.path.append('../urbanpy')
@@ -32,33 +31,34 @@ class RoutingTest(unittest.TestCase):
         gdf_1 = gpd.GeoDataFrame([], geometry=gpd.points_from_xy(lon_1, lat_1))
         gdf_2 = gpd.GeoDataFrame([], geometry=gpd.points_from_xy(lon_2, lat_2))
 
-
         #Start OSRM
         up.routing.start_osrm_server('peru', 'south-america', 'foot')
 
         #Test 3x3 matrix
         dur, dist = up.routing.compute_osrm_dist_matrix(gdf, gdf_1)
 
-        self.assertEqual(dist.all(), np.array([[   0. , 1973. , 3572.6],
-                                               [1973. ,    0. , 1768.3],
-                                               [3572.6, 1768.3,    0. ]]).all())
+        self.assertIsNone(np.testing.assert_allclose(
+            dur, np.array([[   0. , 1977.5, 3576.3],
+                           [1977.5,    0. , 1761.7],
+                           [3576.3, 1761.7,    0. ]])))
 
-        self.assertEqual(dur.all(), np.array([[   0. , 1422.2, 2574.1],
-                                              [1422.2,    0. , 1273.2],
-                                              [2574.1, 1273.2,    0. ]]).all())
+        self.assertIsNone(np.testing.assert_allclose(
+            dist, np.array([[   0. , 1425.2, 2576.5],
+                            [1425.2,    0. , 1268.6],
+                            [2576.5, 1268.6,    0. ]])))
 
         #Testing with missing values
         dur, dist = up.routing.compute_osrm_dist_matrix(gdf, gdf_2)
 
-        self.assertEqual(dur.all(), np.array([
-                                       [np.nan, 18800.5, 18800.5],
-                                       [np.nan, 17608.9, 17608.9],
-                                       [np.nan, 17273.5, 17273.5]]).all())
+        self.assertIsNone(np.testing.assert_allclose(
+            dur, np.array([[np.nan, 26017.3, 26017.3],
+                           [np.nan, 24372.5, 24372.5],
+                           [np.nan, 23895.9, 23895.9]]), equal_nan=True))
 
-        self.assertEqual(dist.all(), np.array([
-                                       [np.nan, 26021.5, 26021.5],
-                                       [np.nan, 24374.1, 24374.1],
-                                       [np.nan, 23908.8, 23908.8]]).all())
+        self.assertIsNone(np.testing.assert_allclose(
+            dist, np.array([[np.nan, 18803.7, 18803.7],
+                            [np.nan, 17619.8, 17619.8],
+                            [np.nan, 17274.7, 17274.7]]), equal_nan=True))
 
         #Close OSRM routing Server
         up.routing.stop_osrm_server('peru', 'south-america', 'foot')
@@ -77,14 +77,13 @@ class RoutingTest(unittest.TestCase):
         G = up.download.osmnx_graph('point', geom=(41.255676, -95.931338), distance=500)
 
         #Path exists
-        source = 7199103694
-        target = 134104548
-
+        source, target = 6564221455, 134104548
+        
         #Test path length
-        self.assertEqual(up.routing.nx_route(G, source, target, 'length'), 714.627)
+        self.assertEqual(up.routing.nx_route(G, source, target, 'length'), 642.385)
 
         #Test number of nodes in path
-        self.assertEqual(up.routing.nx_route(G, source, target, None), 12)
+        self.assertEqual(up.routing.nx_route(G, source, target, None), 5)
 
         #Test with no path
         source, target = 1418626943, 1985246159

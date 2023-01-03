@@ -40,8 +40,9 @@ class GeomTest(unittest.TestCase):
         '''
 
         # Example test values
-        pop_df = up.download.hdx_fb_population('bolivia', 'full')
-        polygon_gdf = up.download.nominatim_osm(query='La Paz, Bolivia')
+        datasets_df = up.download.search_hdx_dataset('bolivia')
+        pop_df = up.download.get_hdx_dataset(datasets_df, 0)
+        polygon_gdf = up.download.nominatim_osm('La Paz, Bolivia', 1)
 
         # Filter pop
         filtered_points_gdf = up.geom.filter_population(pop_df, polygon_gdf)
@@ -63,11 +64,13 @@ class GeomTest(unittest.TestCase):
         '''
 
         # Download city limits
-        polygon_gdf = up.download.nominatim_osm(query='La Paz, Bolivia')
+        polygon_gdf = up.download.nominatim_osm('La Paz, Bolivia', 1)
 
         # Example test values
         bounds = polygon_gdf.geometry.centroid.buffer(0.1).total_bounds
-        filtered_points_gdf = up.geom.filter_population(up.download.hdx_fb_population('bolivia', 'full'), polygon_gdf)
+        datasets_df = up.download.search_hdx_dataset('bolivia')
+        pop_df = up.download.get_hdx_dataset(datasets_df, 0)
+        filtered_points_gdf = up.geom.filter_population(pop_df, polygon_gdf)
 
         # Remove features from bounding box
         features_removed = up.geom.remove_features(filtered_points_gdf, bounds)
@@ -78,7 +81,7 @@ class GeomTest(unittest.TestCase):
         # Test path length
         self.assertEqual(True, features_removed.cx[minx:maxx, miny:maxy].empty)
 
-    def gen_hexagons(self):
+    def test_gen_hexagons(self):
         '''
         Test the generation of H3 hexagons for a given input GeoDataFrame with a polygon or multipolygon geometry.
 
@@ -88,7 +91,7 @@ class GeomTest(unittest.TestCase):
         '''
 
         # Download city limits
-        polygon_gdf = up.download.nominatim_osm(query='La Paz, Bolivia')
+        polygon_gdf = up.download.nominatim_osm('La Paz, Bolivia', 1)
 
         # Generate hexs
         hex_gdf = up.geom.gen_hexagons(resolution=6, city=polygon_gdf)
@@ -96,7 +99,7 @@ class GeomTest(unittest.TestCase):
         # Test the number of hexagons generated
         self.assertEqual((51, 2), hex_gdf.shape)
 
-    def merge_shape_hex(self):
+    def test_merge_shape_hex(self):
         '''
         Test the aggregation of a metric from a smaller shapes (e.g. Points) with a H3 hexagon GeoDataFrame.
 
@@ -107,29 +110,32 @@ class GeomTest(unittest.TestCase):
         '''
 
         # Download city limits
-        polygon_gdf = up.download.nominatim_osm(query='La Paz, Bolivia')
+        polygon_gdf = up.download.nominatim_osm('La Paz, Bolivia', 1)
 
         # Example test values
-        filtered_points_gdf = up.geom.filter_population(up.download.hdx_fb_population('bolivia', 'full'), polygon_gdf)
+        datasets_df = up.download.search_hdx_dataset('bolivia')
+        pop_df = up.download.get_hdx_dataset(datasets_df, 0)
+        filtered_points_gdf = up.geom.filter_population(pop_df, polygon_gdf)
         hex_gdf = up.geom.gen_hexagons(resolution=6, city=polygon_gdf)
 
         # Aggregate pop metric
-        merged_hex = up.geom.merge_shape_hex(hex_gdf, filtered_points_gdf, agg={'population_2020':'sum'})
+        merged_hex = up.geom.merge_shape_hex(hex_gdf, filtered_points_gdf, agg={'bol_general_2020':'sum'})
 
         # Sum aggregated metric with hexagons
-        population_hexs_sum = merged_hex['population_2020'].sum()
+        population_hexs_sum = merged_hex['bol_general_2020'].sum()
 
         # Sum metric with spatial filter
         spatial_filter = filtered_points_gdf.geometry.intersects(hex_gdf.geometry.unary_union)
-        population_points_sum = filtered_points_gdf[spatial_filter]['population_2020'].sum()
+        population_points_sum = filtered_points_gdf[spatial_filter]['bol_general_2020'].sum()
 
         # Delta
         delta = population_hexs_sum - population_points_sum
+        print(delta)
 
-        # Test the number of hexagons generated
-        self.assertEqual(1.4901161193847656e-08, delta)
+        # Test the diff of aggregated population
+        self.assertAlmostEqual(0, delta)
 
-    def resolution_downsampling(self):
+    def test_resolution_downsampling(self):
         '''
         Test downsampling hexagon resolution and aggregating indicated metrics.
 
@@ -139,21 +145,22 @@ class GeomTest(unittest.TestCase):
 
         '''
         # Download city limits
-        polygon_gdf = up.download.nominatim_osm(query='La Paz, Bolivia')
+        polygon_gdf = up.download.nominatim_osm('La Paz, Bolivia', 1)
 
         # Example test values
-        filtered_points_gdf = up.geom.filter_population(up.download.hdx_fb_population('bolivia', 'full'), polygon_gdf)
+        datasets_df = up.download.search_hdx_dataset('bolivia')
+        pop_df = up.download.get_hdx_dataset(datasets_df, 0)
+        filtered_points_gdf = up.geom.filter_population(pop_df, polygon_gdf)
         hex_gdf = up.geom.gen_hexagons(resolution=6, city=polygon_gdf)
 
         # Aggregate pop metric
-        merged_hex = up.geom.merge_shape_hex(hex_gdf, filtered_points_gdf, agg={'population_2020':'sum'})
+        merged_hex = up.geom.merge_shape_hex(hex_gdf, filtered_points_gdf, agg={'bol_general_2020':'sum'})
 
         # Downsample data
-        hex_downsampled = up.geom.resolution_downsampling(merged_hex, 'hex', 5, {'population_2020':'sum'})
+        hex_downsampled = up.geom.resolution_downsampling(merged_hex, 'hex', 5, {'bol_general_2020':'sum'})
 
         # Test the number of hexagons and indicators generated
         self.assertEqual((14, 3), hex_downsampled.shape)
-
 
 if __name__ == '__main__':
     unittest.main()

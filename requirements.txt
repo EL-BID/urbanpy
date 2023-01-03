@@ -8,3 +8,4 @@ googlemaps
 scikit-learn
 osmnx
 networkx
+hdx-python-api
