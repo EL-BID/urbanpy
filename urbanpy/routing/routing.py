@@ -1,14 +1,19 @@
 import time
 import subprocess
 import sys
+import pathlib
 import requests
 import googlemaps
+import pandas as pd
 import numpy as np
 import networkx as nx
 import osmnx as ox
 import geopandas as gpd
+from urbanpy.utils import isnotebook
 from tqdm.auto import tqdm
 from shapely.geometry import Point
+from typing import Union, Tuple
+
 
 __all__ = [
     'start_osrm_server',
@@ -23,9 +28,10 @@ __all__ = [
     'isochrone_from_graph'
 ]
 
+ROUTING_MODUEL_DIR = pathlib.Path(__file__).parent.resolve()
 CONTAINER_NAME = 'osrm_routing_server'
 
-def check_container_is_running(container_name):
+def check_container_is_running(container_name: str) -> bool:
     '''
     Checks if a container is running
 
@@ -42,15 +48,16 @@ def check_container_is_running(container_name):
         True if container is running, False otherwise.
 
     '''
-    completed_process = subprocess.run(['docker', 'ps'], check=True, capture_output=True)
+    completed_process = subprocess.run(['docker', 'ps'], capture_output=True, check=True)
     stdout_str = completed_process.stdout.decode('utf-8')
     container_running = container_name in stdout_str
 
     return container_running
 
-def start_osrm_server(country, continent, profile):
+
+def start_osrm_server(country: str, continent: str, profile: str) -> None:
     '''
-    Download data for OSRM, process it and start a local osrm server
+    Download data for OSRM, process it and start a local osrm server fdhgdfshgrdfhgfdhdf
 
     Parameters
     ----------
@@ -73,35 +80,22 @@ def start_osrm_server(country, continent, profile):
 
     '''
 
-    container_name = CONTAINER_NAME + f"_{continent}_{country}_{profile}"
+    container_name = f"{CONTAINER_NAME}_{continent}_{country}_{profile}"
 
-    # Download, process and run server command sequence
-    dwn_str_unix = f'''
-    docker pull osrm/osrm-backend;
-    mkdir -p ~/data/osrm/;
-    cd ~/data/osrm/;
-    wget https://download.geofabrik.de/{continent}/{country}-latest.osm.pbf;
-    docker run -t --name osrm_extract -v $(pwd):/data osrm/osrm-backend osrm-extract -p /opt/{profile}.lua /data/{country}-latest.osm.pbf;
-    docker run -t --name osrm_partition -v $(pwd):/data osrm/osrm-backend osrm-partition /data/{country}-latest.osm.pbf;
-    docker run -t --name osrm_customize -v $(pwd):/data osrm/osrm-backend osrm-customize /data/{country}-latest.osm.pbf;
-    docker container rm osrm_extract osrm_partition osrm_customize;
-    docker run -t --name {CONTAINER_NAME}_{continent}_{country}_{profile} -p 5000:5000 -v $(pwd):/data osrm/osrm-backend osrm-routed --algorithm mld /data/{country}-latest.osm.pbf;
-    '''
-
-    container_running = check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}_{profile}")
+    container_running = check_container_is_running(container_name)
 
     # Check platform
     if sys.platform in ['darwin', 'linux']:
-        container_check = ['docker', 'inspect', CONTAINER_NAME + f"_{continent}_{country}"]
-        container_start = ['docker', 'start', CONTAINER_NAME + f"_{continent}_{country}"]
-        download_command = dwn_str_unix
+        container_check = ['docker', 'inspect', container_name]
+        container_start = ['docker', 'start', container_name]
+        download_command = ['sh', str(pathlib.PosixPath(ROUTING_MODUEL_DIR, 'unix_download.sh')), CONTAINER_NAME, country, continent, profile]
     else:
-        container_check = ['powershell.exe', 'docker', 'inspect', CONTAINER_NAME + f"_{continent}_{country}"]
-        container_start = ['powershell.exe', 'docker', 'start', CONTAINER_NAME + f"_{continent}_{country}"]
-        download_command = ['powershell.exe', './download_script_windows.ps1', CONTAINER_NAME, country, continent]
+        container_check = ['powershell.exe', 'docker', 'inspect', container_name]
+        container_start = ['powershell.exe', 'docker', 'start', container_name]
+        download_command = ['powershell.exe', str(pathlib.WindowsPath(ROUTING_MODUEL_DIR, 'windows_download.ps1')), CONTAINER_NAME, country, continent, profile]
 
     # Check if container exists:
-    if subprocess.run(container_check).returncode == 0:
+    if subprocess.run(container_check, capture_output=True).returncode == 0:
         if container_running:
             print('Server is already running.')
         else:
@@ -111,24 +105,26 @@ def start_osrm_server(country, continent, profile):
                 time.sleep(5) # Wait server to be prepared to receive requests
                 print('Server was started succesfully')
             except subprocess.CalledProcessError as error:
-                print(f'Something went wrong. Please check if port 5000 is being used or check your docker installation.\nError: {error}')
-
+                print('Something went wrong. Please check if port 5000 is being used or check your docker installation.')
+                print(f'Error: {error}')
     else:
         try:
-            print('This is the first time you used this function.\nInitializing server setup. This may take several minutes...')
-            subprocess.Popen(download_command, shell=True)
-
-            # Verify container is running
-            while container_running == False:
-                container_running = check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}")
-
-            print('Server was started succesfully')
+            print(f'This is the first time you initialized a server for {country} on {profile}.')
+            print('Initializing server setup. This may take several minutes ...')
+            print('To view the detailed logs run the following command from terminal:')
+            print(f'$ watch -n 5 tail -20 ~/data/osrm/{continent}/{country}/logs/{profile}.txt')
+            
+            subprocess.run(download_command, check=True)
             time.sleep(5) # Wait server to be prepared to receive requests
-
+            
+            print('Server was started succesfully')
+            
         except subprocess.CalledProcessError as error:
-            print(f'Something went wrong. Please check your docker installation.\nError: {error}')
+            print('Something went wrong. Please check if port 5000 is being used or your docker installation.')
+            print(f'Error: {error}')
 
-def stop_osrm_server(country, continent, profile):
+
+def stop_osrm_server(country: str, continent: str, profile: str) -> None:
     '''
     Run docker stop on the server's container.
 
@@ -152,21 +148,21 @@ def stop_osrm_server(country, continent, profile):
 
     '''
 
-    container_name = CONTAINER_NAME + f"_{continent}_{country}_{profile}"
+    container_name = f"{CONTAINER_NAME}_{continent}_{country}_{profile}"
 
     # Check platform
     if sys.platform in ['darwin', 'linux']:
-        docker_top = ['docker', 'top', CONTAINER_NAME + f"_{continent}_{country}"]
-        docker_stop = ['docker', 'stop', CONTAINER_NAME + f"_{continent}_{country}"]
+        docker_top = ['docker', 'top', container_name]
+        docker_stop = ['docker', 'stop', container_name]
     else:
-        docker_top = ['powershell.exe', 'docker', 'top', CONTAINER_NAME + f"_{continent}_{country}"]
-        docker_stop = ['powershell.exe', 'docker', 'stop', CONTAINER_NAME + f"_{continent}_{country}"]
+        docker_top = ['powershell.exe', 'docker', 'top', container_name]
+        docker_stop = ['powershell.exe', 'docker', 'stop', container_name]
 
     # Check if container exists:
-    if subprocess.run(docker_top).returncode == 0:
-        if self.check_container_is_running(CONTAINER_NAME + f"_{continent}_{country}") == True:
+    if subprocess.run(docker_top, capture_output=True).returncode == 0:
+        if check_container_is_running(container_name) == True:
             try:
-                subprocess.run(docker_stop, check=True)
+                subprocess.run(docker_stop, capture_output=True, check=True)
                 #subprocess.run(['docker', 'container', 'rm', 'osrm_routing_server'])
                 print('Server was stoped succesfully')
             except subprocess.CalledProcessError as error:
@@ -177,7 +173,8 @@ def stop_osrm_server(country, continent, profile):
     else:
         print('Server does not exist.')
 
-def osrm_route(origin, destination):
+
+def osrm_route(origin: Union[pd.DataFrame, gpd.GeoDataFrame], destination: Union[pd.DataFrame, gpd.GeoDataFrame]) -> Tuple[float, float]:
     '''
     Query an OSRM routing server for routes between an origin and a destination
     using a specified profile.
@@ -208,7 +205,13 @@ def osrm_route(origin, destination):
     dest = f'{destination.x},{destination.y}'
     # If "profile" is passed in the url the default profile is used by the local osrm server
     url = f'http://localhost:5000/route/v1/profile/{orig};{dest}'
-    response = requests.get(url, params={'overview': 'false'})
+
+    try:
+        response = requests.get(url, params={'overview': 'false'})
+    except requests.exceptions.ConnectionError as e:
+        print("Waiting for server to be ready ...")
+        time.sleep(5)
+        response = requests.get(url, params={'overview': 'false'})
 
     try:
         data = response.json()['routes'][0]
@@ -218,7 +221,8 @@ def osrm_route(origin, destination):
         #print(err)
         return np.nan, np.nan
 
-def google_maps_dist_matrix(origin, destination, mode, api_key, **kwargs):
+
+def google_maps_dist_matrix(origin, destination, mode: str, api_key: str, **kwargs) -> Tuple[int,int]:
     '''
     Google Maps distance matrix support.
 
@@ -290,6 +294,7 @@ def google_maps_dist_matrix(origin, destination, mode, api_key, **kwargs):
 
     return dist, dur
 
+
 def ors_api(locations, origin, destination, profile, metrics, api_key):
     '''
     Interface with OpenRoute Service API for distance matrix computation.
@@ -355,9 +360,10 @@ def ors_api(locations, origin, destination, profile, metrics, api_key):
     else:
         return -1, -1
 
+
 def compute_osrm_dist_matrix(origins, destinations):
     '''
-    Compute distance and travel time origin-destination matrices
+    Compute distance and travel time origin-destination matrices kahsgfhjasdgfkasjdhjhsdg
 
     Parameters
     ----------
@@ -397,8 +403,8 @@ def compute_osrm_dist_matrix(origins, destinations):
 
     '''
 
-    dist_matrix = np.zeros_like([], shape=(origins.shape[0], destinations.shape[0]))
-    dur_matrix = np.zeros_like([], shape=(origins.shape[0], destinations.shape[0]))
+    dist_matrix = np.zeros(shape=(origins.shape[0], destinations.shape[0]))
+    dur_matrix = np.zeros(shape=(origins.shape[0], destinations.shape[0]))
 
     if type(origins) == gpd.GeoSeries:
         origins = origins.to_frame()
@@ -406,13 +412,31 @@ def compute_osrm_dist_matrix(origins, destinations):
     if type(destinations) == gpd.GeoSeries:
         destinations = destinations.to_frame()
 
-    for ix, row in tqdm(origins.iterrows(), total=origins.shape[0]):
-        for i, r in tqdm(destinations.iterrows(), total=destinations.shape[0]):
-            dist, dur = osrm_route(row.geometry, r.geometry)
-            dist_matrix[ix, i] = dist
-            dur_matrix[ix, i] = dur
+    if isnotebook():
+        # Initialize progress bar outside for to avoid instanciating several objects
+        pb_orig = tqdm(origins.iterrows(), total=origins.shape[0], desc='Origins', leave=True)
+        pb_dest = tqdm(destinations, desc='Destinations', leave=True)
+
+        for i, orig in pb_orig:
+            for j, dest in destinations.iterrows():
+                dist, dur = osrm_route(orig.geometry, dest.geometry)
+                dist_matrix[i, j] = dist
+                dur_matrix[i, j] = dur
+                pb_dest.update() # Update step
+            pb_dest.refresh() # Force display
+
+            # Reset 2nd progress bar if it is not the last iteration of outer loop
+            if i != origins.shape[0]-1: pb_dest.reset(total=destinations.shape[0])
+        pb_dest.close()
+    else:
+        for i, orig in tqdm(origins.iterrows(), total=origins.shape[0], desc='Origins'):
+            for j, dest in tqdm(destinations.iterrows(), total=destinations.shape[0], desc='Destinations', leave=False):
+                dist, dur = osrm_route(orig.geometry, dest.geometry)
+                dist_matrix[i, j] = dist
+                dur_matrix[i, j] = dur
 
     return dist_matrix, dur_matrix
+
 
 def google_maps_dir_matrix(origin, destination, mode, api_key, **kwargs):
     '''
@@ -483,6 +507,7 @@ def google_maps_dir_matrix(origin, destination, mode, api_key, **kwargs):
 
     return dist, dur
 
+
 def nx_route(graph, source, target, weight, length=True):
     '''
     Compute shortest path from a source and target node.
@@ -549,6 +574,7 @@ def nx_route(graph, source, target, weight, length=True):
         except:
             #If there is no path within the graph
             return -1
+
 
 def isochrone_from_api(locations, time_range, profile, api, api_key):
     '''
@@ -651,6 +677,7 @@ def isochrone_from_api(locations, time_range, profile, api, api_key):
 
         return isochrones[['contour', 'group_index', 'geometry']]
 
+
 def isochrone_from_graph(graph, locations, time_range, profile):
     '''
     Create isochrones from a network graph.
@@ -675,7 +702,7 @@ def isochrone_from_graph(graph, locations, time_range, profile):
     -------
 
     isochrones: GeoDataFrame
-                GeoDataFrame containing the isochrones for the set of locations and time_ranges.
+        GeoDataFrame containing the isochrones for the set of locations and time_ranges.
 
     Examples
     --------
@@ -684,8 +711,6 @@ def isochrone_from_graph(graph, locations, time_range, profile):
     >>> import osmnx as ox
     >>> G = ox.graph_from_place('Berkeley, CA, USA', network_type='walking')
     >>> up.routing.isochrone_from_graph(G, [[],[]], [5, 10], 'walking')
-
-
     '''
 
     profiles = {
@@ -699,7 +724,7 @@ def isochrone_from_graph(graph, locations, time_range, profile):
     else:
         travel_speed = profiles[profile]
 
-    center_nodes = [ox.get_nearest_node(graph, (y, x)) for x, y in locations]
+    center_nodes = [ox.nearest_nodes(graph, x, y) for x, y in locations]
     G = ox.project_graph(graph)
 
     meters_per_minute = travel_speed * 1000 / 60 #km per hour to m per minute
@@ -716,6 +741,6 @@ def isochrone_from_graph(graph, locations, time_range, profile):
             data.append([ix, trip_time, bounding_poly])
 
     isochrones = gpd.GeoDataFrame(data, columns=['group_index', 'contour', 'geometry'])
-    isochrones.crs = 'EPSG:32718'
+    isochrones.crs = 'EPSG:4326'
 
     return isochrones
