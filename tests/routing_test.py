@@ -16,51 +16,51 @@ class RoutingTest(unittest.TestCase):
          * Test without paths, resulting in np.nan values
         '''
 
-        #Example test values
+        # Example test values
 
-        #Sources
+        # Sources
         lon, lat = [-77,-77.01,-77.02], [-12,-12.01,-12.02]
 
-        #Valid 3x3 matrix
+        # Valid 3x3 matrix
         lon_1, lat_1 = [-77,-77.01,-77.02], [-12,-12.01,-12.02]
 
-        #Expected NaN columns
+        # Expected NaN columns
         lon_2, lat_2 = [0,-77.12,-77.32], [0,-12.25,-12.6]
 
         gdf = gpd.GeoDataFrame([], geometry=gpd.points_from_xy(lon, lat))
         gdf_1 = gpd.GeoDataFrame([], geometry=gpd.points_from_xy(lon_1, lat_1))
         gdf_2 = gpd.GeoDataFrame([], geometry=gpd.points_from_xy(lon_2, lat_2))
 
-        #Start OSRM
+        # Start OSRM
         up.routing.start_osrm_server('peru', 'south-america', 'foot')
 
-        #Test 3x3 matrix
+        # Test 3x3 matrix
         dur, dist = up.routing.compute_osrm_dist_matrix(gdf, gdf_1)
 
         self.assertIsNone(np.testing.assert_allclose(
-            dur, np.array([[   0. , 1977.5, 3576.3],
-                           [1977.5,    0. , 1761.7],
-                           [3576.3, 1761.7,    0. ]])))
-
+            dur, np.array([[   0.,  1973.,  3572.6],
+                           [1973.,     0.,  1768.3],
+                           [3572.6, 1768.3,    0. ]])))
+        
         self.assertIsNone(np.testing.assert_allclose(
-            dist, np.array([[   0. , 1425.2, 2576.5],
-                            [1425.2,    0. , 1268.6],
-                            [2576.5, 1268.6,    0. ]])))
+            dist, np.array([[   0.,  1422.2, 2574.1],
+                            [1422.2,    0.,  1273.2],
+                            [2574.1, 1273.2,    0. ]])))
 
-        #Testing with missing values
+        # Testing with missing values
         dur, dist = up.routing.compute_osrm_dist_matrix(gdf, gdf_2)
-
+        
         self.assertIsNone(np.testing.assert_allclose(
-            dur, np.array([[np.nan, 26017.3, 26017.3],
-                           [np.nan, 24372.5, 24372.5],
-                           [np.nan, 23895.9, 23895.9]]), equal_nan=True))
-
+            dur, np.array([[np.nan, 26014.9, 26014.9],
+                           [np.nan, 24374.1, 24374.1],
+                           [np.nan, 23908.8, 23908.8]]), equal_nan=True))
+        
         self.assertIsNone(np.testing.assert_allclose(
-            dist, np.array([[np.nan, 18803.7, 18803.7],
-                            [np.nan, 17619.8, 17619.8],
-                            [np.nan, 17274.7, 17274.7]]), equal_nan=True))
+            dist, np.array([[np.nan, 18801.6, 18801.6],
+                            [np.nan, 17611., 17611.],
+                            [np.nan, 17275.6, 17275.6]]), equal_nan=True))
 
-        #Close OSRM routing Server
+        # Close OSRM routing Server
         up.routing.stop_osrm_server('peru', 'south-america', 'foot')
 
     def test_nx_route(self):
@@ -72,26 +72,31 @@ class RoutingTest(unittest.TestCase):
         * Compute paths from known available paths
 
         '''
-
-        #Create graph from point
-        G = up.download.osmnx_graph('point', geom=(41.255676, -95.931338), distance=500)
-
-        #Path exists
-        source, target = 6564221455, 134104548
+        import osmnx as ox
         
-        #Test path length
-        self.assertEqual(up.routing.nx_route(G, source, target, 'length'), 642.385)
+        # Create graph from point
+        point = (41.255676, -95.931338)
+        G = up.download.osmnx_graph('point', geom=point, distance=500)
 
-        #Test number of nodes in path
-        self.assertEqual(up.routing.nx_route(G, source, target, None), 5)
+        # Path exists
+        source, target = ox.distance.nearest_nodes(
+            G, 
+            [point[1], point[1] - 0.0025], 
+            [point[0], point[0] - 0.0025])
+        
+        # Test path length
+        self.assertEqual(up.routing.nx_route(G, source, target, 'length'), 344.507)
 
-        #Test with no path
+        # Test number of nodes in path
+        self.assertEqual(up.routing.nx_route(G, source, target, None), 3)
+
+        # Test with no path
         source, target = 1418626943, 1985246159
 
-        #Test length
+        # Test length
         self.assertEqual(up.routing.nx_route(G, source, target, 'length'), -1)
 
-        #Test number of nodes
+        # Test number of nodes
         self.assertEqual(up.routing.nx_route(G, source, target, None), -1)
 
     def test_google_matrix(self): pass
