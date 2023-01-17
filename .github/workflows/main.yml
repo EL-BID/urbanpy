@@ -22,8 +22,8 @@ jobs:
     - uses: actions/checkout@v3
     - uses: ammaraskar/sphinx-action@master
       with:
-        pre-build-command: "mkdir /tmp && touch /tmp/sphinx-log"
         docs-folder: "docs/"
+        build-command: "sphinx-build -b html source build"
 
   build:
     runs-on: ubuntu-latest
