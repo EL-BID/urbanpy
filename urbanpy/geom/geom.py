@@ -17,14 +17,16 @@ __all__ = [
     'osmnx_coefficient_computation',
 ]
 
-def merge_geom_downloads(gdfs: Sequence[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
+def merge_geom_downloads(gdfs: Sequence[gpd.GeoDataFrame], crs: str = "EPSG:4326") -> gpd.GeoDataFrame:
     '''
     Merge several GeoDataFrames from OSM download_osm
 
     Parameters
     ----------
     dfs: array_like
-        Array of GeoDataFrames to merge
+        Array of GeoDataFrames to merge. Assumes equal CRS.
+    crs: str
+        Valid string to pass to crs param of the geopandas.GeoDataFrame constructor function.
 
     Returns
     -------
@@ -41,7 +43,7 @@ def merge_geom_downloads(gdfs: Sequence[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
     geometry
     MULTIPOLYGON (((-76.80277 -12.47562, -76.80261...)))
     '''
-    concat = gpd.GeoDataFrame(geometry=[pd.concat(gdfs).unary_union])
+    concat = gpd.GeoDataFrame(geometry=[pd.concat(gdfs).unary_union], crs=crs)
     return concat
 
 
