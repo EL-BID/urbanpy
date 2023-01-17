@@ -23,7 +23,6 @@ jobs:
     - uses: ammaraskar/sphinx-action@master
       with:
         docs-folder: "docs/"
-        build-command: "sphinx-build -b html source build"
 
   build:
     runs-on: ubuntu-latest
