@@ -398,9 +398,8 @@ def get_hdx_label(name):
     for keys, labels in HDX_POPULATION_TYPES.items():
         if keys in name:
             # Avoid assigning "women of reproductive age" label
-            # to the "all" women dataset
-            if keys == 'women':
-                if 'reproductive' in name: continue
+            # to the general women dataset
+            if (keys == 'women') and ('reproductive' in name): continue
             
             return labels
         
