@@ -9,7 +9,7 @@ from hdx.data.dataset import Dataset
 from typing import Optional, Union, Tuple
 from pandas import DataFrame
 from geopandas import GeoDataFrame, GeoSeries
-from urbanpy.utils import to_overpass_query, overpass_to_gdf
+from urbanpy.utils import to_overpass_query, overpass_to_gdf, get_hdx_label, HDX_POPULATION_TYPES
 
 __all__ = [
     'nominatim_osm',
@@ -17,7 +17,9 @@ __all__ = [
     'overpass',
     'osmnx_graph',
     'search_hdx_dataset',
-    'get_hdx_dataset'
+    'get_hdx_dataset',
+    'hdx_fb_population',
+    'hdx_dataset'
 ]
 
 hdx_config = Configuration.create(hdx_site='prod', user_agent='urbanpy', hdx_read_only=True)
@@ -282,43 +284,25 @@ def search_hdx_dataset(country:str, repository="high-resolution-population-densi
     datasets = Dataset.search_in_hdx(f"title:{country.lower()}-{repository}")
 
     resources_records = Dataset.get_all_resources(datasets)
-
     resources_df = pd.DataFrame.from_records(resources_records)
-
     if resources_df.shape[0] == 0:
         print("No datasets found")
 
     else:
-        resources_csv_df = resources_df.query("format == 'CSV'")    
-
-        def get_label(name):
-            population_types = {
-                'overall': 'Overall population density',
-                'women': 'Women',
-                '_men_': 'Men',
-                'children': 'Children (ages 0-5)',
-                'youth': 'Youth (ages 15-24) ',
-                'elderly': 'Elderly (ages 60+)',
-                'women_of_reproductive_age': 'Women of reproductive age (ages 15-49)'
-            }
-
-            for keys, labels in population_types.items():
-                if keys in name:
-                    if keys == 'women':
-                        if 'reproductive' in name: continue
-                    
-                    return labels
-                
-            return population_types['overall']
+        resources_csv_df = resources_df[resources_df["download_url"].str.contains('csv')]
             
         resources_csv_df = resources_csv_df.assign(
             created=pd.to_datetime(resources_csv_df['created']).dt.date,
             size_mb=(resources_csv_df['size'] / 2**20).round(2),
-            population=resources_csv_df['name'].apply(get_label)
         )
 
-        resources_csv_df.index.name = 'id'
+        if repository == "high-resolution-population-density-maps-demographic-estimates":
+            resources_csv_df = resources_csv_df.assign(
+                population=resources_csv_df['name'].apply(get_hdx_label)
+            )
 
+        resources_csv_df.index.name = 'id'
+        
         return resources_csv_df[['created', 'name', 'population', 'size_mb', 'url']]
 
 
@@ -353,7 +337,90 @@ def get_hdx_dataset(resources_df: DataFrame, ids: Union[int, list]) -> DataFrame
     '''
     urls = resources_df.loc[ids, 'url']
 
-    if isinstance(ids, list):
+    if isinstance(ids, list) and len(ids) > 1:
         return pd.concat([pd.read_csv(url) for url in urls])
     else:
         return pd.read_csv(urls)
+
+
+def hdx_fb_population(country, map_type):
+    '''
+    Download population density maps from Facebook HDX.
+    
+    Parameters
+    ----------
+    country: str. One of {'argentina', 'bolivia', 'brazil', 'chile', 'colombia', 'ecuador', 'paraguay', 'peru', 'uruguay'}
+        Input country to download data from.
+    map_type: str. One of {'full', 'children', 'youth', 'elderly'}
+        Input population map to download.
+    
+    Returns
+    -------
+    population: DataFrame
+        DataFrame with lat, lon, and population columns. Coordinates are in
+        EPSG 4326.
+    
+    Examples
+    --------
+    >>> urbanpy.download.hdx_fb_population('peru', 'full')
+    latitude   | longitude  | population_2015 |	population_2020
+    -18.339306 | -70.382361 | 11.318147	      | 12.099885
+    -18.335694 | -70.393750 | 11.318147	      | 12.099885
+    -18.335694 | -70.387361	| 11.318147	      | 12.099885
+    -18.335417 | -70.394028	| 11.318147	      | 12.099885
+    -18.335139 | -70.394306	| 11.318147	      | 12.099885
+    '''
+
+    resources_df = search_hdx_dataset(country)
+
+    # Rename older "full" map_type to "overall"
+    if map_type == "full": map_type = "overall"
+    
+    # Get correct dataset/s index
+    dataset_ix = resources_df[
+        resources_df["population"] == HDX_POPULATION_TYPES[map_type]
+    ].index.tolist()
+
+    population = get_hdx_dataset(resources_df, dataset_ix)
+
+    return population
+
+# Added for backwards compatibility
+from warnings import warn
+
+def hdx_dataset(resource):
+    """
+    Download a dataset from HDX. The allowed formats are CSV (.csv) and zipped
+    CSV (.csv.zip). To run our function we would only copy what is after "https://data.humdata.org/dataset/"
+    to the 'resource' parameter.
+    
+    For example: '4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/317f1c39-8417-4bde-a076-99bd37feefce/download/population_per_2018-10-01.csv.zip'.
+
+    Parameters
+    ----------
+    resource: str
+        Specific address to the HDX dataset resource. Since every dataset is
+        referenced to a diferent resource id, only the base url can be provided
+        by this library. 
+
+    Returns
+    -------
+    dataset: DataFrame
+        Contains the requested HDX dataset resource.
+
+    Examples
+    --------
+    >>> hdx_data = hdx_dataset('4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/317f1c39-8417-4bde-a076-99bd37feefce/download/population_per_2018-10-01.csv.zip')
+    >>> hdx_data.head()
+    latitude   | longitude  | population_2015 |	population_2020
+    -18.339306 | -70.382361 | 11.318147	      | 12.099885
+    -18.335694 | -70.393750 | 11.318147	      | 12.099885
+    -18.335694 | -70.387361	| 11.318147	      | 12.099885
+    -18.335417 | -70.394028	| 11.318147	      | 12.099885
+    -18.335139 | -70.394306	| 11.318147	      | 12.099885
+    """
+    warn('This function will be deprecated. Please use search_hdx_dataset and get_hdx_dataset instead.', DeprecationWarning, stacklevel=2)
+
+    hdx_url = f'https://data.humdata.org/dataset/{resource}'
+    dataset = pd.read_csv(hdx_url)
+    return dataset

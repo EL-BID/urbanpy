@@ -18,7 +18,8 @@ __all__ = [
     'create_duration_labels',
     'to_overpass_query',
     'overpass_to_gdf',
-    'isnotebook'
+    'get_hdx_label',
+    'HDX_POPULATION_TYPES'
 ]
 
 def swap_xy(geom):
@@ -63,20 +64,20 @@ def swap_xy(geom):
                 yield (y, x)
 
     # Process coordinates from each supported geometry type
-    if geom.type in ('Point', 'LineString', 'LinearRing'):
+    if geom.geom_type in ('Point', 'LineString', 'LinearRing'):
         return type(geom)(list(swap_xy_coords(geom.coords)))
-    elif geom.type == 'Polygon':
+    elif geom.geom_type == 'Polygon':
         ring = geom.exterior
         shell = type(ring)(list(swap_xy_coords(ring.coords)))
         holes = list(geom.interiors)
         for pos, ring in enumerate(holes):
             holes[pos] = type(ring)(list(swap_xy_coords(ring.coords)))
         return type(geom)(shell, holes)
-    elif geom.type.startswith('Multi') or geom.type == 'GeometryCollection':
+    elif geom.geom_type.startswith('Multi') or geom.type == 'GeometryCollection':
         # Recursive call
         return type(geom)([swap_xy(part) for part in geom.geoms])
     else:
-        raise ValueError('Type %r not recognized' % geom.type)
+        raise ValueError('Type %r not recognized' % geom.geom_type)
 
 
 def nn_search(tree_features, query_features, metric='haversine'):
@@ -367,16 +368,39 @@ def overpass_to_gdf(type_of_data: str, data: dict, mask: Optional[Union[GeoDataF
 
         return gdf, None
 
+HDX_POPULATION_TYPES =  {
+        'overall': 'Overall population density',
+        'women': 'Women',
+        '_men_': 'Men',
+        'children': 'Children (ages 0-5)',
+        'youth': 'Youth (ages 15-24) ',
+        'elderly': 'Elderly (ages 60+)',
+        'women_of_reproductive_age': 'Women of reproductive age (ages 15-49)'
+    }
 
-def isnotebook():
-    # From https://stackoverflow.com/a/39662359/13523354
-    try:
-        shell = get_ipython().__class__.__name__
-        if shell == 'ZMQInteractiveShell':
-            return True   # Jupyter notebook or qtconsole
-        elif shell == 'TerminalInteractiveShell':
-            return False  # Terminal running IPython
-        else:
-            return False  # Other type (?)
-    except NameError:
-        return False      # Probably standard Python interpreter
+def get_hdx_label(name):
+    """
+    Get a human readable label from a HDX Facebook population density dataset filename.
+
+    Parameters
+    ----------
+    name: str. 
+        HDX Facebook population density dataset filename.    
+    
+    Returns
+    -------
+    labels str: GeoDataFrame
+        POIs from the selected type of facility.
+    df: DataFrame. Optional
+        Relations metadata such as ID and tags. Returns None if 'type_of_data' other than 'relation'. 
+    """
+
+    for keys, labels in HDX_POPULATION_TYPES.items():
+        if keys in name:
+            # Avoid assigning "women of reproductive age" label
+            # to the general women dataset
+            if (keys == 'women') and ('reproductive' in name): continue
+            
+            return labels
+        
+    return HDX_POPULATION_TYPES['overall']

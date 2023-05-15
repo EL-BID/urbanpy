@@ -2,7 +2,7 @@ import pandas as pd
 import geopandas as gpd
 import osmnx as ox
 from h3 import h3
-from tqdm import tqdm
+from rich.progress import track
 from urbanpy.utils import geo_boundary_to_polygon
 from typing import Sequence, Union
 
@@ -17,14 +17,16 @@ __all__ = [
     'osmnx_coefficient_computation',
 ]
 
-def merge_geom_downloads(gdfs: Sequence[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
+def merge_geom_downloads(gdfs: Sequence[gpd.GeoDataFrame], crs: str = "EPSG:4326") -> gpd.GeoDataFrame:
     '''
     Merge several GeoDataFrames from OSM download_osm
 
     Parameters
     ----------
     dfs: array_like
-        Array of GeoDataFrames to merge
+        Array of GeoDataFrames to merge. Assumes equal CRS.
+    crs: str
+        Valid string to pass to crs param of the geopandas.GeoDataFrame constructor function.
 
     Returns
     -------
@@ -41,7 +43,7 @@ def merge_geom_downloads(gdfs: Sequence[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
     geometry
     MULTIPOLYGON (((-76.80277 -12.47562, -76.80261...)))
     '''
-    concat = gpd.GeoDataFrame(geometry=[pd.concat(gdfs).unary_union])
+    concat = gpd.GeoDataFrame(geometry=[pd.concat(gdfs).unary_union], crs=crs)
     return concat
 
 
@@ -220,7 +222,7 @@ def merge_shape_hex(hexs: gpd.GeoDataFrame, shape: gpd.GeoDataFrame, agg: dict, 
     #Avoid SpecificationError by copying the DataFrame
     ret_hex = hexs.copy()
 
-    for key in agg.keys():
+    for key in agg:
         ret_hex.loc[hex_merge.index, key] = hex_merge[key].values
 
     return ret_hex
@@ -368,7 +370,7 @@ def osmnx_coefficient_computation(gdf, net_type, basic_stats, extended_stats, co
 	888e62d4b3fffff	| POLYGON ((-76.87935 -12.03688, -76.88366 -12.0... | 1.044654
     '''
     #May be a lengthy download depending on the amount of features
-    for index, row in tqdm(gdf.iterrows()):
+    for index, row in track(gdf.iterrows(), total=gdf.shape[0], description="Computing road network coefficients..."):
         try:
             graph = ox.graph_from_polygon(row['geometry'], net_type)
             b_stats = ox.basic_stats(graph)
