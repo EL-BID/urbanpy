@@ -5,6 +5,7 @@ from osmnx import project_gdf
 from tqdm.auto import tqdm
 from urbanpy.routing import osrm_route
 from urbanpy.utils import nn_search, create_duration_labels
+from rich.progress import Progress
 
 __all__ = [
     'pressure_map',

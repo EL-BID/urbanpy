@@ -9,3 +9,4 @@ scikit-learn
 osmnx
 networkx
 hdx-python-api
+rich
