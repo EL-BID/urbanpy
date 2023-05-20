@@ -30,5 +30,5 @@ echo "Removing osrm processing containers ... (5/5)"
 docker container rm osrm_extract osrm_partition osrm_customize >> $(pwd)/logs/$4.txt;
 echo "Done (5/5)"
 echo "Starting osrm server ..."
-CONTAINER_ID=$(docker run -d -t --name $1_$3_$2_$4 -p $5:5000 -v $(pwd):/data osrm/osrm-backend osrm-routed --algorithm mld /data/$2-latest.osm.pbf);
+CONTAINER_ID=$(docker run -d -t --name $1_$3_$2_$4 -p 5000:5000 -v $(pwd):/data osrm/osrm-backend osrm-routed --algorithm mld /data/$2-latest.osm.pbf);
 echo "Docker Container ID: ${CONTAINER_ID}"
