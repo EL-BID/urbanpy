@@ -55,7 +55,7 @@ def check_container_is_running(container_name: str) -> bool:
 
 def start_osrm_server(country: str, continent: str, profile: str) -> None:
     '''
-    Download data for OSRM, process it and start a local osrm server fdhgdfshgrdfhgfdhdf
+    Download data for OSRM, process it and start a local osrm server
 
     Parameters
     ----------
