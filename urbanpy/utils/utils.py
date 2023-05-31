@@ -11,19 +11,20 @@ from pandas import DataFrame
 from geopandas import GeoDataFrame, GeoSeries
 
 __all__ = [
-    'swap_xy',
-    'nn_search',
-    'shell_from_geometry',
-    'geo_boundary_to_polygon',
-    'create_duration_labels',
-    'to_overpass_query',
-    'overpass_to_gdf',
-    'get_hdx_label',
-    'HDX_POPULATION_TYPES'
+    "swap_xy",
+    "nn_search",
+    "shell_from_geometry",
+    "geo_boundary_to_polygon",
+    "create_duration_labels",
+    "to_overpass_query",
+    "overpass_to_gdf",
+    "get_hdx_label",
+    "HDX_POPULATION_TYPES",
 ]
 
+
 def swap_xy(geom):
-    '''
+    """
     Util function in case an x,y coordinate needs to be switched
 
     Parameters
@@ -50,38 +51,41 @@ def swap_xy(geom):
     >>> print((p.x, p.y), (p_.x, p_.y))
     (-77.0, -12.0) (-12.0, -77.0)
 
-    '''
+    """
     if geom.is_empty:
         return geom
 
     if geom.has_z:
+
         def swap_xy_coords(coords):
             for x, y, z in coords:
                 yield (y, x, z)
+
     else:
+
         def swap_xy_coords(coords):
             for x, y in coords:
                 yield (y, x)
 
     # Process coordinates from each supported geometry type
-    if geom.geom_type in ('Point', 'LineString', 'LinearRing'):
+    if geom.geom_type in ("Point", "LineString", "LinearRing"):
         return type(geom)(list(swap_xy_coords(geom.coords)))
-    elif geom.geom_type == 'Polygon':
+    elif geom.geom_type == "Polygon":
         ring = geom.exterior
         shell = type(ring)(list(swap_xy_coords(ring.coords)))
         holes = list(geom.interiors)
         for pos, ring in enumerate(holes):
             holes[pos] = type(ring)(list(swap_xy_coords(ring.coords)))
         return type(geom)(shell, holes)
-    elif geom.geom_type.startswith('Multi') or geom.type == 'GeometryCollection':
+    elif geom.geom_type.startswith("Multi") or geom.type == "GeometryCollection":
         # Recursive call
         return type(geom)([swap_xy(part) for part in geom.geoms])
     else:
-        raise ValueError('Type %r not recognized' % geom.geom_type)
+        raise ValueError("Type %r not recognized" % geom.geom_type)
 
 
-def nn_search(tree_features, query_features, metric='haversine'):
-    '''
+def nn_search(tree_features, query_features, metric="haversine"):
+    """
     Build a BallTree for nearest neighbor search based on selected distance.
 
     Parameters
@@ -117,17 +121,16 @@ def nn_search(tree_features, query_features, metric='haversine'):
     >>> query = [[-77,-12]]
     >>> urbanpy.utils.nn_search(features, query)
 
-    '''
+    """
 
-    if metric == 'haversine':
-
+    if metric == "haversine":
         tf = np.radians(tree_features)
         tree = BallTree(tf, metric=metric)
 
         qf = np.radians(query_features)
 
         dist, ind = tree.query(qf)
-        return dist * 6371000/1000, ind
+        return dist * 6371000 / 1000, ind
     else:
         tree = BallTree(tree_features, metric=metric)
         dist, ind = tree.query(query_features)
@@ -135,18 +138,18 @@ def nn_search(tree_features, query_features, metric='haversine'):
 
 
 def shell_from_geometry(geometry):
-    '''
+    """
     Util function for park and pitch processing.
-    '''
+    """
 
     shell = []
     for record in geometry:
-        shell.append([record['lon'], record['lat']])
+        shell.append([record["lon"], record["lat"]])
     return shell
 
 
 def geo_boundary_to_polygon(x):
-    '''
+    """
     Transform h3 geo boundary to shapely Polygon
 
     Parameters
@@ -161,12 +164,14 @@ def geo_boundary_to_polygon(x):
     polygon: Polygon
         Polygon representing H3 hexagon area
 
-    '''
-    return Polygon([bound[::-1] for bound in h3.h3_to_geo_boundary(x)]) # format as x,y (lon, lat)
+    """
+    return Polygon(
+        [bound[::-1] for bound in h3.h3_to_geo_boundary(x)]
+    )  #  format as x,y (lon, lat)
 
 
 def create_duration_labels(durations):
-    '''
+    """
     Creates inputs for pd.cut function (bins and labels) especifically for the trip durations columns.
 
     Parameters
@@ -184,10 +189,17 @@ def create_duration_labels(durations):
     custom_labels: list
         List of numbers with the inputs for the labels parameter of pd.cut function
 
-    '''
+    """
     default_bins = [0, 15, 30, 45, 60, 90, 120]
-    default_labels = ["De 0 a 15", "De 15 a 30", "De 30 a 45", "De 45 a 60",
-                      "De 60 a 90", "De 90 a 120", "Más de 120"]
+    default_labels = [
+        "De 0 a 15",
+        "De 15 a 30",
+        "De 30 a 45",
+        "De 45 a 60",
+        "De 60 a 90",
+        "De 90 a 120",
+        "Más de 120",
+    ]
 
     bins_ = default_bins.copy()
 
@@ -201,7 +213,7 @@ def create_duration_labels(durations):
     if (ix + 1) >= len(default_bins) and max_duration_asint != default_bins[-1]:
         default_bins.append(max_duration_asint)
 
-    custom_bins = default_bins[:ix + 1]
+    custom_bins = default_bins[: ix + 1]
     custom_labels = default_labels[:ix]
 
     return custom_bins, custom_labels
@@ -210,14 +222,14 @@ def create_duration_labels(durations):
 def to_overpass_query(type_of_data: str, query: dict) -> str:
     """
     Parse query dict to build Overpass QL query.
-    
+
     Parameters
     ----------
     type_of_data: str
         OSM type of data (One of: relation, node, way).
     query: dict
         OSM keys and values to be queried
-    
+
     Returns
     -------
     overpass_query: str
@@ -227,89 +239,99 @@ def to_overpass_query(type_of_data: str, query: dict) -> str:
     if len(query) == 0:
         ov_body = f"{type_of_data};"
     else:
-        ov_body = ''
+        ov_body = ""
 
         for key, values in query.items():
             if values is None:
-                operator = ''
-                values_str = ''
+                operator = ""
+                values_str = ""
 
             if type(values) == str:
-                operator = '='
+                operator = "="
                 values_str = f'"{values}"'
 
             if type(values) == list:
                 n_values = len(values)
 
                 if n_values == 0:
-                    operator = ''
-                    values_str = ''
+                    operator = ""
+                    values_str = ""
                 if n_values >= 1:
-                    operator = '~'
+                    operator = "~"
                     values_str = f'"{"|".join(v for v in values)}"'
-                    
+
             ov_body += f"""{type_of_data}[\"{key}\"{operator}{values_str}];\n"""
-    
+
     overpass_query = f"""[timeout:120][out:json][bbox];
     ({ov_body});
     out body geom;"""
-        
+
     return overpass_query
 
 
-def process_overpass_relations(data: dict, mask: Optional[Union[GeoDataFrame, GeoSeries, Polygon, MultiPolygon]] = None) -> Tuple[DataFrame, GeoDataFrame]:
-    '''
+def process_overpass_relations(
+    data: dict,
+    mask: Optional[Union[GeoDataFrame, GeoSeries, Polygon, MultiPolygon]] = None,
+) -> Tuple[DataFrame, GeoDataFrame]:
+    """
     Process relation data structure from an Overpass API response.
-    
+
     Parameters
     ----------
     data: dict
         Overpass API response payload.
     mask: GeoDataFrame, GeoSeries, (Multi)Polygon
         Polygon vector layer used to clip the final gdf. See geopandas.clip().
-    
+
     Returns
     -------
     gdf_members: GeoDataFrame
         All geometries from relations members with relation ID
     df_relations: DataFrame
         Relations metadata such as ID and tags.
-    '''
-    
-    df_relations = pd.DataFrame.from_dict(data['elements']).drop('members', axis=1)
-    
-    # Separete nodes from ways members
+    """
+
+    df_relations = pd.DataFrame.from_dict(data["elements"]).drop("members", axis=1)
+
+    # Separate nodes from ways members
     rels_nodes, rels_ways = [], []
-    for elem in data['elements']:
-        for mem in elem['members']:
-            mem['relation_id'] = elem['id'] # Set member-relation key
-            if mem['type'] == 'node':
+    for elem in data["elements"]:
+        for mem in elem["members"]:
+            mem["relation_id"] = elem["id"]  # Set member-relation key
+            if mem["type"] == "node":
                 rels_nodes.append(mem)
-            if mem['type'] == 'way':
+            if mem["type"] == "way":
                 rels_ways.append(mem)
 
     # Process node members
     df_nodes = pd.DataFrame.from_dict(rels_nodes)
-    df_nodes['geometry'] = gpd.points_from_xy(df_nodes['lon'], df_nodes['lat'])
-    gdf_nodes = gpd.GeoDataFrame(df_nodes, crs='EPSG:4326')
+    df_nodes["geometry"] = gpd.points_from_xy(df_nodes["lon"], df_nodes["lat"])
+    gdf_nodes = gpd.GeoDataFrame(df_nodes, crs="EPSG:4326")
 
-    # Process way members
+    #  Process way members
     df_ways = pd.DataFrame.from_dict(rels_ways)
-    df_ways['shell'] = df_ways['geometry'].apply(shell_from_geometry)
-    df_ways = df_ways[df_ways['shell'].apply(len) > 2]
-    df_ways['geometry'] = df_ways['shell'].apply(Polygon)
+    df_ways["shell"] = df_ways["geometry"].apply(shell_from_geometry)
+    df_ways = df_ways[df_ways["shell"].apply(len) > 2]
+    df_ways["geometry"] = df_ways["shell"].apply(Polygon)
     gdf_ways = gpd.GeoDataFrame(df_ways, crs="EPSG:4326")
-    gdf_ways.geometry = gdf_ways.geometry.apply(make_valid) # buffer(0) is faster but shapely recommends make_valid()
+    # buffer(0) is faster but shapely recommends make_valid()
+    gdf_ways.geometry = gdf_ways.geometry.apply(make_valid)
 
     # Merge members and return gdf
-    gdf_members = gpd.GeoDataFrame(pd.concat([gdf_nodes, gdf_ways]), crs='EPSG:4326')
+    gdf_members = gpd.GeoDataFrame(pd.concat([gdf_nodes, gdf_ways]), crs="EPSG:4326")
     if mask is not None:
-        gdf_members = gdf_members.clip(mask=mask) # Using hexs is ~100x faster than adm boundaries
+        # Using hexs is ~100x faster than adm boundaries
+        gdf_members = gdf_members.clip(mask=mask)
 
     return gdf_members, df_relations
 
 
-def overpass_to_gdf(type_of_data: str, data: dict, mask: Optional[Union[GeoDataFrame, GeoSeries, Polygon, MultiPolygon]] = None, ov_keys: Optional[list] = None) -> Tuple[GeoDataFrame, Optional[DataFrame]]:
+def overpass_to_gdf(
+    type_of_data: str,
+    data: dict,
+    mask: Optional[Union[GeoDataFrame, GeoSeries, Polygon, MultiPolygon]] = None,
+    ov_keys: Optional[list] = None,
+) -> Tuple[GeoDataFrame, Optional[DataFrame]]:
     """
     Process overpass response data according to type_of_data and clip to mask if given.
 
@@ -320,63 +342,71 @@ def overpass_to_gdf(type_of_data: str, data: dict, mask: Optional[Union[GeoDataF
     data: dict
         Response object's json result from Overpass API.
     mask: dict. Optional
-        Dict contaning OSM tag filters. Dict keys can take OSM tags 
-        and Dict values can be list of strings, str or None. 
+        Dict contaning OSM tag filters. Dict keys can take OSM tags
+        and Dict values can be list of strings, str or None.
         Check keys [OSM Map Features](https://wiki.openstreetmap.org/wiki/Map_features).
         Example: {
-            'key0': ['v0a', 'v0b','v0c'], 
-            'key1': 'v1', 
+            'key0': ['v0a', 'v0b','v0c'],
+            'key1': 'v1',
             'key2': None
         }
     ov_keys: list. Optional
         Unique OSM keys used in Overpass query (e.g. "amenity", "shop", etc) to fill "poi_type" df column.
-        
-    
+
+
     Returns
     -------
     gdf: GeoDataFrame
         POIs from the selected type of facility.
     df: DataFrame. Optional
-        Relations metadata such as ID and tags. Returns None if 'type_of_data' other than 'relation'. 
+        Relations metadata such as ID and tags. Returns None if 'type_of_data' other than 'relation'.
     """
 
-    if type_of_data == 'relation':
+    if type_of_data == "relation":
         return process_overpass_relations(data, mask)
     else:
-        df = pd.DataFrame.from_dict(data['elements'])
+        df = pd.DataFrame.from_dict(data["elements"])
 
-        if type_of_data == 'node':
-            df['geometry']= gpd.points_from_xy(df['lon'], df['lat'])
+        if type_of_data == "node":
+            df["geometry"] = gpd.points_from_xy(df["lon"], df["lat"])
 
-        if type_of_data == 'way':
-            df['geometry'] = df['geometry'].apply(lambda x: Polygon(shell_from_geometry(x)))
+        if type_of_data == "way":
+            df["geometry"] = df["geometry"].apply(
+                lambda x: Polygon(shell_from_geometry(x))
+            )
 
         gdf = gpd.GeoDataFrame(df, crs=4326)
         if mask is not None:
-            gdf = gdf.clip(mask=mask) 
-        
+            gdf = gdf.clip(mask=mask)
+
         if ov_keys is not None:
-            # Extract relevant data from osm tags
-            gdf['poi_type'] = gdf['tags'].apply(lambda tag: tag[ov_keys[0]] if ov_keys[0] in tag.keys() else np.NaN)
+            #  Extract relevant data from osm tags
+            gdf["poi_type"] = gdf["tags"].apply(
+                lambda tag: tag[ov_keys[0]] if ov_keys[0] in tag.keys() else np.NaN
+            )
             for k in ov_keys:
                 # Use other keys to complete NaNs
-                gdf['poi_type'].fillna(
-                    value=gdf['tags'].apply(lambda tag: tag[k] if k in tag.keys() else np.NaN)
+                gdf["poi_type"].fillna(
+                    value=gdf["tags"].apply(
+                        lambda tag: tag[k] if k in tag.keys() else np.NaN
+                    )
                 )
-                if gdf['poi_type'].isna().sum() == 0:
+                if gdf["poi_type"].isna().sum() == 0:
                     break
 
         return gdf, None
 
-HDX_POPULATION_TYPES =  {
-        'overall': 'Overall population density',
-        'women': 'Women',
-        '_men_': 'Men',
-        'children': 'Children (ages 0-5)',
-        'youth': 'Youth (ages 15-24) ',
-        'elderly': 'Elderly (ages 60+)',
-        'women_of_reproductive_age': 'Women of reproductive age (ages 15-49)'
-    }
+
+HDX_POPULATION_TYPES = {
+    "overall": "Overall population density",
+    "women": "Women",
+    "_men_": "Men",
+    "children": "Children (ages 0-5)",
+    "youth": "Youth (ages 15-24) ",
+    "elderly": "Elderly (ages 60+)",
+    "women_of_reproductive_age": "Women of reproductive age (ages 15-49)",
+}
+
 
 def get_hdx_label(name):
     """
@@ -384,23 +414,24 @@ def get_hdx_label(name):
 
     Parameters
     ----------
-    name: str. 
-        HDX Facebook population density dataset filename.    
-    
+    name: str.
+        HDX Facebook population density dataset filename.
+
     Returns
     -------
     labels str: GeoDataFrame
         POIs from the selected type of facility.
     df: DataFrame. Optional
-        Relations metadata such as ID and tags. Returns None if 'type_of_data' other than 'relation'. 
+        Relations metadata such as ID and tags. Returns None if 'type_of_data' other than 'relation'.
     """
 
     for keys, labels in HDX_POPULATION_TYPES.items():
         if keys in name:
             # Avoid assigning "women of reproductive age" label
             # to the general women dataset
-            if (keys == 'women') and ('reproductive' in name): continue
-            
+            if (keys == "women") and ("reproductive" in name):
+                continue
+
             return labels
-        
-    return HDX_POPULATION_TYPES['overall']
+
+    return HDX_POPULATION_TYPES["overall"]

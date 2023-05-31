@@ -26,7 +26,14 @@ shops = {
         "wine",
         "water",
     ],
-    "mall": ["department_store", "general", "kiosk", "mall", "supermarket", "wholesale"],
+    "mall": [
+        "department_store",
+        "general",
+        "kiosk",
+        "mall",
+        "supermarket",
+        "wholesale",
+    ],
     "clothing": [
         "baby_goods",
         "bag",
@@ -99,7 +106,14 @@ shops = {
         "tiles",
         "window_blind",
     ],
-    "electronics": ["computer", "electronics", "hifi", "mobile_phone", "radiotechnics", "vacuum_cleaner"],
+    "electronics": [
+        "computer",
+        "electronics",
+        "hifi",
+        "mobile_phone",
+        "radiotechnics",
+        "vacuum_cleaner",
+    ],
     "outdoors": [
         "atv",
         "bicycle",
@@ -188,7 +202,7 @@ amenities = {
         "music_school",
         "school",
         "university",
-        "driving_school"
+        "driving_school",
     ],
     "transportation": [
         "bicycle_parking",
@@ -249,7 +263,7 @@ amenities = {
         "post_office",
         "prison",
         "ranger_station",
-        "townhall"
+        "townhall",
     ],
     "others": [
         "animal_boarding",
