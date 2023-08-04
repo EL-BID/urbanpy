@@ -137,3 +137,9 @@ If you use this library or find the documentation useful for your research, plea
 <a href="https://github.com/EL-BID/urbanpy/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=EL-BID/urbanpy" />
 </a>
+
+## Related projects
+
+<a href="https://www.autodash.org/">
+  <img src="https://www.autodash.org/static/images/logo.png" width=64 height=64 /><p>AutoDash</p>
+</a>
