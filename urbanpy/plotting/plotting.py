@@ -1,13 +1,14 @@
 # import pydeck as pdk
 import pandas as pd
 import plotly.express as px
+
 # import matplotlib.pyplot as plt
 # from urbanpy.utils import tuples_to_lists
 
 __all__ = [
     # 'pydeck_df',
     # 'gen_pydeck_layer',
-    'choropleth_map',
+    "choropleth_map",
 ]
 
 # def gen_pydeck_layer(layer_type, data, **kwargs):
@@ -16,8 +17,9 @@ __all__ = [
 #     else:
 #         return pdk.Layer('PolygonLayer', data, **kwargs)
 
+
 def choropleth_map(gdf, color_column, df_filter=None, **kwargs):
-    '''
+    """
     Produce a Choroplethmap using plotly by passing a GeoDataFrame.
 
     Parameters
@@ -43,22 +45,27 @@ def choropleth_map(gdf, color_column, df_filter=None, **kwargs):
     >>> hex_lima['pop_2020'] = population_2020
     >>> urbanpy.plotting.choropleth_map(hex_lima, 'pop_2020', [-12, -77])
 
-    '''
-
+    """
 
     if df_filter is not None:
         gdff = gdf[df_filter].copy()
     else:
         gdff = gdf.copy()
 
-    gdff = gdff.reset_index()[['index', color_column, 'geometry']].dropna()
+    gdff = gdff.reset_index()[["index", color_column, "geometry"]].dropna()
     lon, lat = gdff.geometry.unary_union.centroid.xy
 
-    fig = px.choropleth_mapbox(gdff, geojson=gdff[['geometry']].__geo_interface__,
-                               color=color_column, locations="index",
-                               center={"lat": lat[0], "lon": lon[0]},
-                               mapbox_style="carto-positron", **kwargs)
+    fig = px.choropleth_mapbox(
+        gdff,
+        geojson=gdff[["geometry"]].__geo_interface__,
+        color=color_column,
+        locations="index",
+        center={"lat": lat[0], "lon": lon[0]},
+        mapbox_style="carto-positron",
+        **kwargs
+    )
     return fig
+
 
 # def pydeck_df(gdf, features, cmap, bins, color_feature):
 #     '''
