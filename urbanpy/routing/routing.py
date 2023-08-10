@@ -90,7 +90,7 @@ def start_osrm_server(country: str, continent: str, profile: str) -> None:
         container_check = ["docker", "inspect", container_name]
         container_start = ["docker", "start", container_name]
         download_command = [
-            "sh",
+            "bash",
             str(pathlib.PosixPath(ROUTING_MODUEL_DIR, "unix_download.sh")),
             CONTAINER_NAME,
             country,
