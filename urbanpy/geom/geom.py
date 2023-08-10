@@ -7,18 +7,21 @@ from urbanpy.utils import geo_boundary_to_polygon
 from typing import Sequence, Union
 
 __all__ = [
-    'merge_geom_downloads',
-    'filter_population',
-    'remove_features',
-    'gen_hexagons',
-    'merge_shape_hex',
-    'overlay_polygons_hexs',
-    'resolution_downsampling',
-    'osmnx_coefficient_computation',
+    "merge_geom_downloads",
+    "filter_population",
+    "remove_features",
+    "gen_hexagons",
+    "merge_shape_hex",
+    "overlay_polygons_hexs",
+    "resolution_downsampling",
+    "osmnx_coefficient_computation",
 ]
 
-def merge_geom_downloads(gdfs: Sequence[gpd.GeoDataFrame], crs: str = "EPSG:4326") -> gpd.GeoDataFrame:
-    '''
+
+def merge_geom_downloads(
+    gdfs: Sequence[gpd.GeoDataFrame], crs: str = "EPSG:4326"
+) -> gpd.GeoDataFrame:
+    """
     Merge several GeoDataFrames from OSM download_osm
 
     Parameters
@@ -42,13 +45,15 @@ def merge_geom_downloads(gdfs: Sequence[gpd.GeoDataFrame], crs: str = "EPSG:4326
     >>> lima.head()
     geometry
     MULTIPOLYGON (((-76.80277 -12.47562, -76.80261...)))
-    '''
+    """
     concat = gpd.GeoDataFrame(geometry=[pd.concat(gdfs).unary_union], crs=crs)
     return concat
 
 
-def filter_population(pop_df: pd.DataFrame, polygon_gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-    '''
+def filter_population(
+    pop_df: pd.DataFrame, polygon_gdf: gpd.GeoDataFrame
+) -> gpd.GeoDataFrame:
+    """
     Filter an HDX database download to the polygon bounds
 
     Parameters
@@ -77,19 +82,25 @@ def filter_population(pop_df: pd.DataFrame, polygon_gdf: gpd.GeoDataFrame) -> gp
     -12.519861 | -76.745694 | 2.633668        | 2.644757        | POINT (-76.74569 -12.51986)
     -12.519861 | -76.742639 | 2.633668        | 2.644757        | POINT (-76.74264 -12.51986)
     -12.519861 | -76.741250 | 2.633668        | 2.644757        | POINT (-76.74125 -12.51986)
-    '''
+    """
     minx, miny, maxx, maxy = polygon_gdf.geometry.total_bounds
-    limits_filter = pop_df['longitude'].between(minx, maxx) & pop_df['latitude'].between(miny, maxy)
+    limits_filter = pop_df["longitude"].between(minx, maxx) & pop_df[
+        "latitude"
+    ].between(miny, maxy)
     filtered_points = pop_df[limits_filter]
 
-    geometry_ = gpd.points_from_xy(filtered_points['longitude'], filtered_points['latitude'])
-    filtered_points_gdf = gpd.GeoDataFrame(filtered_points, geometry=geometry_, crs='EPSG:4326')
+    geometry_ = gpd.points_from_xy(
+        filtered_points["longitude"], filtered_points["latitude"]
+    )
+    filtered_points_gdf = gpd.GeoDataFrame(
+        filtered_points, geometry=geometry_, crs="EPSG:4326"
+    )
 
     return filtered_points_gdf
 
 
 def remove_features(gdf: gpd.GeoDataFrame, bounds: Sequence[float]) -> gpd.GeoDataFrame:
-    '''
+    """
     Remove a set of features based on bounds
 
     Parameters
@@ -112,7 +123,7 @@ def remove_features(gdf: gpd.GeoDataFrame, bounds: Sequence[float]) -> gpd.GeoDa
     >>> print(lima.shape, removed.shape)
     (348434, 4) (348427, 4)
 
-    '''
+    """
     minx, miny, maxx, maxy = bounds
     drop_ix = gdf.cx[minx:maxx, miny:maxy].index
 
@@ -120,7 +131,7 @@ def remove_features(gdf: gpd.GeoDataFrame, bounds: Sequence[float]) -> gpd.GeoDa
 
 
 def gen_hexagons(resolution: int, city: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-    '''
+    """
     Converts an input multipolygon layer to H3 hexagons given a resolution.
 
     Parameters
@@ -146,30 +157,40 @@ def gen_hexagons(resolution: int, city: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     888e62c851fffff | POLYGON ((-77.20708 -12.08484, -77.21140 -12.0...))
     888e62c841fffff | POLYGON ((-77.22689 -12.07104, -77.23122 -12.0...))
     888e62c847fffff | POLYGON ((-77.23072 -12.07929, -77.23504 -12.0...))
-    '''
+    """
     # Polyfill the city boundaries
     h3_polygons = list()
     h3_indexes = list()
 
-    # Get every polygon in Multipolygon shape
+    # Get every polygon in Multipolygon shape
     city_poly = city.explode(index_parts=True).reset_index(drop=True)
 
     for _, geo in city_poly.iterrows():
-        hexagons = h3.polyfill(geo['geometry'].__geo_interface__, res=resolution, geo_json_conformant=True)
+        hexagons = h3.polyfill(
+            geo["geometry"].__geo_interface__, res=resolution, geo_json_conformant=True
+        )
         for hexagon in hexagons:
             h3_polygons.append(geo_boundary_to_polygon(hexagon))
             h3_indexes.append(hexagon)
 
-    # Create hexagon dataframe
+    # Create hexagon dataframe
     city_hexagons = gpd.GeoDataFrame(h3_indexes, geometry=h3_polygons).drop_duplicates()
-    city_hexagons.crs = 'EPSG:4326'
-    city_hexagons = city_hexagons.rename(columns={0: 'hex'}) # Format column name for readability
+    city_hexagons.crs = "EPSG:4326"
+    city_hexagons = city_hexagons.rename(
+        columns={0: "hex"}
+    )  # Format column name for readability
 
     return city_hexagons
 
 
-def merge_shape_hex(hexs: gpd.GeoDataFrame, shape: gpd.GeoDataFrame, agg: dict, how='inner', predicate='intersects') -> gpd.GeoDataFrame:
-    '''
+def merge_shape_hex(
+    hexs: gpd.GeoDataFrame,
+    shape: gpd.GeoDataFrame,
+    agg: dict,
+    how="inner",
+    predicate="intersects",
+) -> gpd.GeoDataFrame:
+    """
     Merges a H3 hexagon GeoDataFrame with a Point GeoDataFrame and aggregates the
     point gdf data.
 
@@ -213,13 +234,13 @@ def merge_shape_hex(hexs: gpd.GeoDataFrame, shape: gpd.GeoDataFrame, agg: dict, 
     888e62132bfffff | POLYGON ((-76.84736 -12.17523, -76.85167 -12.1... | 608.312696
     888e628debfffff | POLYGON ((-76.67982 -12.18998, -76.68413 -12.1... | NaN
     888e6299b3fffff | POLYGON ((-76.78876 -11.97286, -76.79307 -11.9... | 3225.658803
-    '''
+    """
     joined = gpd.sjoin(shape, hexs, how=how, predicate=predicate)
 
-    #Uses index right based on the order of points and hex. Right takes hex index
-    hex_merge = joined.groupby('index_right').agg(agg)
+    # Uses index right based on the order of points and hex. Right takes hex index
+    hex_merge = joined.groupby("index_right").agg(agg)
 
-    #Avoid SpecificationError by copying the DataFrame
+    # Avoid SpecificationError by copying the DataFrame
     ret_hex = hexs.copy()
 
     for key in agg:
@@ -228,8 +249,13 @@ def merge_shape_hex(hexs: gpd.GeoDataFrame, shape: gpd.GeoDataFrame, agg: dict, 
     return ret_hex
 
 
-def overlay_polygons_hexs(polygons: gpd.GeoDataFrame, hexs: gpd.GeoDataFrame, hex_col: str, columns: Sequence[str]) -> gpd.GeoDataFrame:
-    '''
+def overlay_polygons_hexs(
+    polygons: gpd.GeoDataFrame,
+    hexs: gpd.GeoDataFrame,
+    hex_col: str,
+    columns: Sequence[str],
+) -> gpd.GeoDataFrame:
+    """
     Overlays a Polygon GeoDataFrame with a H3 hexagon GeoDataFrame and divide the 'columns' the values proportionally to the overlayed area.
 
     Parameters
@@ -264,29 +290,35 @@ def overlay_polygons_hexs(polygons: gpd.GeoDataFrame, hexs: gpd.GeoDataFrame, he
     898e62004a7ffff |  74.154973 |  POLYGON ((-76.79911 -12.36468, -76.80027 -12.3...
     898e62004b7ffff |  46.989828 |  POLYGON ((-76.79879 -12.36128, -76.79995 -12.3...
 
-    '''
-    polygons_ = polygons.copy() # Preserve data state
-    polygons_['poly_area'] = polygons_.geometry.area # Calc polygon area
+    """
+    polygons_ = polygons.copy()  # Preserve data state
+    polygons_["poly_area"] = polygons_.geometry.area  # Calc polygon area
 
     # Overlay intersection
-    overlayed = gpd.overlay(polygons_, hexs, how='intersection')
+    overlayed = gpd.overlay(polygons_, hexs, how="intersection")
 
     # Downsample indicators using proporional overlayed area w.r.t polygon area
-    area_prop = overlayed.geometry.area / overlayed['poly_area']
+    area_prop = overlayed.geometry.area / overlayed["poly_area"]
     overlayed[columns] = overlayed[columns].apply(lambda col: col * area_prop)
 
     # Aggregate over Hex ID
     per_hexagon_data = overlayed.groupby(hex_col)[columns].sum()
 
     # Preserve data as GeoDataFrame
-    hex_df = pd.merge(left=per_hexagon_data, right=hexs[[hex_col,'geometry']], on=hex_col)
-    hex_gdf = gpd.GeoDataFrame(hex_df[[hex_col]+columns], geometry=hex_df['geometry'], crs=hexs.crs)
+    hex_df = pd.merge(
+        left=per_hexagon_data, right=hexs[[hex_col, "geometry"]], on=hex_col
+    )
+    hex_gdf = gpd.GeoDataFrame(
+        hex_df[[hex_col] + columns], geometry=hex_df["geometry"], crs=hexs.crs
+    )
 
     return hex_gdf
 
 
-def resolution_downsampling(gdf: gpd.GeoDataFrame, hex_col: str, coarse_resolution: int, agg: dict) -> gpd.GeoDataFrame:
-    '''
+def resolution_downsampling(
+    gdf: gpd.GeoDataFrame, hex_col: str, coarse_resolution: int, agg: dict
+) -> gpd.GeoDataFrame:
+    """
     Downsample hexagon resolution aggregating indicated metrics (e.g. Transform hexagon resolution from 9 to 6).
 
     Parameters
@@ -304,18 +336,30 @@ def resolution_downsampling(gdf: gpd.GeoDataFrame, hex_col: str, coarse_resoluti
     -------
     gdfc: GeoDataFrame
         GeoDataFrame with lower resolution hexagons geometry and metrics aggregated as indicated.
-    '''
+    """
     gdf_coarse = gdf.copy()
-    coarse_hex_col = 'hex_{}'.format(coarse_resolution)
-    gdf_coarse[coarse_hex_col] = gdf_coarse[hex_col].apply(lambda x: h3.h3_to_parent(x,coarse_resolution))
+    coarse_hex_col = "hex_{}".format(coarse_resolution)
+    gdf_coarse[coarse_hex_col] = gdf_coarse[hex_col].apply(
+        lambda x: h3.h3_to_parent(x, coarse_resolution)
+    )
     dfc = gdf_coarse.groupby([coarse_hex_col]).agg(agg).reset_index()
     gdfc_geometry = dfc[coarse_hex_col].apply(geo_boundary_to_polygon)
 
     return gpd.GeoDataFrame(dfc, geometry=gdfc_geometry, crs=gdf.crs)
 
 
-def osmnx_coefficient_computation(gdf, net_type, basic_stats, extended_stats, connectivity=False, anc=False, ecc=False, bc=False, cc=False):
-    '''
+def osmnx_coefficient_computation(
+    gdf,
+    net_type,
+    basic_stats,
+    extended_stats,
+    connectivity=False,
+    anc=False,
+    ecc=False,
+    bc=False,
+    cc=False,
+):
+    """
     Apply osmnx's graph from polygon to query a city's street network within a geometry.
     This may be a long procedure given the hexagon layer resolution.
 
@@ -363,16 +407,20 @@ def osmnx_coefficient_computation(gdf, net_type, basic_stats, extended_stats, co
     On record 1:  There are no nodes within the requested geometry
     On record 3:  There are no nodes within the requested geometry
                 hex	| geometry	                                        | circuity_avg
-	888e62c64bfffff	| POLYGON ((-76.89763 -12.03869, -76.90194 -12.0... | 1.021441
-	888e6212e1fffff	| POLYGON ((-76.75291 -12.19727, -76.75722 -12.2... | NaN
-	888e62d333fffff	| POLYGON ((-77.09253 -11.83762, -77.09685 -11.8... | 1.025313
-	888e666c2dfffff	| POLYGON ((-76.93109 -11.79031, -76.93540 -11.7... | NaN
-	888e62d4b3fffff	| POLYGON ((-76.87935 -12.03688, -76.88366 -12.0... | 1.044654
-    '''
-    #May be a lengthy download depending on the amount of features
-    for index, row in track(gdf.iterrows(), total=gdf.shape[0], description="Computing road network coefficients..."):
+        888e62c64bfffff	| POLYGON ((-76.89763 -12.03869, -76.90194 -12.0... | 1.021441
+        888e6212e1fffff	| POLYGON ((-76.75291 -12.19727, -76.75722 -12.2... | NaN
+        888e62d333fffff	| POLYGON ((-77.09253 -11.83762, -77.09685 -11.8... | 1.025313
+        888e666c2dfffff	| POLYGON ((-76.93109 -11.79031, -76.93540 -11.7... | NaN
+        888e62d4b3fffff	| POLYGON ((-76.87935 -12.03688, -76.88366 -12.0... | 1.044654
+    """
+    # May be a lengthy download depending on the amount of features
+    for index, row in track(
+        gdf.iterrows(),
+        total=gdf.shape[0],
+        description="Computing road network coefficients...",
+    ):
         try:
-            graph = ox.graph_from_polygon(row['geometry'], net_type)
+            graph = ox.graph_from_polygon(row["geometry"], net_type)
             b_stats = ox.basic_stats(graph)
             ext_stats = ox.extended_stats(graph, connectivity, anc, ecc, bc, cc)
 
@@ -381,6 +429,6 @@ def osmnx_coefficient_computation(gdf, net_type, basic_stats, extended_stats, co
             for stat in extended_stats:
                 gdf.loc[index, stat] = ext_stats.get(stat)
         except Exception as err:
-            print(f'On record {index}: ', err)
+            print(f"On record {index}: ", err)
 
     return gdf
