@@ -191,15 +191,8 @@ def create_duration_labels(durations):
 
     """
     default_bins = [0, 15, 30, 45, 60, 90, 120]
-    default_labels = [
-        "De 0 a 15",
-        "De 15 a 30",
-        "De 30 a 45",
-        "De 45 a 60",
-        "De 60 a 90",
-        "De 90 a 120",
-        "Más de 120",
-    ]
+    default_labels = [f"{default_bins[i]}-{default_bins[i+1]}" for i in range(len(default_bins) - 1)]
+    default_labels.append(f">{default_bins[-1]}")
 
     bins_ = default_bins.copy()
 
