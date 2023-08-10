@@ -108,12 +108,12 @@ class UtilTest(unittest.TestCase):
         # Case 0-10
         bins, test = up.utils.create_duration_labels(inp_1)
         self.assertEqual(bins, [0, 15])
-        self.assertEqual(test, ["De 0 a 15"])
+        self.assertEqual(test, ["0-15"])
 
         # Case 0-20
         bins, test = up.utils.create_duration_labels(inp_2)
         self.assertEqual(bins, [0, 15, 30])
-        self.assertEqual(test, ["De 0 a 15", "De 15 a 30"])
+        self.assertEqual(test, ["0-15", "15-30"])
 
         # Case 10-100
         bins, test = up.utils.create_duration_labels(inp_3)
@@ -121,12 +121,12 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(
             test,
             [
-                "De 0 a 15",
-                "De 15 a 30",
-                "De 30 a 45",
-                "De 45 a 60",
-                "De 60 a 90",
-                "De 90 a 120",
+                "0-15",
+                "15-30",
+                "30-45",
+                "45-60",
+                "60-90",
+                "90-120",
             ],
         )
 
