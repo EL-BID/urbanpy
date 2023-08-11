@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.9, '3.10']
+        python-version: ["3.9", "3.10", "3.11"]
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
@@ -54,7 +54,9 @@ jobs:
 
   release:
     needs: [docs, build]
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    if: |
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags')) ||
+      (github.event_name == 'release' && contains(github.event.action, 'published'))
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
