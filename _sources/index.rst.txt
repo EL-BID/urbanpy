@@ -138,12 +138,6 @@ UrbanPy's original authors are Claudio Ortega
 (`socials <https://www.linkedin.com/in/claudioortega27/>`__) and Andrés
 Regal (`socials <https://www.linkedin.com/in/andrés-regal/>`__).
 
-.. toctree::
-   :maxdepth: 6
-   :caption: Contents:
-
-   modules
-
 \*Current support is tested on Linux Ubuntu 18.04 & Mac OS Catalina,
 coming soon we will test and support Windows 10.
 
