@@ -1,14 +1,15 @@
-import geopandas as gpd
-import pandas as pd
-import numpy as np
-from h3 import h3
 from math import ceil
-from shapely.geometry import Polygon, MultiPolygon
+from typing import Optional, Tuple, Union
+
+import geopandas as gpd
+import numpy as np
+import pandas as pd
+from geopandas import GeoDataFrame, GeoSeries
+from h3 import h3
+from pandas import DataFrame
+from shapely.geometry import MultiPolygon, Polygon
 from shapely.validation import make_valid
 from sklearn.neighbors import BallTree
-from typing import Optional, Union, Tuple
-from pandas import DataFrame
-from geopandas import GeoDataFrame, GeoSeries
 
 __all__ = [
     "swap_xy",
@@ -176,22 +177,20 @@ def create_duration_labels(durations):
 
     Parameters
     ----------
-
     durations: Pandas Series
         Series containing trip durations in minutes.
 
     Returns
     -------
-
     custom_bins: list
         List of numbers with the inputs for the bins parameter of pd.cut function
-
     custom_labels: list
         List of numbers with the inputs for the labels parameter of pd.cut function
-
     """
     default_bins = [0, 15, 30, 45, 60, 90, 120]
-    default_labels = [f"{default_bins[i]}-{default_bins[i+1]}" for i in range(len(default_bins) - 1)]
+    default_labels = [
+        f"{default_bins[i]}-{default_bins[i+1]}" for i in range(len(default_bins) - 1)
+    ]
     default_labels.append(f">{default_bins[-1]}")
 
     bins_ = default_bins.copy()
@@ -345,7 +344,6 @@ def overpass_to_gdf(
         }
     ov_keys: list. Optional
         Unique OSM keys used in Overpass query (e.g. "amenity", "shop", etc) to fill "poi_type" df column.
-
 
     Returns
     -------
