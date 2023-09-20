@@ -1,20 +1,22 @@
+from typing import Optional, Tuple, Union
 from warnings import warn
-import requests
+
 import geopandas as gpd
-import pandas as pd
 import numpy as np
 import osmnx as ox
-from shapely.geometry import Polygon, MultiPolygon
+import pandas as pd
+import requests
+from geopandas import GeoDataFrame, GeoSeries
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
-from typing import Optional, Union, Tuple
 from pandas import DataFrame
-from geopandas import GeoDataFrame, GeoSeries
+from shapely.geometry import MultiPolygon, Polygon
+
 from urbanpy.utils import (
-    to_overpass_query,
-    overpass_to_gdf,
-    get_hdx_label,
     HDX_POPULATION_TYPES,
+    get_hdx_label,
+    overpass_to_gdf,
+    to_overpass_query,
 )
 
 __all__ = [
@@ -176,7 +178,8 @@ def overpass(
             'key1': 'v1',
             'key2': None
         }
-    mask:
+    mask: GeoDataFrame, GeoSeries, Polygon or MultiPolygon
+        Total bounds of mask to be used for the query.
 
     Returns
     -------
@@ -185,6 +188,7 @@ def overpass(
     df: DataFrame
         Relations metadata such as ID and tags. Returns None if 'type_of_data' other than 'relation'.
     """
+
     minx, miny, maxx, maxy = mask.total_bounds
     bbox_string = f"{minx},{miny},{maxx},{maxy}"
 
@@ -353,7 +357,6 @@ def get_hdx_dataset(resources_df: DataFrame, ids: Union[int, list]) -> DataFrame
     ----------
     resources_df: pd.DataFrame
         Resources dataframe from returned by search_hdx_dataset
-
     ids: int or list
         IDs in the resources dataframe
 
@@ -373,7 +376,9 @@ def get_hdx_dataset(resources_df: DataFrame, ids: Union[int, list]) -> DataFrame
     -18.335694 | -70.387361	| 11.318147	      | 12.099885
     -18.335417 | -70.394028	| 11.318147	      | 12.099885
     -18.335139 | -70.394306	| 11.318147	      | 12.099885
+
     """
+
     urls = resources_df.loc[ids, "url"]
 
     if isinstance(ids, list) and len(ids) > 1:

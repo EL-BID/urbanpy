@@ -22,11 +22,10 @@ sys.path.insert(0, os.path.abspath("../.."))
 # sys.path.insert(0, os.path.abspath('../../urbanpy/utils'))
 import sphinx_rtd_theme
 
-
 # -- Project information -----------------------------------------------------
 
 project = "urbanpy"
-copyright = "2020, IADB"
+copyright = "2023, IADB"
 author = "Andres Regal, Claudio Ortega & Antonio Vasquez Brust"
 
 # The full version, including alpha/beta/rc tags
@@ -38,7 +37,11 @@ release = "__version__"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["sphinx.ext.autodoc", "sphinx_rtd_theme", "numpydoc"]
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx_rtd_theme",
+    "numpydoc",
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
