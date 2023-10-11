@@ -141,6 +141,10 @@ If you use this library or find the documentation useful for your research, plea
   <img src="https://contrib.rocks/image?repo=EL-BID/urbanpy" />
 </a>
 
+## Use Cases
+[Urbanpy applied to the education sector in Brasil](https://github.com/EL-BID/IADB-education-1)
+This repo is for code, documentation, and discussion for work associated with a skills-based volunteering project in collaboration with the IADB and urbanpy.
+
 ## Related projects
 
 <a href="https://www.autodash.org/">
