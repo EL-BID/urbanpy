@@ -1,92 +1,47 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>Routing Modules &mdash; urbanpy __version__ documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>Routing Modules &mdash; urbanpy 0.2.2-dev1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+        <script src="_static/jquery.js?v=5be48651"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=8e9f4d89"></script>
+        <script src="_static/doctools.js?v=b682be12"></script>
+        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Accessibility Module" href="urbanpy.accessibility.html" />
     <link rel="prev" title="Plotting Module" href="urbanpy.plotting.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="index.html" class="icon icon-home"> urbanpy
           
-
-          
+          <a href="index.html" class="icon icon-home">
+            urbanpy
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="usage/installation.html">Installation</a></li>
@@ -97,19 +52,7 @@
 <li class="toctree-l3"><a class="reference internal" href="urbanpy.download.html">Download Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="urbanpy.geom.html">Geom Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="urbanpy.plotting.html">Plotting Module</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Routing Modules</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#urbanpy.routing.compute_osrm_dist_matrix"><code class="docutils literal notranslate"><span class="pre">compute_osrm_dist_matrix()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbanpy.routing.google_maps_dir_matrix"><code class="docutils literal notranslate"><span class="pre">google_maps_dir_matrix()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbanpy.routing.google_maps_dist_matrix"><code class="docutils literal notranslate"><span class="pre">google_maps_dist_matrix()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbanpy.routing.isochrone_from_api"><code class="docutils literal notranslate"><span class="pre">isochrone_from_api()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbanpy.routing.isochrone_from_graph"><code class="docutils literal notranslate"><span class="pre">isochrone_from_graph()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbanpy.routing.nx_route"><code class="docutils literal notranslate"><span class="pre">nx_route()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbanpy.routing.ors_api"><code class="docutils literal notranslate"><span class="pre">ors_api()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbanpy.routing.osrm_route"><code class="docutils literal notranslate"><span class="pre">osrm_route()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbanpy.routing.start_osrm_server"><code class="docutils literal notranslate"><span class="pre">start_osrm_server()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbanpy.routing.stop_osrm_server"><code class="docutils literal notranslate"><span class="pre">stop_osrm_server()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Routing Modules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="urbanpy.accessibility.html">Accessibility Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="urbanpy.utils.html">Utils Module</a></li>
 </ul>
@@ -121,489 +64,64 @@
 <li class="toctree-l1"><a class="reference internal" href="code_of_conduct.html">Contributor Covenant Code of Conduct</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">urbanpy</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="urbanpy.html">Reference</a> &raquo;</li>
-        
-      <li>Routing Modules</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="urbanpy.html">Reference</a></li>
+      <li class="breadcrumb-item active">Routing Modules</li>
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="_sources/urbanpy.routing.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <section id="module-urbanpy.routing">
-<span id="routing-modules"></span><h1>Routing Modules<a class="headerlink" href="#module-urbanpy.routing" title="Permalink to this heading">¶</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="urbanpy.routing.compute_osrm_dist_matrix">
-<span class="sig-prename descclassname"><span class="pre">urbanpy.routing.</span></span><span class="sig-name descname"><span class="pre">compute_osrm_dist_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destinations</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.routing.compute_osrm_dist_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute distance and travel time origin-destination matrices kahsgfhjasdgfkasjdhjhsdg</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>origins: GeoDataFrame or GeoSeries</strong></dt><dd><p>Input Point geometries corresponding to the starting points of a route.</p>
-</dd>
-<dt><strong>destinations: GeoDataFrame or GeoSeries</strong></dt><dd><p>Point geometries corresponding to the end points of a route.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>dist_matrix: array_like</dt><dd><p>Array with origins as rows and destinations as columns. Distance in meters.</p>
-</dd>
-<dt>dur_matrix: array_like</dt><dd><p>Array with origins as rows and destinations as columns. Duration in minutes.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">hex</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">gen_hexagons</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">lima</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">download</span><span class="o">.</span><span class="n">overpass_pois</span><span class="p">(</span><span class="nb">hex</span><span class="o">.</span><span class="n">total_bounds</span><span class="p">,</span> <span class="s1">&#39;food_supply&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">urbanpy</span><span class="o">.</span><span class="n">routing</span><span class="o">.</span><span class="n">start_osrm_server</span><span class="p">(</span><span class="s1">&#39;peru&#39;</span><span class="p">,</span> <span class="s1">&#39;south-america&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dist</span><span class="p">,</span> <span class="n">dur</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">routing</span><span class="o">.</span><span class="n">compute_osrm_dist_matrix</span><span class="p">(</span><span class="n">points</span><span class="o">.</span><span class="n">head</span><span class="p">(),</span> <span class="n">fs</span><span class="o">.</span><span class="n">head</span><span class="p">(),</span> <span class="s1">&#39;walking&#39;</span><span class="p">)</span>
-<span class="go">array([[ 82012.4,  93899.9,  88964.6, 111839.8,  87844. ],</span>
-<span class="go">   [ 26346.3,  23725.6,  19618.9,  38607.9,  22725.6],</span>
-<span class="go">   [ 26504.4,  23883.7,  19777. ,  38766. ,  22883.7],</span>
-<span class="go">   [ 33314.3,  30693.6,  26586.9,  45575.9,  29693.5],</span>
-<span class="go">   [ 26659.3,  24038.7,  19931.9,  38920.9,  23038.6]])</span>
-<span class="go">array([[59093.7, 67666.8, 64123.1, 80592.8, 63331.5],</span>
-<span class="go">   [19027.5, 17094.6, 14152.3, 27797.6, 16402.8],</span>
-<span class="go">   [19141.5, 17208.6, 14266.3, 27911.6, 16516.8],</span>
-<span class="go">   [24044.9, 22112. , 19169.7, 32815. , 21420.2],</span>
-<span class="go">   [19253.1, 17320.2, 14377.9, 28023.2, 16628.4]])</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="urbanpy.routing.google_maps_dir_matrix">
-<span class="sig-prename descclassname"><span class="pre">urbanpy.routing.</span></span><span class="sig-name descname"><span class="pre">google_maps_dir_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.routing.google_maps_dir_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Google Maps distance matrix support.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>origin: tuple, list or str</strong></dt><dd><p>Origin for distance calculation. If tuple or list, a matrix for all
-lat-lon pairs will be computed (origin as rows). If str, google_maps
-will georeference and then compute.</p>
-</dd>
-<dt><strong>destination: tuple, list or str</strong></dt><dd><p>Origin for distance calculation. If tuple or list, a matrix for all
-lat-lon pairs will be computed (origin as rows). If str, google_maps
-will georeference and then compute.</p>
-</dd>
-<dt><strong>mode: str. One of {“driving”, “walking”, “transit”, “bicycling”}</strong></dt><dd><p>Mode for travel time calculation</p>
-</dd>
-<dt><strong>api_key: str</strong></dt><dd><p>Google Maps API key</p>
-</dd>
-<dt><strong>**kwargs</strong></dt><dd><p>Additional keyword arguments for the distance matrix API. See
-<a class="reference external" href="https://github.com/googlemaps/google-maps-services-python/blob/master/googlemaps/directions.py">https://github.com/googlemaps/google-maps-services-python/blob/master/googlemaps/directions.py</a></p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>dist: int</dt><dd><p>Distance for the o/d pair. Depends on metric parameter</p>
-</dd>
-<dt>dur: int</dt><dd><p>Travel time duration, depends on units kwargs</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">API_KEY</span> <span class="o">=</span> <span class="s1">&#39;example-key&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">urbanpy</span><span class="o">.</span><span class="n">routing</span><span class="o">.</span><span class="n">google_maps_dir_matrix</span><span class="p">(</span><span class="s1">&#39;San Juan de Lurigancho&#39;</span><span class="p">,</span> <span class="s1">&#39;Miraflores&#39;</span><span class="p">,</span> <span class="s1">&#39;walking&#39;</span><span class="p">,</span> <span class="n">API_KEY</span><span class="p">)</span>
-<span class="go">    (18477, 13494)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="urbanpy.routing.google_maps_dist_matrix">
-<span class="sig-prename descclassname"><span class="pre">urbanpy.routing.</span></span><span class="sig-name descname"><span class="pre">google_maps_dist_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#urbanpy.routing.google_maps_dist_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Google Maps distance matrix support.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>origin: tuple, list or str</strong></dt><dd><p>Origin for distance calculation. If tuple or list, a matrix for all
-lat-lon pairs will be computed (origin as rows). If str, google_maps
-will georeference and then compute.</p>
-</dd>
-<dt><strong>destination: tuple, list or str</strong></dt><dd><p>Origin for distance calculation. If tuple or list, a matrix for all
-lat-lon pairs will be computed (origin as rows). If str, google_maps
-will georeference and then compute.</p>
-</dd>
-<dt><strong>mode: str. One of {“driving”, “walking”, “transit”, “bicycling”}</strong></dt><dd><p>Mode for travel time calculation</p>
-</dd>
-<dt><strong>api_key: str</strong></dt><dd><p>Google Maps API key</p>
-</dd>
-<dt><strong>**kwargs</strong></dt><dd><p>Additional keyword arguments for the distance matrix API. See
-<a class="reference external" href="https://github.com/googlemaps/google-maps-services-python/blob/master/googlemaps/distance_matrix.py">https://github.com/googlemaps/google-maps-services-python/blob/master/googlemaps/distance_matrix.py</a></p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>dist: int</dt><dd><p>Distance for the o/d pair. Depends on metric parameter</p>
-</dd>
-<dt>time: int</dt><dd><p>Travel time duration</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">API_KEY</span> <span class="o">=</span> <span class="s1">&#39;example-key&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">urbanpy</span><span class="o">.</span><span class="n">routing</span><span class="o">.</span><span class="n">google_maps_dist_matrix</span><span class="p">(</span><span class="s1">&#39;San Juan de Lurigancho&#39;</span><span class="p">,</span> <span class="s1">&#39;Miraflores&#39;</span><span class="p">,</span> <span class="s1">&#39;walking&#39;</span><span class="p">,</span> <span class="n">API_KEY</span><span class="p">)</span>
-<span class="go">    (18477, 13494)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">urbanpy</span><span class="o">.</span><span class="n">routing</span><span class="o">.</span><span class="n">google_maps_dist_matrix</span><span class="p">((</span><span class="o">-</span><span class="mi">12</span><span class="p">,</span><span class="o">-</span><span class="mi">77</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mf">12.01</span><span class="p">,</span><span class="o">-</span><span class="mf">77.01</span><span class="p">),</span> <span class="s1">&#39;walking&#39;</span><span class="p">,</span> <span class="n">API_KEY</span><span class="p">)</span>
-<span class="go">    (2428, 1838)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">urbanpy</span><span class="o">.</span><span class="n">routing</span><span class="o">.</span><span class="n">google_maps_dist_matrix</span><span class="p">([(</span><span class="o">-</span><span class="mi">12</span><span class="p">,</span><span class="o">-</span><span class="mi">77</span><span class="p">),(</span><span class="o">-</span><span class="mf">12.11</span><span class="p">,</span><span class="o">-</span><span class="mf">77.01</span><span class="p">)],</span> <span class="p">[(</span><span class="o">-</span><span class="mf">12.11</span><span class="p">,</span><span class="o">-</span><span class="mf">77.01</span><span class="p">),(</span><span class="o">-</span><span class="mi">12</span><span class="p">,</span><span class="o">-</span><span class="mi">77</span><span class="p">)],</span> <span class="s1">&#39;walking&#39;</span><span class="p">,</span> <span class="n">API_KEY</span><span class="p">)</span>
-<span class="go">    ([[13743, 0], [0, 13720]], [[10232, 0], [0, 10674]])</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="urbanpy.routing.isochrone_from_api">
-<span class="sig-prename descclassname"><span class="pre">urbanpy.routing.</span></span><span class="sig-name descname"><span class="pre">isochrone_from_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">locations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.routing.isochrone_from_api" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get isochrones from either the OpenRouteService or MapBox API</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>locations: array_like (float, float)</strong></dt><dd><p>Set of locations from which to calculate the isochrones in lon, lat pairs.
-Larger sets may exceed API limits.</p>
-</dd>
-<dt><strong>time_range: array_like (int)</strong></dt><dd><p>Time intervals to compute i.e. the travel time ranges for the
-isochrones. Depends on the API</p>
-</dd>
-<dt><strong>profile: str. Depends on the API.</strong></dt><dd><p>Mobility profile to compute the isochrones</p>
-</dd>
-<dt><strong>api: str. One of {“ors”, “mapbox”}</strong></dt><dd><p>API to request the isochrones from.</p>
-</dd>
-<dt><strong>api_key: str</strong></dt><dd><p>API auth key</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>isochrones: GeoDataFrame</dt><dd><p>GeoPandas GeoDataFrame containing the isochrone polygons with columns:
-contour (time range), group index (isochrone-location matcher) and geometry</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">urbanpy</span> <span class="k">as</span> <span class="nn">up</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">API_KEY</span> <span class="o">=</span> <span class="s2">&quot;some_key&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">up</span><span class="o">.</span><span class="n">routing</span><span class="o">.</span><span class="n">isochrone_from_api</span><span class="p">([[</span><span class="mf">8.681495</span><span class="p">,</span><span class="mf">49.41461</span><span class="p">],[</span><span class="mf">8.686507</span><span class="p">,</span><span class="mf">49.41943</span><span class="p">]],</span> <span class="p">[</span><span class="mi">300</span><span class="p">,</span><span class="mi">900</span><span class="p">],</span> <span class="s1">&#39;foot-walking&#39;</span><span class="p">,</span> <span class="s1">&#39;ors&#39;</span><span class="p">,</span> <span class="n">API_KEY</span><span class="p">)</span>
-<span class="go"> contour |  group_index |                                           geometry</span>
-<span class="go">   300.0 |           0  | POLYGON ((8.67640 49.41485, 8.67643 49.41461, ...</span>
-<span class="go">   900.0 |           0  | POLYGON ((8.66750 49.41169, 8.66755 49.41164, ...</span>
-<span class="go">   300.0 |           1  | POLYGON ((8.68103 49.41902, 8.68167 49.41815, ...</span>
-<span class="go">   900.0 |           1  | POLYGON ((8.67108 49.41982, 8.67109 49.41946, ...</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">up</span><span class="o">.</span><span class="n">routing</span><span class="o">.</span><span class="n">isochrone_from_api</span><span class="p">([[</span><span class="mf">8.681495</span><span class="p">,</span><span class="mf">49.41461</span><span class="p">],[</span><span class="mf">8.686507</span><span class="p">,</span><span class="mf">49.41943</span><span class="p">]],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span> <span class="s1">&#39;driving&#39;</span><span class="p">,</span> <span class="s1">&#39;mapbox&#39;</span><span class="p">,</span> <span class="n">API_KEY</span><span class="p">)</span>
-<span class="go">contour | group_index |                                            geometry</span>
-<span class="go">   10   |         0   | POLYGON ((8.68149 49.43661, 8.68100 49.43461, ...</span>
-<span class="go">    5   |         0   | POLYGON ((8.67850 49.42361, 8.67621 49.42190, ...</span>
-<span class="go">   10   |         1   | POLYGON ((8.67258 49.44751, 8.67138 49.44743, ...</span>
-<span class="go">    5   |         1   | POLYGON ((8.68265 49.42957, 8.68151 49.42846, ...</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="urbanpy.routing.isochrone_from_graph">
-<span class="sig-prename descclassname"><span class="pre">urbanpy.routing.</span></span><span class="sig-name descname"><span class="pre">isochrone_from_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.routing.isochrone_from_graph" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create isochrones from a network graph.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>graph: NetworkX or OSMnx graph.</strong></dt><dd><p>Input graph to compute isochrones from.</p>
-</dd>
-<dt><strong>locations: array_like</strong></dt><dd><p>Locations (lon, lat) from which to trace the isochrones.</p>
-</dd>
-<dt><strong>time_range: int</strong></dt><dd><p>Travel time from which to construct the isochrones</p>
-</dd>
-<dt><strong>profile: str or int</strong></dt><dd><p>If str,  a default avg. speed will be used to compute the travel time.
-If int, this value will be used as the avg. speed to compute the isochrones.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>isochrones: GeoDataFrame</dt><dd><p>GeoDataFrame containing the isochrones for the set of locations and time_ranges.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">urbanpy</span> <span class="k">as</span> <span class="nn">up</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">osmnx</span> <span class="k">as</span> <span class="nn">ox</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">ox</span><span class="o">.</span><span class="n">graph_from_place</span><span class="p">(</span><span class="s1">&#39;Berkeley, CA, USA&#39;</span><span class="p">,</span> <span class="n">network_type</span><span class="o">=</span><span class="s1">&#39;walking&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">up</span><span class="o">.</span><span class="n">routing</span><span class="o">.</span><span class="n">isochrone_from_graph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="p">[[],[]],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="s1">&#39;walking&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="urbanpy.routing.nx_route">
-<span class="sig-prename descclassname"><span class="pre">urbanpy.routing.</span></span><span class="sig-name descname"><span class="pre">nx_route</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.routing.nx_route" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute shortest path from a source and target node.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>graph: NetworkX Graph</strong></dt><dd><p>Input graph from which to calculate paths</p>
-</dd>
-<dt><strong>source: str or int</strong></dt><dd><p>ID of the source node from which to calculate path. Depending on the graph,
-this may be a string or integer or a combination of both as tuples.</p>
-</dd>
-<dt><strong>target: str or int</strong></dt><dd><p>ID of the target node. Type corresponds to node id types in the input graph.</p>
-</dd>
-<dt><strong>weight: str</strong></dt><dd><p>Attribute to be used as weights in the path. If None returns the sequence of nodes
-or the number of nodes to travel as length.</p>
-</dd>
-<dt><strong>length: bool</strong></dt><dd><p>Flag for whether to calculate the path lenght or the sequence of nodes to follow.
-If weight is none and length is true, the number of nodes in the path will be returned.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>path: list</dt><dd><p>Sequence of node ids in a list.</p>
-</dd>
-<dt>path_length: float or int</dt><dd><p>Length of the path according to the weight attribute.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">osmnx</span> <span class="k">as</span> <span class="nn">ox</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">urbanpy</span> <span class="k">as</span> <span class="nn">up</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choices</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">ox</span><span class="o">.</span><span class="n">graph_from_place</span><span class="p">(</span><span class="s1">&#39;Lima, Peru&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">source</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">choices</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">),</span> <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">up</span><span class="o">.</span><span class="n">routing</span><span class="o">.</span><span class="n">nx_route</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="s1">&#39;length&#39;</span><span class="p">)</span>
-<span class="go">8348.236999999996</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="urbanpy.routing.ors_api">
-<span class="sig-prename descclassname"><span class="pre">urbanpy.routing.</span></span><span class="sig-name descname"><span class="pre">ors_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">locations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbanpy.routing.ors_api" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interface with OpenRoute Service API for distance matrix computation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>origin: list</strong></dt><dd><p>Input origin(s) indices in the location array to compute travel times and distances</p>
-</dd>
-<dt><strong>destination: list</strong></dt><dd><p>Input destination(s) indices in the location array to compute travel times and distances</p>
-</dd>
-<dt><strong>profile: str. One of {‘driving-car’, ‘foot-walking’, ‘cycling-regular’}</strong></dt><dd></dd>
-<dt><strong>metrics: list</strong></dt><dd><p>Combination of metrics to compute (distance and travel time, or one of them)</p>
-</dd>
-<dt><strong>api_key: str</strong></dt><dd><p>Authorization API key for OpenRouteService (see API limits)</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>dist: list</dt><dd><p>Distance matrix</p>
-</dd>
-<dt>dur: list</dt><dd><p>Travel time matrix</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">locations</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">9.70093</span><span class="p">,</span><span class="mf">48.477473</span><span class="p">],[</span><span class="mf">9.207916</span><span class="p">,</span><span class="mf">49.153868</span><span class="p">],[</span><span class="mf">37.573242</span><span class="p">,</span><span class="mf">55.801281</span><span class="p">],[</span><span class="mf">115.663757</span><span class="p">,</span><span class="mf">38.106467</span><span class="p">]]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;distance&quot;</span><span class="p">,</span><span class="s2">&quot;duration&quot;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">destinations</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">api_key</span> <span class="o">=</span> <span class="o">...</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">urbanpy</span><span class="o">.</span><span class="n">routing</span><span class="o">.</span><span class="n">ors_api</span><span class="p">(</span><span class="n">locations</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">destinations</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="s1">&#39;driving-car&#39;</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span>
-<span class="go">[[5753.86,88998.08,399003.44]]</span>
-<span class="go">[[140861.31,2434228.75,1.0262603E7]]</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="urbanpy.routing.osrm_route">
-<span class="sig-prename descclassname"><span class="pre">urbanpy.routing.</span></span><span class="sig-name descname"><span class="pre">osrm_route</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">GeoDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#urbanpy.routing.osrm_route" title="Permalink to this definition">¶</a></dt>
-<dd><p>Query an OSRM routing server for routes between an origin and a destination
-using a specified profile.</p>
-<p>Travel mode (“foot”, “bicycle”, or “car”) is determined by the profile
-selected when starting the OSRM server</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>origin: DataFrame with columns x and y or Point geometry</strong></dt><dd><p>Input origin in lat lon pairs (y, x) to pass into the routing engine</p>
-</dd>
-<dt><strong>destination: DataFrame with columns x and y or Point geometry</strong></dt><dd><p>Input destination in lat lon pairs (y,x) to pass to the routing engine</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>distance: float</dt><dd><p>Total travel distance from origin to destination in meters</p>
-</dd>
-<dt>duration: float</dt><dd><p>Total travel time in minutes</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="urbanpy.routing.start_osrm_server">
-<span class="sig-prename descclassname"><span class="pre">urbanpy.routing.</span></span><span class="sig-name descname"><span class="pre">start_osrm_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">country</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urbanpy.routing.start_osrm_server" title="Permalink to this definition">¶</a></dt>
-<dd><p>Download data for OSRM, process it and start a local osrm server</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>country: str</strong></dt><dd><p>Which country to download data from. Expected in lower case &amp; dashes replace spaces.</p>
-</dd>
-<dt><strong>continent: str</strong></dt><dd><p>Which continent of the given country. Expected in lower case &amp; dashes replace spaces.</p>
-</dd>
-<dt><strong>profile: str. One of {‘foot’, ‘car’, ‘bicycle’}</strong></dt><dd><p>Travel mode to use when routing and estimating travel time.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">urbanpy</span><span class="o">.</span><span class="n">routing</span><span class="o">.</span><span class="n">start_osrm_server</span><span class="p">(</span><span class="s1">&#39;peru&#39;</span><span class="p">,</span> <span class="s1">&#39;south-america&#39;</span><span class="p">,</span> <span class="s1">&#39;foot&#39;</span><span class="p">)</span>
-<span class="go">Starting server ...</span>
-<span class="go">Server was started succesfully.</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="urbanpy.routing.stop_osrm_server">
-<span class="sig-prename descclassname"><span class="pre">urbanpy.routing.</span></span><span class="sig-name descname"><span class="pre">stop_osrm_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">country</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urbanpy.routing.stop_osrm_server" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run docker stop on the server’s container.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>country: str</strong></dt><dd><p>Which country the osrm to stop is routing. Expected in lower case &amp; dashes replace spaces.</p>
-</dd>
-<dt><strong>continent: str</strong></dt><dd><p>Continent of the given country. Expected in lower case &amp; dashes replace spaces.</p>
-</dd>
-<dt><strong>profile: str. One of {‘foot’, ‘car’, ‘bicycle’}</strong></dt><dd><p>Travel mode to use when routing and estimating travel time.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">urbanpy</span><span class="o">.</span><span class="n">routing</span><span class="o">.</span><span class="n">stop_osrm_server</span><span class="p">(</span><span class="s1">&#39;peru&#39;</span><span class="p">,</span> <span class="s1">&#39;south-america&#39;</span><span class="p">,</span> <span class="s1">&#39;foot&#39;</span><span class="p">)</span>
-<span class="go">Server stopped succesfully</span>
-</pre></div>
-</div>
-</dd></dl>
-
+             
+  <section id="routing-modules">
+<h1>Routing Modules<a class="headerlink" href="#routing-modules" title="Permalink to this heading"></a></h1>
 </section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="urbanpy.accessibility.html" class="btn btn-neutral float-right" title="Accessibility Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="urbanpy.plotting.html" class="btn btn-neutral float-left" title="Plotting Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="urbanpy.accessibility.html" class="btn btn-neutral float-right" title="Accessibility Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2023, IADB.
-
-    </p>
+    <p>&#169; Copyright 2023, IADB.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
