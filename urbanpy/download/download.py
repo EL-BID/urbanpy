@@ -35,22 +35,23 @@ hdx_config = Configuration.create(
 )
 
 
-def nominatim_osm(query: str, expected_position=0) -> GeoDataFrame:
+def nominatim_osm(query: str, expected_position: "int | None" = 0) -> GeoDataFrame:
     """
     Download OpenStreetMaps data for a specific city.
 
     Parameters
     ----------
     query: str
-        Query for city polygon data to be downloaded.
+        Query string for OSM data to be downloaded (e.g. "Lima, Peru").
     expected_position: int 0:n
         Expected position of the polygon data within the Nominatim results.
-        Default 0 (first result).
+        Default 0 returns the first result.
+        If set to None, all the results are returned.
 
     Returns
     -------
-    city: GeoDataFrame
-        GeoDataFrame with the city's polygon as its geometry column.
+    gdf: GeoDataFrame
+        GeoDataFrame with the fetched OSM data.
 
     Examples
     --------
@@ -66,9 +67,10 @@ def nominatim_osm(query: str, expected_position=0) -> GeoDataFrame:
     response = requests.get(osm_url, params=osm_parameters)
     all_results = response.json()
     gdf = gpd.GeoDataFrame.from_features(all_results["features"], crs="EPSG:4326")
-    city = gdf.iloc[expected_position : expected_position + 1, :]
-
-    return city
+    if expected_position is None:
+        return gdf
+    
+    return gdf.iloc[expected_position : expected_position + 1]
 
 
 def overpass_pois(bounds, facilities=None, custom_query=None):
