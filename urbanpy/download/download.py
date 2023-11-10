@@ -35,7 +35,7 @@ hdx_config = Configuration.create(
 )
 
 
-def nominatim_osm(query: str, expected_position: int | None = 0) -> GeoDataFrame:
+def nominatim_osm(query: str, expected_position: "int | None" = 0) -> GeoDataFrame:
     """
     Download OpenStreetMaps data for a specific city.
 
