@@ -67,10 +67,10 @@ def nominatim_osm(query: str, expected_position: "int | None" = 0) -> GeoDataFra
     response = requests.get(osm_url, params=osm_parameters)
     all_results = response.json()
     gdf = gpd.GeoDataFrame.from_features(all_results["features"], crs="EPSG:4326")
-    if expected_position:
-        return gdf.iloc[expected_position : expected_position + 1] # this returns a GeoDataFrame instead of GeoSeries
-
-    return gdf
+    if expected_position is None:
+        return gdf
+    
+    return gdf.iloc[expected_position : expected_position + 1]
 
 
 def overpass_pois(bounds, facilities=None, custom_query=None):
