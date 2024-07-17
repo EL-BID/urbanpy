@@ -4,3 +4,4 @@ numpydoc
 geopandas
 pandas
 sphinx_rtd_theme
+furo
