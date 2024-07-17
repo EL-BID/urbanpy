@@ -14,10 +14,6 @@ jobs:
     - uses: ammaraskar/sphinx-action@master
       with:
         docs-folder: "docs/"
-
-    - uses: ammaraskar/sphinx-action@master
-      with:
-        docs-folder: "docs/"
     - name: Commit documentation changes
       run: |
         git clone https://github.com/EL-BID/urbanpy.git --branch gh-pages --single-branch gh-pages
