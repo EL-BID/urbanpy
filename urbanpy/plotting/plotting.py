@@ -26,17 +26,14 @@ def choropleth_map(gdf, color_column, df_filter=None, **kwargs):
     ----------
 
     gdf: GeoDataFrame
-             Input data containing a geometry column and features
-
+        Input data containing a geometry column and features
     color_column: str
-                      Column from gdf to use as color
-
-
+        Column from gdf to use as color
     df_filter: pd.Series, default to None
-                   Pandas Series containing true/false values that satisfy a
-                   condition (e.g. (df['population'] > 100))
+        Pandas Series containing true/false values that satisfy a
+        condition (e.g. (df['population'] > 100))
 
-    **kargs: Any parameter of plotly.px.choroplethmapbox.
+    **kwargs: Any parameter of plotly.px.choroplethmapbox.
 
     Examples
     --------
@@ -64,6 +61,7 @@ def choropleth_map(gdf, color_column, df_filter=None, **kwargs):
         mapbox_style="carto-positron",
         **kwargs
     )
+    
     return fig
 
 

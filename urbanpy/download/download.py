@@ -164,7 +164,6 @@ def overpass_pois(bounds, facilities=None, custom_query=None):
         )
         return response
 
-
 def overpass(
     type_of_data: str,
     query: dict,
@@ -175,26 +174,22 @@ def overpass(
 
     Parameters
     ----------
-    type_of_data: str. One of {'node', 'way', 'relation', 'rel'}
-        OSM Data structure to be queried from Overpass API.
-    query: dict
-        Dict contaning OSM tag filters. Dict keys can take OSM tags
-        and Dict values can be list of strings, str or None.
+    type_of_data : str
+        One of {'node', 'way', 'relation', 'rel'}. OSM Data structure to be queried from Overpass API.
+    query : dict
+        Dict containing OSM tag filters. Dict keys can take OSM tags and Dict values can be a list of strings, str, or None.
+        Example: { 'key0': ['v0a', 'v0b', 'v0c'], 'key1': 'v1', 'key2': None }
         Check keys [OSM Map Features](https://wiki.openstreetmap.org/wiki/Map_features).
-        Example: {
-            'key0': ['v0a', 'v0b','v0c'],
-            'key1': 'v1',
-            'key2': None
-        }
-    mask: GeoDataFrame, GeoSeries, Polygon or MultiPolygon
+    mask : GeoDataFrame, GeoSeries, Polygon, or MultiPolygon
         Total bounds of mask to be used for the query.
 
     Returns
     -------
-    gdf: GeoDataFrame
+    gdf : GeoDataFrame
         POIs from the selected type of facility.
-    df: DataFrame
-        Relations metadata such as ID and tags. Returns None if 'type_of_data' other than 'relation'.
+    df : DataFrame
+        Relations metadata such as ID and tags. Returns None if 'type_of_data' is other than 'relation'.
+
     """
 
     minx, miny, maxx, maxy = mask.total_bounds

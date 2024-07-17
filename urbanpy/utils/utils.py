@@ -329,28 +329,25 @@ def overpass_to_gdf(
 
     Parameters
     ----------
-    type_of_data: str. One of {'node', 'way', 'relation', 'rel'}
+    type_of_data : str. One of {'node', 'way', 'relation', 'rel'}
         OSM Data structure to be queried from Overpass API.
-    data: dict
+    data : dict
         Response object's json result from Overpass API.
-    mask: dict. Optional
+    mask : dict. Optional
         Dict contaning OSM tag filters. Dict keys can take OSM tags
         and Dict values can be list of strings, str or None.
+        Example: { 'key0': ['v0a', 'v0b', 'v0c'], 'key1': 'v1', 'key2': None }
         Check keys [OSM Map Features](https://wiki.openstreetmap.org/wiki/Map_features).
-        Example: {
-            'key0': ['v0a', 'v0b','v0c'],
-            'key1': 'v1',
-            'key2': None
-        }
-    ov_keys: list. Optional
+    ov_keys : list. Optional
         Unique OSM keys used in Overpass query (e.g. "amenity", "shop", etc) to fill "poi_type" df column.
 
     Returns
     -------
-    gdf: GeoDataFrame
+    gdf : GeoDataFrame
         POIs from the selected type of facility.
-    df: DataFrame. Optional
+    df : DataFrame. Optional
         Relations metadata such as ID and tags. Returns None if 'type_of_data' other than 'relation'.
+
     """
 
     if type_of_data == "relation":

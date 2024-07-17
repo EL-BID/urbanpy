@@ -8,7 +8,7 @@ UrbanPy is an open source project to automate data extraction,
 measurement, and visualization of urban accessibility metrics.
 
 Functional goals
-================
+----------------
 
 -  [x] Download open source spatial data (Limits & Points of Interests)
 -  [x] Allow for the use of a grid system or administrative boundaries
@@ -20,7 +20,7 @@ Functional goals
 -  [x] Visualise the results as maps
 
 UX goals
-========
+--------
 
 -  [ ] Atomic functions (one purpose per function)
 -  [x] Use the power of Python Geospatial Ecosystem under the hood
@@ -86,7 +86,7 @@ Additional Dependecies Notes
    guide on installation options and requirements.
 
 Examples
-========
+~~~~~~~~
 
 UrbanPy lets you download and visualize city boundaries extremely easy:
 
