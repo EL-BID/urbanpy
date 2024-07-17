@@ -35,7 +35,7 @@ hdx_config = Configuration.create(
 )
 
 
-def nominatim_osm(query: str, expected_position: "int | None" = 0) -> GeoDataFrame:
+def nominatim_osm(query: str, email: str, expected_position: "int | None" = 0) -> GeoDataFrame:
     """
     Download OpenStreetMaps data for a specific city.
 
@@ -60,9 +60,15 @@ def nominatim_osm(query: str, expected_position: "int | None" = 0) -> GeoDataFra
     geometry	 | place_id	 | osm_type	| osm_id     | display_name	| place_rank  |  category | type	       | importance	| icon
     MULTIPOLYGON | 235480647 | relation	| 1944670.0  | Lima, Peru	| 12	      |  boundary |	administrative | 0.703484	| https://nominatim.openstreetmap.org/images/map...
     """
+    if email is None:
+        raise ValueError("Please provide an email to avoid violating Nominatim API rules.")
     osm_url = "https://nominatim.openstreetmap.org/search.php"
-    osm_parameters = {"polygon_geojson": "1", "format": "geojson"}
-    osm_parameters["q"] = query
+    osm_parameters = {
+        "q": query,
+        "polygon_geojson": "1", 
+        "format": "geojson", 
+        "email": email
+    }
 
     response = requests.get(osm_url, params=osm_parameters)
     all_results = response.json()
