@@ -96,7 +96,7 @@ class GeomTest(unittest.TestCase):
         """
 
         # Download city limits
-        polygon_gdf = up.download.nominatim_osm("La Paz, Bolivia", 1, email="claudio.rtega2701@gmail.com")
+        polygon_gdf = up.download.nominatim_osm("La Paz, Bolivia", 0, email="claudio.rtega2701@gmail.com")
 
         # Generate hexs
         hex_gdf = up.geom.gen_hexagons(resolution=6, city=polygon_gdf)
@@ -156,7 +156,7 @@ class GeomTest(unittest.TestCase):
 
         """
         # Download city limits
-        polygon_gdf = up.download.nominatim_osm("La Paz, Bolivia", 1, email="claudio.rtega2701@gmail.com")
+        polygon_gdf = up.download.nominatim_osm("La Paz, Bolivia", 0, email="claudio.rtega2701@gmail.com")
 
         # Example test values
         datasets_df = up.download.search_hdx_dataset("bolivia")
