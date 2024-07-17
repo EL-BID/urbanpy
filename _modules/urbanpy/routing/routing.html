@@ -1,0 +1,1106 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+
+    <!-- Generated with Sphinx 7.4.5 and Furo 2024.05.06 -->
+        <title>urbanpy.routing.routing - urbanpy __version__ documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5dd5ad26" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=387cc868" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" /
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">urbanpy __version__ documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  
+  <span class="sidebar-brand-text">urbanpy __version__ documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../urbanpy.html">Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../urbanpy.download.html">Download Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../urbanpy.geom.html">Geom Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../urbanpy.plotting.html">Plotting Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../urbanpy.routing.html">Routing Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../urbanpy.accessibility.html">Accessibility Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../urbanpy.utils.html">Utils Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">AM-331-A3 Licencia de Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code_of_conduct.html">Contributor Covenant Code of Conduct</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for urbanpy.routing.routing</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">googlemaps</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">osmnx</span> <span class="k">as</span> <span class="nn">ox</span>
+<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">rich.progress</span> <span class="kn">import</span> <span class="n">Progress</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;start_osrm_server&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;stop_osrm_server&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;osrm_route&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;google_maps_dist_matrix&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ors_api&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;compute_osrm_dist_matrix&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;google_maps_dir_matrix&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nx_route&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;isochrone_from_api&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;isochrone_from_graph&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">ROUTING_MODUEL_DIR</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="n">CONTAINER_NAME</span> <span class="o">=</span> <span class="s2">&quot;osrm_routing_server&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">check_container_is_running</span><span class="p">(</span><span class="n">container_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks if a container is running</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    container_name: str</span>
+<span class="sd">        Name of container to check</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    container_running: bool</span>
+<span class="sd">        True if container is running, False otherwise.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">completed_process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+        <span class="p">[</span><span class="s2">&quot;docker&quot;</span><span class="p">,</span> <span class="s2">&quot;ps&quot;</span><span class="p">],</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="n">stdout_str</span> <span class="o">=</span> <span class="n">completed_process</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="n">container_running</span> <span class="o">=</span> <span class="n">container_name</span> <span class="ow">in</span> <span class="n">stdout_str</span>
+
+    <span class="k">return</span> <span class="n">container_running</span>
+
+
+<div class="viewcode-block" id="start_osrm_server">
+<a class="viewcode-back" href="../../../urbanpy.routing.html#urbanpy.routing.start_osrm_server">[docs]</a>
+<span class="k">def</span> <span class="nf">start_osrm_server</span><span class="p">(</span><span class="n">country</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">continent</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Download data for OSRM, process it and start a local osrm server</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    country: str</span>
+<span class="sd">             Which country to download data from. Expected in lower case &amp; dashes replace spaces.</span>
+
+<span class="sd">    continent: str</span>
+<span class="sd">             Which continent of the given country. Expected in lower case &amp; dashes replace spaces.</span>
+
+<span class="sd">    profile: str. One of {&#39;foot&#39;, &#39;car&#39;, &#39;bicycle&#39;}</span>
+<span class="sd">             Travel mode to use when routing and estimating travel time.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; urbanpy.routing.start_osrm_server(&#39;peru&#39;, &#39;south-america&#39;, &#39;foot&#39;)</span>
+<span class="sd">    Starting server ...</span>
+<span class="sd">    Server was started succesfully.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">container_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">CONTAINER_NAME</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">continent</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">country</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">profile</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">container_running</span> <span class="o">=</span> <span class="n">check_container_is_running</span><span class="p">(</span><span class="n">container_name</span><span class="p">)</span>
+
+    <span class="c1"># Check platform</span>
+    <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;darwin&quot;</span><span class="p">,</span> <span class="s2">&quot;linux&quot;</span><span class="p">]:</span>
+        <span class="n">container_check</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;docker&quot;</span><span class="p">,</span> <span class="s2">&quot;inspect&quot;</span><span class="p">,</span> <span class="n">container_name</span><span class="p">]</span>
+        <span class="n">container_start</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;docker&quot;</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="n">container_name</span><span class="p">]</span>
+        <span class="n">download_command</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;bash&quot;</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">pathlib</span><span class="o">.</span><span class="n">PosixPath</span><span class="p">(</span><span class="n">ROUTING_MODUEL_DIR</span><span class="p">,</span> <span class="s2">&quot;unix_download.sh&quot;</span><span class="p">)),</span>
+            <span class="n">CONTAINER_NAME</span><span class="p">,</span>
+            <span class="n">country</span><span class="p">,</span>
+            <span class="n">continent</span><span class="p">,</span>
+            <span class="n">profile</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">container_check</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;powershell.exe&quot;</span><span class="p">,</span> <span class="s2">&quot;docker&quot;</span><span class="p">,</span> <span class="s2">&quot;inspect&quot;</span><span class="p">,</span> <span class="n">container_name</span><span class="p">]</span>
+        <span class="n">container_start</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;powershell.exe&quot;</span><span class="p">,</span> <span class="s2">&quot;docker&quot;</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="n">container_name</span><span class="p">]</span>
+        <span class="n">download_command</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;powershell.exe&quot;</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">pathlib</span><span class="o">.</span><span class="n">WindowsPath</span><span class="p">(</span><span class="n">ROUTING_MODUEL_DIR</span><span class="p">,</span> <span class="s2">&quot;windows_download.ps1&quot;</span><span class="p">)),</span>
+            <span class="n">CONTAINER_NAME</span><span class="p">,</span>
+            <span class="n">country</span><span class="p">,</span>
+            <span class="n">continent</span><span class="p">,</span>
+            <span class="n">profile</span><span class="p">,</span>
+        <span class="p">]</span>
+
+    <span class="c1"># Check if container exists:</span>
+    <span class="k">if</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">container_check</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">container_running</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Server is already running.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting server ...&quot;</span><span class="p">)</span>
+                <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">container_start</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># Wait server to be prepared to receive requests</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Server was started succesfully&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;Something went wrong. Please check if port 5000 is being used or check your docker installation.&quot;</span>
+                <span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;This is the first time you initialized a server for </span><span class="si">{</span><span class="n">country</span><span class="si">}</span><span class="s2"> on </span><span class="si">{</span><span class="n">profile</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initializing server setup. This may take several minutes ...&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;To view the detailed logs run the following command from terminal:&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;$ watch -n 5 tail -20 ~/data/osrm/</span><span class="si">{</span><span class="n">continent</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">country</span><span class="si">}</span><span class="s2">/logs/</span><span class="si">{</span><span class="n">profile</span><span class="si">}</span><span class="s2">.txt&quot;</span>
+            <span class="p">)</span>
+
+            <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">download_command</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># Wait server to be prepared to receive requests</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Server was started succesfully&quot;</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;Something went wrong. Please check if port 5000 is being used or your docker installation.&quot;</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="stop_osrm_server">
+<a class="viewcode-back" href="../../../urbanpy.routing.html#urbanpy.routing.stop_osrm_server">[docs]</a>
+<span class="k">def</span> <span class="nf">stop_osrm_server</span><span class="p">(</span><span class="n">country</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">continent</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">profile</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run docker stop on the server&#39;s container.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    country: str</span>
+<span class="sd">             Which country the osrm to stop is routing. Expected in lower case &amp; dashes replace spaces.</span>
+
+<span class="sd">    continent: str</span>
+<span class="sd">             Continent of the given country. Expected in lower case &amp; dashes replace spaces.</span>
+
+<span class="sd">    profile: str. One of {&#39;foot&#39;, &#39;car&#39;, &#39;bicycle&#39;}</span>
+<span class="sd">             Travel mode to use when routing and estimating travel time.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; urbanpy.routing.stop_osrm_server(&#39;peru&#39;, &#39;south-america&#39;, &#39;foot&#39;)</span>
+<span class="sd">    Server stopped succesfully</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">container_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">CONTAINER_NAME</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">continent</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">country</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">profile</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Check platform</span>
+    <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;darwin&quot;</span><span class="p">,</span> <span class="s2">&quot;linux&quot;</span><span class="p">]:</span>
+        <span class="n">docker_top</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;docker&quot;</span><span class="p">,</span> <span class="s2">&quot;top&quot;</span><span class="p">,</span> <span class="n">container_name</span><span class="p">]</span>
+        <span class="n">docker_stop</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;docker&quot;</span><span class="p">,</span> <span class="s2">&quot;stop&quot;</span><span class="p">,</span> <span class="n">container_name</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">docker_top</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;powershell.exe&quot;</span><span class="p">,</span> <span class="s2">&quot;docker&quot;</span><span class="p">,</span> <span class="s2">&quot;top&quot;</span><span class="p">,</span> <span class="n">container_name</span><span class="p">]</span>
+        <span class="n">docker_stop</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;powershell.exe&quot;</span><span class="p">,</span> <span class="s2">&quot;docker&quot;</span><span class="p">,</span> <span class="s2">&quot;stop&quot;</span><span class="p">,</span> <span class="n">container_name</span><span class="p">]</span>
+
+    <span class="c1"># Check if container exists:</span>
+    <span class="k">if</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">docker_top</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">check_container_is_running</span><span class="p">(</span><span class="n">container_name</span><span class="p">)</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">docker_stop</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="c1"># subprocess.run([&#39;docker&#39;, &#39;container&#39;, &#39;rm&#39;, &#39;osrm_routing_server&#39;])</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Server was stoped succesfully&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Something went wrong. Please check your docker installation.</span><span class="se">\n</span><span class="s2">Error: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Server is not running.&quot;</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Server does not exist.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="osrm_route">
+<a class="viewcode-back" href="../../../urbanpy.routing.html#urbanpy.routing.osrm_route">[docs]</a>
+<span class="k">def</span> <span class="nf">osrm_route</span><span class="p">(</span>
+    <span class="n">origin</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">],</span>
+    <span class="n">destination</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Query an OSRM routing server for routes between an origin and a destination</span>
+<span class="sd">    using a specified profile.</span>
+
+<span class="sd">    Travel mode (&quot;foot&quot;, &quot;bicycle&quot;, or &quot;car&quot;) is determined by the profile</span>
+<span class="sd">    selected when starting the OSRM server</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    origin: DataFrame with columns x and y or Point geometry</span>
+<span class="sd">            Input origin in lat lon pairs (y, x) to pass into the routing engine</span>
+
+<span class="sd">    destination: DataFrame with columns x and y or Point geometry</span>
+<span class="sd">                 Input destination in lat lon pairs (y,x) to pass to the routing engine</span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    distance: float</span>
+<span class="sd">              Total travel distance from origin to destination in meters</span>
+<span class="sd">    duration: float</span>
+<span class="sd">              Total travel time in minutes</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">orig</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">origin</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">origin</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">dest</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">destination</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">destination</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="c1"># If &quot;profile&quot; is passed in the url the default profile is used by the local osrm server</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;http://localhost:5000/route/v1/profile/</span><span class="si">{</span><span class="n">orig</span><span class="si">}</span><span class="s2">;</span><span class="si">{</span><span class="n">dest</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;overview&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">})</span>
+    <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ConnectionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Waiting for server to be ready ...&quot;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;overview&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">})</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;routes&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">distance</span><span class="p">,</span> <span class="n">duration</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;distance&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">distance</span><span class="p">,</span> <span class="n">duration</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="c1"># print(err)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span></div>
+
+
+
+<div class="viewcode-block" id="google_maps_dist_matrix">
+<a class="viewcode-back" href="../../../urbanpy.routing.html#urbanpy.routing.google_maps_dist_matrix">[docs]</a>
+<span class="k">def</span> <span class="nf">google_maps_dist_matrix</span><span class="p">(</span>
+    <span class="n">origin</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Google Maps distance matrix support.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    origin: tuple, list or str</span>
+<span class="sd">            Origin for distance calculation. If tuple or list, a matrix for all</span>
+<span class="sd">            lat-lon pairs will be computed (origin as rows). If str, google_maps</span>
+<span class="sd">            will georeference and then compute.</span>
+
+<span class="sd">    destination: tuple, list or str</span>
+<span class="sd">                 Origin for distance calculation. If tuple or list, a matrix for all</span>
+<span class="sd">                 lat-lon pairs will be computed (origin as rows). If str, google_maps</span>
+<span class="sd">                 will georeference and then compute.</span>
+
+<span class="sd">    mode: str. One of {&quot;driving&quot;, &quot;walking&quot;, &quot;transit&quot;, &quot;bicycling&quot;}</span>
+<span class="sd">          Mode for travel time calculation</span>
+
+<span class="sd">    api_key: str</span>
+<span class="sd">             Google Maps API key</span>
+
+<span class="sd">    **kwargs</span>
+<span class="sd">        Additional keyword arguments for the distance matrix API. See</span>
+<span class="sd">        https://github.com/googlemaps/google-maps-services-python/blob/master/googlemaps/distance_matrix.py</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    dist: int</span>
+<span class="sd">          Distance for the o/d pair. Depends on metric parameter</span>
+
+<span class="sd">    time: int</span>
+<span class="sd">          Travel time duration</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; API_KEY = &#39;example-key&#39;</span>
+<span class="sd">    &gt;&gt;&gt; urbanpy.routing.google_maps_dist_matrix(&#39;San Juan de Lurigancho&#39;, &#39;Miraflores&#39;, &#39;walking&#39;, API_KEY)</span>
+<span class="sd">        (18477, 13494)</span>
+<span class="sd">    &gt;&gt;&gt; urbanpy.routing.google_maps_dist_matrix((-12,-77), (-12.01,-77.01), &#39;walking&#39;, API_KEY)</span>
+<span class="sd">        (2428, 1838)</span>
+<span class="sd">    &gt;&gt;&gt; urbanpy.routing.google_maps_dist_matrix([(-12,-77),(-12.11,-77.01)], [(-12.11,-77.01),(-12,-77)], &#39;walking&#39;, API_KEY)</span>
+<span class="sd">        ([[13743, 0], [0, 13720]], [[10232, 0], [0, 10674]])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">googlemaps</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">distance_matrix</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;rows&quot;</span><span class="p">]</span>
+
+        <span class="n">dist</span><span class="p">,</span> <span class="n">dur</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+                <span class="n">dist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">element</span><span class="p">[</span><span class="s2">&quot;distance&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;elements&quot;</span><span class="p">]]</span>
+                <span class="p">)</span>
+                <span class="n">dur</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">element</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;elements&quot;</span><span class="p">]]</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;rows&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;elements&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;distance&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+            <span class="n">dur</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;rows&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;elements&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;duration&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">dur</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">dist</span><span class="p">,</span> <span class="n">dur</span></div>
+
+
+
+<div class="viewcode-block" id="ors_api">
+<a class="viewcode-back" href="../../../urbanpy.routing.html#urbanpy.routing.ors_api">[docs]</a>
+<span class="k">def</span> <span class="nf">ors_api</span><span class="p">(</span><span class="n">locations</span><span class="p">,</span> <span class="n">origin</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">api_key</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interface with OpenRoute Service API for distance matrix computation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    origin: list</span>
+<span class="sd">            Input origin(s) indices in the location array to compute travel times and distances</span>
+
+<span class="sd">    destination: list</span>
+<span class="sd">            Input destination(s) indices in the location array to compute travel times and distances</span>
+
+<span class="sd">    profile: str. One of {&#39;driving-car&#39;, &#39;foot-walking&#39;, &#39;cycling-regular&#39;}</span>
+
+<span class="sd">    metrics: list</span>
+<span class="sd">             Combination of metrics to compute (distance and travel time, or one of them)</span>
+
+<span class="sd">    api_key: str</span>
+<span class="sd">             Authorization API key for OpenRouteService (see API limits)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    dist: list</span>
+<span class="sd">           Distance matrix</span>
+
+<span class="sd">    dur: list</span>
+<span class="sd">          Travel time matrix</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; locations = [[9.70093,48.477473],[9.207916,49.153868],[37.573242,55.801281],[115.663757,38.106467]]</span>
+<span class="sd">    &gt;&gt;&gt; metrics = [&quot;distance&quot;,&quot;duration&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; sources = [0]</span>
+<span class="sd">    &gt;&gt;&gt; destinations = [1,2,3]</span>
+<span class="sd">    &gt;&gt;&gt; api_key = ...</span>
+<span class="sd">    &gt;&gt;&gt; urbanpy.routing.ors_api(locations, sources, destinations, metrics, &#39;driving-car&#39;, api_key)</span>
+<span class="sd">    [[5753.86,88998.08,399003.44]]</span>
+<span class="sd">    [[140861.31,2434228.75,1.0262603E7]]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">body</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;locations&quot;</span><span class="p">:</span> <span class="n">locations</span><span class="p">,</span>
+        <span class="s2">&quot;sources&quot;</span><span class="p">:</span> <span class="n">origin</span><span class="p">,</span>
+        <span class="s2">&quot;destinations&quot;</span><span class="p">:</span> <span class="n">destination</span><span class="p">,</span>
+        <span class="s2">&quot;metrics&quot;</span><span class="p">:</span> <span class="n">metrics</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Accept&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="n">api_key</span><span class="p">,</span>
+        <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json; charset=utf-8&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;https://api.openrouteservice.org/v2/matrix/</span><span class="si">{</span><span class="n">profile</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">json</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
+        <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;distances&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;durations&quot;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span></div>
+
+
+
+<div class="viewcode-block" id="compute_osrm_dist_matrix">
+<a class="viewcode-back" href="../../../urbanpy.routing.html#urbanpy.routing.compute_osrm_dist_matrix">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_osrm_dist_matrix</span><span class="p">(</span><span class="n">origins</span><span class="p">,</span> <span class="n">destinations</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute distance and travel time origin-destination matrices kahsgfhjasdgfkasjdhjhsdg</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    origins: GeoDataFrame or GeoSeries</span>
+<span class="sd">             Input Point geometries corresponding to the starting points of a route.</span>
+
+<span class="sd">    destinations: GeoDataFrame or GeoSeries</span>
+<span class="sd">                  Point geometries corresponding to the end points of a route.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    dist_matrix: array_like</span>
+<span class="sd">                 Array with origins as rows and destinations as columns. Distance in meters.</span>
+
+<span class="sd">    dur_matrix: array_like</span>
+<span class="sd">                Array with origins as rows and destinations as columns. Duration in minutes.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; hex = urbanpy.geom.gen_hexagons(8, lima)</span>
+<span class="sd">    &gt;&gt;&gt; fs = urbanpy.download.overpass_pois(hex.total_bounds, &#39;food_supply&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; urbanpy.routing.start_osrm_server(&#39;peru&#39;, &#39;south-america&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; dist, dur = urbanpy.routing.compute_osrm_dist_matrix(points.head(), fs.head(), &#39;walking&#39;)</span>
+<span class="sd">    array([[ 82012.4,  93899.9,  88964.6, 111839.8,  87844. ],</span>
+<span class="sd">       [ 26346.3,  23725.6,  19618.9,  38607.9,  22725.6],</span>
+<span class="sd">       [ 26504.4,  23883.7,  19777. ,  38766. ,  22883.7],</span>
+<span class="sd">       [ 33314.3,  30693.6,  26586.9,  45575.9,  29693.5],</span>
+<span class="sd">       [ 26659.3,  24038.7,  19931.9,  38920.9,  23038.6]])</span>
+<span class="sd">    array([[59093.7, 67666.8, 64123.1, 80592.8, 63331.5],</span>
+<span class="sd">       [19027.5, 17094.6, 14152.3, 27797.6, 16402.8],</span>
+<span class="sd">       [19141.5, 17208.6, 14266.3, 27911.6, 16516.8],</span>
+<span class="sd">       [24044.9, 22112. , 19169.7, 32815. , 21420.2],</span>
+<span class="sd">       [19253.1, 17320.2, 14377.9, 28023.2, 16628.4]])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dist_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">origins</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">destinations</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">dur_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">origins</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">destinations</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">origins</span><span class="p">)</span> <span class="o">==</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoSeries</span><span class="p">:</span>
+        <span class="n">origins</span> <span class="o">=</span> <span class="n">origins</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">destinations</span><span class="p">)</span> <span class="o">==</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoSeries</span><span class="p">:</span>
+        <span class="n">destinations</span> <span class="o">=</span> <span class="n">destinations</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="n">Progress</span><span class="p">()</span> <span class="k">as</span> <span class="n">progress</span><span class="p">:</span>
+        <span class="n">pb_orig</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span>
+            <span class="n">total</span><span class="o">=</span><span class="n">origins</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;[red]Origins processed&quot;</span>
+        <span class="p">)</span>
+        <span class="n">pb_dest</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span>
+            <span class="n">total</span><span class="o">=</span><span class="n">destinations</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;[blue]Destinations&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">orig</span> <span class="ow">in</span> <span class="n">origins</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">dest</span> <span class="ow">in</span> <span class="n">destinations</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+                <span class="n">dist</span><span class="p">,</span> <span class="n">dur</span> <span class="o">=</span> <span class="n">osrm_route</span><span class="p">(</span><span class="n">orig</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="n">dest</span><span class="o">.</span><span class="n">geometry</span><span class="p">)</span>
+                <span class="n">dist_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">dist</span>
+                <span class="n">dur_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">dur</span>
+                <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">pb_dest</span><span class="p">,</span> <span class="n">advance</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">pb_orig</span><span class="p">,</span> <span class="n">advance</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dist_matrix</span><span class="p">,</span> <span class="n">dur_matrix</span></div>
+
+
+
+<div class="viewcode-block" id="google_maps_dir_matrix">
+<a class="viewcode-back" href="../../../urbanpy.routing.html#urbanpy.routing.google_maps_dir_matrix">[docs]</a>
+<span class="k">def</span> <span class="nf">google_maps_dir_matrix</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">api_key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Google Maps distance matrix support.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    origin: tuple, list or str</span>
+<span class="sd">            Origin for distance calculation. If tuple or list, a matrix for all</span>
+<span class="sd">            lat-lon pairs will be computed (origin as rows). If str, google_maps</span>
+<span class="sd">            will georeference and then compute.</span>
+
+<span class="sd">    destination: tuple, list or str</span>
+<span class="sd">                 Origin for distance calculation. If tuple or list, a matrix for all</span>
+<span class="sd">                 lat-lon pairs will be computed (origin as rows). If str, google_maps</span>
+<span class="sd">                 will georeference and then compute.</span>
+
+<span class="sd">    mode: str. One of {&quot;driving&quot;, &quot;walking&quot;, &quot;transit&quot;, &quot;bicycling&quot;}</span>
+<span class="sd">          Mode for travel time calculation</span>
+
+<span class="sd">    api_key: str</span>
+<span class="sd">             Google Maps API key</span>
+
+<span class="sd">    **kwargs</span>
+<span class="sd">        Additional keyword arguments for the distance matrix API. See</span>
+<span class="sd">        https://github.com/googlemaps/google-maps-services-python/blob/master/googlemaps/directions.py</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    dist: int</span>
+<span class="sd">          Distance for the o/d pair. Depends on metric parameter</span>
+
+<span class="sd">    dur: int</span>
+<span class="sd">          Travel time duration, depends on units kwargs</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; API_KEY = &#39;example-key&#39;</span>
+<span class="sd">    &gt;&gt;&gt; urbanpy.routing.google_maps_dir_matrix(&#39;San Juan de Lurigancho&#39;, &#39;Miraflores&#39;, &#39;walking&#39;, API_KEY)</span>
+<span class="sd">        (18477, 13494)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">googlemaps</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">directions</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">legs</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;legs&quot;</span><span class="p">]</span>
+
+        <span class="n">dist</span><span class="p">,</span> <span class="n">dur</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">legs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">leg</span> <span class="ow">in</span> <span class="n">legs</span><span class="p">:</span>
+                <span class="n">dist</span> <span class="o">+=</span> <span class="n">leg</span><span class="p">[</span><span class="s2">&quot;distance&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+                <span class="n">dur</span> <span class="o">+=</span> <span class="n">leg</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="n">legs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;distance&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+            <span class="n">dur</span> <span class="o">=</span> <span class="n">legs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;duration&quot;</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">dur</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">dist</span><span class="p">,</span> <span class="n">dur</span></div>
+
+
+
+<div class="viewcode-block" id="nx_route">
+<a class="viewcode-back" href="../../../urbanpy.routing.html#urbanpy.routing.nx_route">[docs]</a>
+<span class="k">def</span> <span class="nf">nx_route</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute shortest path from a source and target node.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    graph: NetworkX Graph</span>
+<span class="sd">           Input graph from which to calculate paths</span>
+
+<span class="sd">    source: str or int</span>
+<span class="sd">            ID of the source node from which to calculate path. Depending on the graph,</span>
+<span class="sd">            this may be a string or integer or a combination of both as tuples.</span>
+
+<span class="sd">    target: str or int</span>
+<span class="sd">            ID of the target node. Type corresponds to node id types in the input graph.</span>
+
+<span class="sd">    weight: str</span>
+<span class="sd">            Attribute to be used as weights in the path. If None returns the sequence of nodes</span>
+<span class="sd">            or the number of nodes to travel as length.</span>
+
+<span class="sd">    length: bool</span>
+<span class="sd">            Flag for whether to calculate the path lenght or the sequence of nodes to follow.</span>
+<span class="sd">            If weight is none and length is true, the number of nodes in the path will be returned.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    path: list</span>
+<span class="sd">          Sequence of node ids in a list.</span>
+
+<span class="sd">    path_length: float or int</span>
+<span class="sd">                 Length of the path according to the weight attribute.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; import osmnx as ox</span>
+<span class="sd">    &gt;&gt;&gt; import urbanpy as up</span>
+<span class="sd">    &gt;&gt;&gt; from random import choices</span>
+<span class="sd">    &gt;&gt;&gt; G = ox.graph_from_place(&#39;Lima, Peru&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; source, target = choices(list(G.nodes), k=2)</span>
+<span class="sd">    &gt;&gt;&gt; up.routing.nx_route(G, source, target, &#39;length&#39;)</span>
+<span class="sd">    8348.236999999996</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">length</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">path_length</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">shortest_path_length</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">path_length</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="c1"># If there is no path within the graph</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">shortest_path</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">path</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="c1"># If there is no path within the graph</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
+
+
+
+<div class="viewcode-block" id="isochrone_from_api">
+<a class="viewcode-back" href="../../../urbanpy.routing.html#urbanpy.routing.isochrone_from_api">[docs]</a>
+<span class="k">def</span> <span class="nf">isochrone_from_api</span><span class="p">(</span><span class="n">locations</span><span class="p">,</span> <span class="n">time_range</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">api</span><span class="p">,</span> <span class="n">api_key</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get isochrones from either the OpenRouteService or MapBox API</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    locations: array_like (float, float)</span>
+<span class="sd">               Set of locations from which to calculate the isochrones in lon, lat pairs.</span>
+<span class="sd">               Larger sets may exceed API limits.</span>
+
+<span class="sd">    time_range: array_like (int)</span>
+<span class="sd">                Time intervals to compute i.e. the travel time ranges for the</span>
+<span class="sd">                isochrones. Depends on the API</span>
+
+<span class="sd">    profile: str. Depends on the API.</span>
+<span class="sd">             Mobility profile to compute the isochrones</span>
+
+<span class="sd">    api: str. One of {&quot;ors&quot;, &quot;mapbox&quot;}</span>
+<span class="sd">         API to request the isochrones from.</span>
+
+<span class="sd">    api_key: str</span>
+<span class="sd">             API auth key</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    isochrones: GeoDataFrame</span>
+<span class="sd">                GeoPandas GeoDataFrame containing the isochrone polygons with columns:</span>
+<span class="sd">                contour (time range), group index (isochrone-location matcher) and geometry</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; import urbanpy as up</span>
+<span class="sd">    &gt;&gt;&gt; API_KEY = &quot;some_key&quot;</span>
+<span class="sd">    &gt;&gt;&gt; up.routing.isochrone_from_api([[8.681495,49.41461],[8.686507,49.41943]], [300,900], &#39;foot-walking&#39;, &#39;ors&#39;, API_KEY)</span>
+<span class="sd">     contour |  group_index |                                           geometry</span>
+<span class="sd">       300.0 |           0  | POLYGON ((8.67640 49.41485, 8.67643 49.41461, ...</span>
+<span class="sd">       900.0 |           0  | POLYGON ((8.66750 49.41169, 8.66755 49.41164, ...</span>
+<span class="sd">       300.0 |           1  | POLYGON ((8.68103 49.41902, 8.68167 49.41815, ...</span>
+<span class="sd">       900.0 |           1  | POLYGON ((8.67108 49.41982, 8.67109 49.41946, ...</span>
+<span class="sd">    &gt;&gt;&gt; up.routing.isochrone_from_api([[8.681495,49.41461],[8.686507,49.41943]], [5,10], &#39;driving&#39;, &#39;mapbox&#39;, API_KEY)</span>
+<span class="sd">    contour | group_index |                                            geometry</span>
+<span class="sd">       10   |         0   | POLYGON ((8.68149 49.43661, 8.68100 49.43461, ...</span>
+<span class="sd">        5   |         0   | POLYGON ((8.67850 49.42361, 8.67621 49.42190, ...</span>
+<span class="sd">       10   |         1   | POLYGON ((8.67258 49.44751, 8.67138 49.44743, ...</span>
+<span class="sd">        5   |         1   | POLYGON ((8.68265 49.42957, 8.68151 49.42846, ...</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">api</span> <span class="o">==</span> <span class="s2">&quot;ors&quot;</span><span class="p">:</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;locations&quot;</span><span class="p">:</span> <span class="n">locations</span><span class="p">,</span> <span class="s2">&quot;range&quot;</span><span class="p">:</span> <span class="n">time_range</span><span class="p">}</span>
+
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Accept&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="n">api_key</span><span class="p">,</span>
+            <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json; charset=utf-8&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">call</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;https://api.openrouteservice.org/v2/isochrones/</span><span class="si">{</span><span class="n">profile</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="n">isochrones</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="o">.</span><span class="n">from_features</span><span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+            <span class="n">isochrones</span><span class="o">.</span><span class="n">crs</span> <span class="o">=</span> <span class="s2">&quot;EPSG:4326&quot;</span>
+            <span class="n">isochrones</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;contour&quot;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">isochrones</span><span class="p">[[</span><span class="s2">&quot;contour&quot;</span><span class="p">,</span> <span class="s2">&quot;group_index&quot;</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Request error with HTTP code </span><span class="si">{</span><span class="n">call</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">call</span><span class="o">.</span><span class="n">reason</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">contour_min</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="k">for</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">time_range</span><span class="p">])</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># There may be a better solution. Mapbox does not support multiple points in one go</span>
+        <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">locations</span><span class="p">):</span>
+            <span class="n">pair</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">lon</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">lat</span><span class="p">)])</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://api.mapbox.com/isochrone/v1/mapbox/</span><span class="si">{</span><span class="n">profile</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">pair</span><span class="si">}</span><span class="s2">?contours_minutes=</span><span class="si">{</span><span class="n">contour_min</span><span class="si">}</span><span class="s2">&amp;polygons=true&amp;access_token=</span><span class="si">{</span><span class="n">api_key</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">call</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">features</span> <span class="o">==</span> <span class="p">{}:</span>
+                    <span class="n">features_</span> <span class="o">=</span> <span class="n">call</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+                    <span class="c1"># Assing a group index for the request number (id for the location-contour match)</span>
+                    <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">features_</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]:</span>
+                        <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span><span class="s2">&quot;group_index&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ix</span>
+                    <span class="n">features</span> <span class="o">=</span> <span class="n">features_</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">features_</span> <span class="o">=</span> <span class="n">call</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">features_</span><span class="p">:</span>
+                        <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span><span class="s2">&quot;group_index&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ix</span>
+                    <span class="n">features</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">features_</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="n">isochrones</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="o">.</span><span class="n">from_features</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+        <span class="n">isochrones</span><span class="o">.</span><span class="n">crs</span> <span class="o">=</span> <span class="s2">&quot;EPSG:4326&quot;</span>
+
+        <span class="k">return</span> <span class="n">isochrones</span><span class="p">[[</span><span class="s2">&quot;contour&quot;</span><span class="p">,</span> <span class="s2">&quot;group_index&quot;</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">]]</span></div>
+
+
+
+<div class="viewcode-block" id="isochrone_from_graph">
+<a class="viewcode-back" href="../../../urbanpy.routing.html#urbanpy.routing.isochrone_from_graph">[docs]</a>
+<span class="k">def</span> <span class="nf">isochrone_from_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">locations</span><span class="p">,</span> <span class="n">time_range</span><span class="p">,</span> <span class="n">profile</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create isochrones from a network graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    graph: NetworkX or OSMnx graph.</span>
+<span class="sd">        Input graph to compute isochrones from.</span>
+
+<span class="sd">    locations: array_like</span>
+<span class="sd">        Locations (lon, lat) from which to trace the isochrones.</span>
+
+<span class="sd">    time_range: int</span>
+<span class="sd">        Travel time from which to construct the isochrones</span>
+
+<span class="sd">    profile: str or int</span>
+<span class="sd">        If str,  a default avg. speed will be used to compute the travel time.</span>
+<span class="sd">        If int, this value will be used as the avg. speed to compute the isochrones.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    isochrones: GeoDataFrame</span>
+<span class="sd">        GeoDataFrame containing the isochrones for the set of locations and time_ranges.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; import urbanpy as up</span>
+<span class="sd">    &gt;&gt;&gt; import osmnx as ox</span>
+<span class="sd">    &gt;&gt;&gt; G = ox.graph_from_place(&#39;Berkeley, CA, USA&#39;, network_type=&#39;walking&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; up.routing.isochrone_from_graph(G, [[],[]], [5, 10], &#39;walking&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">profiles</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;driving&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="s2">&quot;walking&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="s2">&quot;cycling&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">profile</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">profiles</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">profile</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">travel_speed</span> <span class="o">=</span> <span class="n">profile</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">travel_speed</span> <span class="o">=</span> <span class="n">profiles</span><span class="p">[</span><span class="n">profile</span><span class="p">]</span>
+
+    <span class="n">center_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ox</span><span class="o">.</span><span class="n">nearest_nodes</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">locations</span><span class="p">]</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">ox</span><span class="o">.</span><span class="n">project_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+
+    <span class="n">meters_per_minute</span> <span class="o">=</span> <span class="n">travel_speed</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">/</span> <span class="mi">60</span>  <span class="c1"># km per hour to m per minute</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;length&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">meters_per_minute</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">center_node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">center_nodes</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">trip_time</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">time_range</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">subgraph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">ego_graph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">center_node</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">trip_time</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
+            <span class="n">node_points</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">Point</span><span class="p">((</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;lon&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">]))</span>
+                <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">subgraph</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="n">bounding_poly</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoSeries</span><span class="p">(</span><span class="n">node_points</span><span class="p">)</span><span class="o">.</span><span class="n">unary_union</span><span class="o">.</span><span class="n">convex_hull</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">ix</span><span class="p">,</span> <span class="n">trip_time</span><span class="p">,</span> <span class="n">bounding_poly</span><span class="p">])</span>
+
+    <span class="n">isochrones</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;group_index&quot;</span><span class="p">,</span> <span class="s2">&quot;contour&quot;</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">])</span>
+    <span class="n">isochrones</span><span class="o">.</span><span class="n">crs</span> <span class="o">=</span> <span class="s2">&quot;EPSG:4326&quot;</span>
+
+    <span class="k">return</span> <span class="n">isochrones</span></div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023, IADB
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/documentation_options.js?v=8e9f4d89"></script>
+    <script src="../../../_static/doctools.js?v=b682be12"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/furo.js?v=4e2eecee"></script>
+    </body>
+</html>

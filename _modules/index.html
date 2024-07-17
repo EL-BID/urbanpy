@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quickstart &mdash; urbanpy __version__ documentation</title>
+  <title>Overview: module code &mdash; urbanpy __version__ documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5dd5ad26" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -20,9 +19,7 @@
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Reference" href="../urbanpy.html" />
-    <link rel="prev" title="Installation" href="installation.html" /> 
+    <link rel="search" title="Search" href="../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,9 +42,9 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../urbanpy.html">Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../license.html">AM-331-A3 Licencia de Software</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing guidelines</a></li>
@@ -68,9 +65,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Quickstart</li>
+      <li class="breadcrumb-item active">Overview: module code</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/usage/quickstart.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -78,33 +74,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="quickstart">
-<h1>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading"></a></h1>
-<p>UrbanPy lets you download and visualize city boundaries extremely easy:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">urbanpy</span> <span class="k">as</span> <span class="nn">up</span>
-
-<span class="n">boundaries</span> <span class="o">=</span> <span class="n">up</span><span class="o">.</span><span class="n">download</span><span class="o">.</span><span class="n">nominatim_osm</span><span class="p">(</span><span class="s1">&#39;Lima, Peru&#39;</span><span class="p">,</span> <span class="n">expected_position</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">boundaries</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Since <code class="docutils literal notranslate"><span class="pre">boundaries</span></code> is a GeoDataFrame it can be easily plotted with the
-method <code class="docutils literal notranslate"><span class="pre">.plot()</span></code>. You can also generate hexagons to fill the city
-boundaries in a oneliner.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">hexs</span> <span class="o">=</span> <span class="n">up</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">gen_hexagons</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">city</span><span class="o">=</span><span class="n">boundaries</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Also check our <a class="reference external" href="/notebooks">example notebooks</a>, and if you have
-examples or visualizations of your own, we encourage you to share
-contribute.</p>
-</section>
-
+  <h1>All modules for which code is available</h1>
+<ul><li><a href="urbanpy/accessibility/accessibility.html">urbanpy.accessibility.accessibility</a></li>
+<li><a href="urbanpy/download/download.html">urbanpy.download.download</a></li>
+<li><a href="urbanpy/geom/geom.html">urbanpy.geom.geom</a></li>
+<li><a href="urbanpy/plotting/plotting.html">urbanpy.plotting.plotting</a></li>
+<li><a href="urbanpy/routing/routing.html">urbanpy.routing.routing</a></li>
+<li><a href="urbanpy/utils/utils.html">urbanpy.utils.utils</a></li>
+</ul>
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../urbanpy.html" class="btn btn-neutral float-right" title="Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -15,9 +15,9 @@
   
         <script src="_static/jquery.js?v=5be48651"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=8e9f4d89"></script>
+        <script src="_static/documentation_options.js?v=8e9f4d89"></script>
         <script src="_static/doctools.js?v=b682be12"></script>
-        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -53,7 +53,10 @@
 <li class="toctree-l2 current"><a class="reference internal" href="urbanpy.html#modules-reference">Modules Reference</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="urbanpy.download.html">Download Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="urbanpy.geom.html">Geom Module</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Plotting Module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Plotting Module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#urbanpy.plotting.choropleth_map"><code class="docutils literal notranslate"><span class="pre">choropleth_map()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="urbanpy.routing.html">Routing Modules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="urbanpy.accessibility.html">Accessibility Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="urbanpy.utils.html">Utils Module</a></li>
@@ -91,8 +94,31 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="plotting-module">
-<h1>Plotting Module<a class="headerlink" href="#plotting-module" title="Permalink to this heading"></a></h1>
+  <section id="module-urbanpy.plotting">
+<span id="plotting-module"></span><h1>Plotting Module<a class="headerlink" href="#module-urbanpy.plotting" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="urbanpy.plotting.choropleth_map">
+<span class="sig-prename descclassname"><span class="pre">urbanpy.plotting.</span></span><span class="sig-name descname"><span class="pre">choropleth_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/urbanpy/plotting/plotting.html#choropleth_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#urbanpy.plotting.choropleth_map" title="Link to this definition"></a></dt>
+<dd><p>Produce a Choroplethmap using plotly by passing a GeoDataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gdf</strong> (<em>GeoDataFrame</em>) – Input data containing a geometry column and features</p></li>
+<li><p><strong>color_column</strong> (<em>str</em>) – Column from gdf to use as color</p></li>
+<li><p><strong>df_filter</strong> (<em>pd.Series</em><em>, </em><em>default to None</em>) – Pandas Series containing true/false values that satisfy a
+condition (e.g. (df[‘population’] &gt; 100))</p></li>
+<li><p><strong>**kwargs</strong> (<em>Any parameter</em><em> of </em><em>plotly.px.choroplethmapbox.</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hex_lima</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">gen_hexagons</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">lima</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hex_lima</span><span class="p">[</span><span class="s1">&#39;pop_2020&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">population_2020</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">urbanpy</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">choropleth_map</span><span class="p">(</span><span class="n">hex_lima</span><span class="p">,</span> <span class="s1">&#39;pop_2020&#39;</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">,</span> <span class="o">-</span><span class="mi">77</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </section>
 
 

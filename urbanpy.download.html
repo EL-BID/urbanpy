@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -15,9 +15,9 @@
   
         <script src="_static/jquery.js?v=5be48651"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=8e9f4d89"></script>
+        <script src="_static/documentation_options.js?v=8e9f4d89"></script>
         <script src="_static/doctools.js?v=b682be12"></script>
-        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -51,7 +51,17 @@
 <li class="toctree-l1 current"><a class="reference internal" href="urbanpy.html">Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="urbanpy.html#modules-description">Modules Description</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="urbanpy.html#modules-reference">Modules Reference</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Download Module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Download Module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#urbanpy.download.get_hdx_dataset"><code class="docutils literal notranslate"><span class="pre">get_hdx_dataset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#urbanpy.download.hdx_dataset"><code class="docutils literal notranslate"><span class="pre">hdx_dataset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#urbanpy.download.hdx_fb_population"><code class="docutils literal notranslate"><span class="pre">hdx_fb_population()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#urbanpy.download.nominatim_osm"><code class="docutils literal notranslate"><span class="pre">nominatim_osm()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#urbanpy.download.osmnx_graph"><code class="docutils literal notranslate"><span class="pre">osmnx_graph()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#urbanpy.download.overpass"><code class="docutils literal notranslate"><span class="pre">overpass()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#urbanpy.download.overpass_pois"><code class="docutils literal notranslate"><span class="pre">overpass_pois()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#urbanpy.download.search_hdx_dataset"><code class="docutils literal notranslate"><span class="pre">search_hdx_dataset()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="urbanpy.geom.html">Geom Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="urbanpy.plotting.html">Plotting Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="urbanpy.routing.html">Routing Modules</a></li>
@@ -91,8 +101,262 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="download-module">
-<h1>Download Module<a class="headerlink" href="#download-module" title="Permalink to this heading"></a></h1>
+  <section id="module-urbanpy.download">
+<span id="download-module"></span><h1>Download Module<a class="headerlink" href="#module-urbanpy.download" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="urbanpy.download.get_hdx_dataset">
+<span class="sig-prename descclassname"><span class="pre">urbanpy.download.</span></span><span class="sig-name descname"><span class="pre">get_hdx_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resources_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/urbanpy/download/download.html#get_hdx_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#urbanpy.download.get_hdx_dataset" title="Link to this definition"></a></dt>
+<dd><p>HDX dataset download.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>resources_df</strong> (<em>pd.DataFrame</em>) – Resources dataframe from returned by search_hdx_dataset</p></li>
+<li><p><strong>ids</strong> (<em>int</em><em> or </em><em>list</em>) – IDs in the resources dataframe</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>data</strong> – The corresponding dataset in DataFrame format</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">resources_df</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">download</span><span class="o">.</span><span class="n">search_hdx_dataset</span><span class="p">(</span><span class="s1">&#39;peru&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">population_df</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">download</span><span class="o">.</span><span class="n">get_hdx_dataset</span><span class="p">(</span><span class="n">resources_df</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">population_df</span>
+<span class="go">latitude   | longitude  | population_2015 | population_2020</span>
+<span class="go">-18.339306 | -70.382361 | 11.318147       | 12.099885</span>
+<span class="go">-18.335694 | -70.393750 | 11.318147       | 12.099885</span>
+<span class="go">-18.335694 | -70.387361     | 11.318147           | 12.099885</span>
+<span class="go">-18.335417 | -70.394028     | 11.318147           | 12.099885</span>
+<span class="go">-18.335139 | -70.394306     | 11.318147           | 12.099885</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="urbanpy.download.hdx_dataset">
+<span class="sig-prename descclassname"><span class="pre">urbanpy.download.</span></span><span class="sig-name descname"><span class="pre">hdx_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/urbanpy/download/download.html#hdx_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#urbanpy.download.hdx_dataset" title="Link to this definition"></a></dt>
+<dd><p>Download a dataset from HDX. The allowed formats are CSV (.csv) and zipped
+CSV (.csv.zip). To run our function we would only copy what is after “<a class="reference external" href="https://data.humdata.org/dataset/">https://data.humdata.org/dataset/</a>”
+to the ‘resource’ parameter.</p>
+<p>For example: ‘4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/317f1c39-8417-4bde-a076-99bd37feefce/download/population_per_2018-10-01.csv.zip’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>resource</strong> (<em>str</em>) – Specific address to the HDX dataset resource. Since every dataset is
+referenced to a diferent resource id, only the base url can be provided
+by this library.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>dataset</strong> – Contains the requested HDX dataset resource.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hdx_data</span> <span class="o">=</span> <span class="n">hdx_dataset</span><span class="p">(</span><span class="s1">&#39;4e74db39-87f1-4383-9255-eaf8ebceb0c9/resource/317f1c39-8417-4bde-a076-99bd37feefce/download/population_per_2018-10-01.csv.zip&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hdx_data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="go">latitude   | longitude  | population_2015 | population_2020</span>
+<span class="go">-18.339306 | -70.382361 | 11.318147       | 12.099885</span>
+<span class="go">-18.335694 | -70.393750 | 11.318147       | 12.099885</span>
+<span class="go">-18.335694 | -70.387361     | 11.318147           | 12.099885</span>
+<span class="go">-18.335417 | -70.394028     | 11.318147           | 12.099885</span>
+<span class="go">-18.335139 | -70.394306     | 11.318147           | 12.099885</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="urbanpy.download.hdx_fb_population">
+<span class="sig-prename descclassname"><span class="pre">urbanpy.download.</span></span><span class="sig-name descname"><span class="pre">hdx_fb_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">country</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/urbanpy/download/download.html#hdx_fb_population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#urbanpy.download.hdx_fb_population" title="Link to this definition"></a></dt>
+<dd><p>Download population density maps from Facebook HDX.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>country</strong> (<em>str. One</em><em> of </em><em>{'argentina'</em><em>, </em><em>'bolivia'</em><em>, </em><em>'brazil'</em><em>, </em><em>'chile'</em><em>, </em><em>'colombia'</em><em>, </em><em>'ecuador'</em><em>, </em><em>'paraguay'</em><em>, </em><em>'peru'</em><em>, </em><em>'uruguay'}</em>) – Input country to download data from.</p></li>
+<li><p><strong>map_type</strong> (<em>str. One</em><em> of </em><em>{'full'</em><em>, </em><em>'children'</em><em>, </em><em>'youth'</em><em>, </em><em>'elderly'}</em>) – Input population map to download.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>population</strong> – DataFrame with lat, lon, and population columns. Coordinates are in
+EPSG 4326.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">urbanpy</span><span class="o">.</span><span class="n">download</span><span class="o">.</span><span class="n">hdx_fb_population</span><span class="p">(</span><span class="s1">&#39;peru&#39;</span><span class="p">,</span> <span class="s1">&#39;full&#39;</span><span class="p">)</span>
+<span class="go">latitude   | longitude  | population_2015 | population_2020</span>
+<span class="go">-18.339306 | -70.382361 | 11.318147       | 12.099885</span>
+<span class="go">-18.335694 | -70.393750 | 11.318147       | 12.099885</span>
+<span class="go">-18.335694 | -70.387361     | 11.318147           | 12.099885</span>
+<span class="go">-18.335417 | -70.394028     | 11.318147           | 12.099885</span>
+<span class="go">-18.335139 | -70.394306     | 11.318147           | 12.099885</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="urbanpy.download.nominatim_osm">
+<span class="sig-prename descclassname"><span class="pre">urbanpy.download.</span></span><span class="sig-name descname"><span class="pre">nominatim_osm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GeoDataFrame</span></span></span><a class="reference internal" href="_modules/urbanpy/download/download.html#nominatim_osm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#urbanpy.download.nominatim_osm" title="Link to this definition"></a></dt>
+<dd><p>Download OpenStreetMaps data for a specific city.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<em>str</em>) – Query string for OSM data to be downloaded (e.g. “Lima, Peru”).</p></li>
+<li><p><strong>expected_position</strong> (<em>int 0:n</em>) – Expected position of the polygon data within the Nominatim results.
+Default 0 returns the first result.
+If set to None, all the results are returned.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>gdf</strong> – GeoDataFrame with the fetched OSM data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>GeoDataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lima</span> <span class="o">=</span> <span class="n">nominatim_osm</span><span class="p">(</span><span class="s1">&#39;Lima, Peru&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lima</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="go">geometry     | place_id      | osm_type     | osm_id     | display_name     | place_rank  |  category | type               | importance     | icon</span>
+<span class="go">MULTIPOLYGON | 235480647 | relation | 1944670.0  | Lima, Peru       | 12          |  boundary |     administrative | 0.703484       | https://nominatim.openstreetmap.org/images/map...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="urbanpy.download.osmnx_graph">
+<span class="sig-prename descclassname"><span class="pre">urbanpy.download.</span></span><span class="sig-name descname"><span class="pre">osmnx_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">download_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'drive'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/urbanpy/download/download.html#osmnx_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#urbanpy.download.osmnx_graph" title="Link to this definition"></a></dt>
+<dd><p>Download a graph from OSM using osmnx.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>download_type</strong> (<em>str. One</em><em> of </em><em>{'polygon'</em><em>, </em><em>'place'</em><em>, </em><em>'point'}</em>) – Input download type. If polygon, the polygon parameter must be provided
+as a Shapely Polygon.</p></li>
+<li><p><strong>network_type</strong> (<em>str. One</em><em> of </em><em>{'drive'</em><em>, </em><em>'drive_service'</em><em>, </em><em>'walk'</em><em>, </em><em>'bike'</em><em>, </em><em>'all'</em><em>, </em><em>'all_private'}</em>) – Network type to download. Defaults to drive.</p></li>
+<li><p><strong>query_str</strong> (<em>str</em><em> (</em><em>Optional</em><em>)</em><em>.</em>) – Only requiered for place type downloads. Query string to download a network.</p></li>
+<li><p><strong>polygon</strong> (<em>Shapely Polygon</em><em> or </em><em>Point</em><em> (</em><em>Optional</em><em>)</em><em>.</em>) – Polygon requiered for polygon type downloads, Point for place downloads.
+Polygons are used as bounds for network download, points as the center.
+with a distance buffer.</p></li>
+<li><p><strong>distance</strong> (<em>int</em>) – Distance in meters to use as buffer from a point to download the network.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>G</strong> – Requested graph with simplyfied geometries.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>networkx.MultiDiGraph</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">poly</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">download</span><span class="o">.</span><span class="n">nominatim_osm</span><span class="p">(</span><span class="s1">&#39;San Isidro, Peru&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">download</span><span class="o">.</span><span class="n">osmnx_graph</span><span class="p">(</span><span class="s1">&#39;polygon&#39;</span><span class="p">,</span> <span class="n">geom</span><span class="o">=</span><span class="n">lima</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="s1">&#39;geometry&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span>
+<span class="go">&lt;networkx.classes.multidigraph.MultiDiGraph at 0x1a2ba08150&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="urbanpy.download.overpass">
+<span class="sig-prename descclassname"><span class="pre">urbanpy.download.</span></span><span class="sig-name descname"><span class="pre">overpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_of_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GeoDataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">GeoSeries</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Polygon</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MultiPolygon</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">GeoDataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/urbanpy/download/download.html#overpass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#urbanpy.download.overpass" title="Link to this definition"></a></dt>
+<dd><p>Download geographic data using Overpass API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type_of_data</strong> (<em>str</em>) – One of {‘node’, ‘way’, ‘relation’, ‘rel’}. OSM Data structure to be queried from Overpass API.</p></li>
+<li><p><strong>query</strong> (<em>dict</em>) – Dict containing OSM tag filters. Dict keys can take OSM tags and Dict values can be a list of strings, str, or None.
+Example: { ‘key0’: [‘v0a’, ‘v0b’, ‘v0c’], ‘key1’: ‘v1’, ‘key2’: None }
+Check keys [OSM Map Features](<a class="reference external" href="https://wiki.openstreetmap.org/wiki/Map_features">https://wiki.openstreetmap.org/wiki/Map_features</a>).</p></li>
+<li><p><strong>mask</strong> (<em>GeoDataFrame</em><em>, </em><em>GeoSeries</em><em>, </em><em>Polygon</em><em>, or </em><em>MultiPolygon</em>) – Total bounds of mask to be used for the query.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>gdf</strong> (<em>GeoDataFrame</em>) – POIs from the selected type of facility.</p></li>
+<li><p><strong>df</strong> (<em>DataFrame</em>) – Relations metadata such as ID and tags. Returns None if ‘type_of_data’ is other than ‘relation’.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="urbanpy.download.overpass_pois">
+<span class="sig-prename descclassname"><span class="pre">urbanpy.download.</span></span><span class="sig-name descname"><span class="pre">overpass_pois</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facilities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/urbanpy/download/download.html#overpass_pois"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#urbanpy.download.overpass_pois" title="Link to this definition"></a></dt>
+<dd><p>Download POIs using Overpass API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bounds</strong> (<em>array_like</em>) – Input bounds for query. Follows [minx,miny,maxx,maxy] pattern.</p></li>
+<li><p><strong>facilities</strong> (<em>str. One</em><em> of </em><em>{'food'</em><em>, </em><em>'health'</em><em>, </em><em>'education'</em><em>, </em><em>'finance'}</em>) – Type of facilities to download according to HOTOSM types. Based on this
+a different type of query is constructed.</p></li>
+<li><p><strong>custom_query</strong> (<em>str</em><em> (</em><em>Optional</em><em>)</em><em>. Default None.</em>) – String with custom Overpass QL query (See <a class="reference external" href="https://wiki.openstreetmap.org/wiki/Overpass_API/Language_Guide">https://wiki.openstreetmap.org/wiki/Overpass_API/Language_Guide</a>).
+If this parameter is diferent than None, bounds and facilities values
+are ignored.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>gdf</strong> (<em>GeoDataFrame</em>) – POIs from the selected type of facility. If ‘custom_query’ is given
+response is returned instead of gdf.</p></li>
+<li><p><strong>response</strong> (<em>request.Response</em>) – Returned only if ‘custom_query’ is given. Contains the server’s response
+to the HTTP request from the Overpass API Server.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lima</span> <span class="o">=</span> <span class="n">nominatim_osm</span><span class="p">(</span><span class="s1">&#39;Lima, Peru&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">urbanpy</span><span class="o">.</span><span class="n">download</span><span class="o">.</span><span class="n">overpass_pois</span><span class="p">(</span><span class="n">lima</span><span class="o">.</span><span class="n">total_bounds</span><span class="p">,</span> <span class="s1">&#39;health&#39;</span><span class="p">)</span>
+<span class="go">type |  id        | lat           | lon            | tags                                              | geometry                   | poi_type</span>
+<span class="go">node |      367826732 |     -0.944005 |     -80.733941 | {&#39;amenity&#39;: &#39;pharmacy&#39;, &#39;name&#39;: &#39;Fybeca&#39;}         | POINT (-80.73394 -0.94401)     | pharmacy</span>
+<span class="go">node |      367830051 |     -0.954086 |     -80.742420 | {&#39;amenity&#39;: &#39;hospital&#39;, &#39;emergency&#39;: &#39;yes&#39;, &#39;n... | POINT (-80.74242 -0.95409)     | hospital</span>
+<span class="go">node |      367830065 |     -0.954012 |     -80.741554 | {&#39;amenity&#39;: &#39;hospital&#39;, &#39;name&#39;: &#39;Clínica del S... | POINT (-80.74155 -0.95401)     | hospital</span>
+<span class="go">node |      367830072 |     -0.953488 |     -80.740739 | {&#39;amenity&#39;: &#39;hospital&#39;, &#39;name&#39;: &#39;Clínica Cente... | POINT (-80.74074 -0.95349)     | hospital</span>
+<span class="go">node |      3206491590|     -1.040708 |     -80.665107 | {&#39;amenity&#39;: &#39;hospital&#39;, &#39;name&#39;: &#39;Clínica Monte... | POINT (-80.66511 -1.04071)     | hospital</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="urbanpy.download.search_hdx_dataset">
+<span class="sig-prename descclassname"><span class="pre">urbanpy.download.</span></span><span class="sig-name descname"><span class="pre">search_hdx_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">country</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repository</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'high-resolution-population-density-maps-demographic-estimates'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/urbanpy/download/download.html#search_hdx_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#urbanpy.download.search_hdx_dataset" title="Link to this definition"></a></dt>
+<dd><p>Dataset search within HDX repositories. Defaults to population density maps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>country</strong> (<em>str</em>) – Country to search datasets</p></li>
+<li><p><strong>resource</strong> (<em>str</em>) – Resource type within the HDX database</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>datasets</strong> – DataFrame of available datasets within HDX</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">resources_df</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">download</span><span class="o">.</span><span class="n">search_hdx_dataset</span><span class="p">(</span><span class="s1">&#39;peru&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">resources_df</span>
+<span class="go">   | created        | name                                              | population                                    | size_mb | url</span>
+<span class="go">id |                        |                                                       |                                           |         |</span>
+<span class="go">0  | 2019-06-11     | population_per_2018-10-01.csv.zip                     | Overall population density                | 19.36       | https://data.humdata.org/dataset/4e74db39-87f1...</span>
+<span class="go">2  | 2019-06-11     | PER_children_under_five_2019-06-01_csv.zip        | Children (ages 0-5)                           | 16.60       | https://data.humdata.org/dataset/4e74db39-87f1...</span>
+<span class="go">4  | 2019-06-11     | PER_elderly_60_plus_2019-06-01_csv.zip                | Elderly (ages 60+)                        | 16.59       | https://data.humdata.org/dataset/4e74db39-87f1...</span>
+<span class="go">6  | 2019-06-11     | PER_men_2019-06-01_csv.zip                        | Men                                           | 16.64       | https://data.humdata.org/dataset/4e74db39-87f1...</span>
+<span class="go">8  | 2019-06-11     | PER_women_2019-06-01_csv.zip                      | Women                                         | 16.63       | https://data.humdata.org/dataset/4e74db39-87f1...</span>
+<span class="go">10 | 2019-06-11     | PER_women_of_reproductive_age_15_49_2019-06-01... | Women of reproductive age (ages 15-49)    | 16.62   | https://data.humdata.org/dataset/4e74db39-87f1...</span>
+<span class="go">12 | 2019-06-11     | PER_youth_15_24_2019-06-01_csv.zip                | Youth (ages 15-24)                            | 16.61       | https://data.humdata.org/dataset/4e74db39-87f1...</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </section>
 
 

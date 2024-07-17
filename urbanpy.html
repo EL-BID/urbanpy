@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -15,9 +15,9 @@
   
         <script src="_static/jquery.js?v=5be48651"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=8e9f4d89"></script>
+        <script src="_static/documentation_options.js?v=8e9f4d89"></script>
         <script src="_static/doctools.js?v=b682be12"></script>
-        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -91,9 +91,9 @@
            <div itemprop="articleBody">
              
   <section id="reference">
-<h1>Reference<a class="headerlink" href="#reference" title="Permalink to this heading"></a></h1>
+<h1>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h1>
 <section id="modules-description">
-<h2>Modules Description<a class="headerlink" href="#modules-description" title="Permalink to this heading"></a></h2>
+<h2>Modules Description<a class="headerlink" href="#modules-description" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>download: Main functions for data download from Nominatin API,
 OverPass API and HDX population data</p></li>
@@ -107,15 +107,65 @@ maps</p></li>
 </ul>
 </section>
 <section id="modules-reference">
-<h2>Modules Reference<a class="headerlink" href="#modules-reference" title="Permalink to this heading"></a></h2>
+<h2>Modules Reference<a class="headerlink" href="#modules-reference" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="urbanpy.download.html">Download Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="urbanpy.geom.html">Geom Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="urbanpy.plotting.html">Plotting Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="urbanpy.routing.html">Routing Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="urbanpy.accessibility.html">Accessibility Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="urbanpy.utils.html">Utils Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="urbanpy.download.html">Download Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.download.html#urbanpy.download.get_hdx_dataset"><code class="docutils literal notranslate"><span class="pre">get_hdx_dataset()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.download.html#urbanpy.download.hdx_dataset"><code class="docutils literal notranslate"><span class="pre">hdx_dataset()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.download.html#urbanpy.download.hdx_fb_population"><code class="docutils literal notranslate"><span class="pre">hdx_fb_population()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.download.html#urbanpy.download.nominatim_osm"><code class="docutils literal notranslate"><span class="pre">nominatim_osm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.download.html#urbanpy.download.osmnx_graph"><code class="docutils literal notranslate"><span class="pre">osmnx_graph()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.download.html#urbanpy.download.overpass"><code class="docutils literal notranslate"><span class="pre">overpass()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.download.html#urbanpy.download.overpass_pois"><code class="docutils literal notranslate"><span class="pre">overpass_pois()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.download.html#urbanpy.download.search_hdx_dataset"><code class="docutils literal notranslate"><span class="pre">search_hdx_dataset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="urbanpy.geom.html">Geom Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.geom.html#urbanpy.geom.filter_population"><code class="docutils literal notranslate"><span class="pre">filter_population()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.geom.html#urbanpy.geom.gen_hexagons"><code class="docutils literal notranslate"><span class="pre">gen_hexagons()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.geom.html#urbanpy.geom.merge_geom_downloads"><code class="docutils literal notranslate"><span class="pre">merge_geom_downloads()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.geom.html#urbanpy.geom.merge_shape_hex"><code class="docutils literal notranslate"><span class="pre">merge_shape_hex()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.geom.html#urbanpy.geom.osmnx_coefficient_computation"><code class="docutils literal notranslate"><span class="pre">osmnx_coefficient_computation()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.geom.html#urbanpy.geom.overlay_polygons_hexs"><code class="docutils literal notranslate"><span class="pre">overlay_polygons_hexs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.geom.html#urbanpy.geom.remove_features"><code class="docutils literal notranslate"><span class="pre">remove_features()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.geom.html#urbanpy.geom.resolution_downsampling"><code class="docutils literal notranslate"><span class="pre">resolution_downsampling()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="urbanpy.plotting.html">Plotting Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.plotting.html#urbanpy.plotting.choropleth_map"><code class="docutils literal notranslate"><span class="pre">choropleth_map()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="urbanpy.routing.html">Routing Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.routing.html#urbanpy.routing.compute_osrm_dist_matrix"><code class="docutils literal notranslate"><span class="pre">compute_osrm_dist_matrix()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.routing.html#urbanpy.routing.google_maps_dir_matrix"><code class="docutils literal notranslate"><span class="pre">google_maps_dir_matrix()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.routing.html#urbanpy.routing.google_maps_dist_matrix"><code class="docutils literal notranslate"><span class="pre">google_maps_dist_matrix()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.routing.html#urbanpy.routing.isochrone_from_api"><code class="docutils literal notranslate"><span class="pre">isochrone_from_api()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.routing.html#urbanpy.routing.isochrone_from_graph"><code class="docutils literal notranslate"><span class="pre">isochrone_from_graph()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.routing.html#urbanpy.routing.nx_route"><code class="docutils literal notranslate"><span class="pre">nx_route()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.routing.html#urbanpy.routing.ors_api"><code class="docutils literal notranslate"><span class="pre">ors_api()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.routing.html#urbanpy.routing.osrm_route"><code class="docutils literal notranslate"><span class="pre">osrm_route()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.routing.html#urbanpy.routing.start_osrm_server"><code class="docutils literal notranslate"><span class="pre">start_osrm_server()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.routing.html#urbanpy.routing.stop_osrm_server"><code class="docutils literal notranslate"><span class="pre">stop_osrm_server()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="urbanpy.accessibility.html">Accessibility Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.accessibility.html#urbanpy.accessibility.hu_access_map"><code class="docutils literal notranslate"><span class="pre">hu_access_map()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.accessibility.html#urbanpy.accessibility.pressure_map"><code class="docutils literal notranslate"><span class="pre">pressure_map()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.accessibility.html#urbanpy.accessibility.travel_times"><code class="docutils literal notranslate"><span class="pre">travel_times()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="urbanpy.utils.html">Utils Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.utils.html#urbanpy.utils.create_duration_labels"><code class="docutils literal notranslate"><span class="pre">create_duration_labels()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.utils.html#urbanpy.utils.geo_boundary_to_polygon"><code class="docutils literal notranslate"><span class="pre">geo_boundary_to_polygon()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.utils.html#urbanpy.utils.get_hdx_label"><code class="docutils literal notranslate"><span class="pre">get_hdx_label()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.utils.html#urbanpy.utils.nn_search"><code class="docutils literal notranslate"><span class="pre">nn_search()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.utils.html#urbanpy.utils.overpass_to_gdf"><code class="docutils literal notranslate"><span class="pre">overpass_to_gdf()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.utils.html#urbanpy.utils.shell_from_geometry"><code class="docutils literal notranslate"><span class="pre">shell_from_geometry()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.utils.html#urbanpy.utils.swap_xy"><code class="docutils literal notranslate"><span class="pre">swap_xy()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="urbanpy.utils.html#urbanpy.utils.to_overpass_query"><code class="docutils literal notranslate"><span class="pre">to_overpass_query()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>

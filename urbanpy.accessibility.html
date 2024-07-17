@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -15,9 +15,9 @@
   
         <script src="_static/jquery.js?v=5be48651"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=8e9f4d89"></script>
+        <script src="_static/documentation_options.js?v=8e9f4d89"></script>
         <script src="_static/doctools.js?v=b682be12"></script>
-        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -55,7 +55,12 @@
 <li class="toctree-l3"><a class="reference internal" href="urbanpy.geom.html">Geom Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="urbanpy.plotting.html">Plotting Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="urbanpy.routing.html">Routing Modules</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Accessibility Module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Accessibility Module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#urbanpy.accessibility.hu_access_map"><code class="docutils literal notranslate"><span class="pre">hu_access_map()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#urbanpy.accessibility.pressure_map"><code class="docutils literal notranslate"><span class="pre">pressure_map()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#urbanpy.accessibility.travel_times"><code class="docutils literal notranslate"><span class="pre">travel_times()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="urbanpy.utils.html">Utils Module</a></li>
 </ul>
 </li>
@@ -91,8 +96,96 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="accessibility-module">
-<h1>Accessibility Module<a class="headerlink" href="#accessibility-module" title="Permalink to this heading"></a></h1>
+  <section id="module-urbanpy.accessibility">
+<span id="accessibility-module"></span><h1>Accessibility Module<a class="headerlink" href="#module-urbanpy.accessibility" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="urbanpy.accessibility.hu_access_map">
+<span class="sig-prename descclassname"><span class="pre">urbanpy.accessibility.</span></span><span class="sig-name descname"><span class="pre">hu_access_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">units</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pois</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1250</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/urbanpy/accessibility/accessibility.html#hu_access_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#urbanpy.accessibility.hu_access_map" title="Link to this definition"></a></dt>
+<dd><p>Create accessibility surface from Hu et al. 2019. The authors provide an accessibility to healthy foods indicator that contemplates both the catchment area of a store and the access from a city block/district/county (denoted as E2SFCA).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>units</strong> (<em>GeoDataFrame</em>) – Input spatial units to calculate access.</p></li>
+<li><p><strong>pois</strong> (<em>GeoDataFrame</em>) – Input points of interest for access calculations</p></li>
+<li><p><strong>population_column</strong> (<em>str</em>) – Key for population values in each spatial unit</p></li>
+<li><p><strong>weight</strong> (<em>int</em>) – Weight for final indicator computation. Defaults to 1</p></li>
+<li><p><strong>d0</strong> (<em>int</em>) – Buffer size. Defaults to 1250</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>access_map</strong> – Input unit dataframe with accessibility values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>GeoDataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">surface</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">accessibility</span><span class="o">.</span><span class="n">hu_access_map</span><span class="p">(</span><span class="n">blocks</span><span class="p">,</span> <span class="n">pois</span><span class="p">,</span> <span class="s1">&#39;pop_2020&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">surface</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="go">geometry     | place_id      | osm_type     | osm_id     | display_name     | place_rank  |  category | type               | importance     | icon</span>
+<span class="go">MULTIPOLYGON | 235480647 | relation | 1944670.0  | Lima, Peru       | 12          |  boundary |     administrative | 0.703484       | https://nominatim.openstreetmap.org/images/map...</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<p>Hu, L., Zhao, C., Wang, M., Su, S., Weng, M., &amp; Wang, W. (2020). Dynamic healthy food accessibility in a rapidly urbanizing metropolitan area: socioeconomic inequality and relative contribution of local factors. Cities, 105, 102819.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="urbanpy.accessibility.pressure_map">
+<span class="sig-prename descclassname"><span class="pre">urbanpy.accessibility.</span></span><span class="sig-name descname"><span class="pre">pressure_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blocks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pois</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">demand_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'intersects'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1250</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/urbanpy/accessibility/accessibility.html#pressure_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#urbanpy.accessibility.pressure_map" title="Link to this definition"></a></dt>
+<dd><p>Create the unaggregated pressure map from Ritsema van Eck &amp; de Jong, 1999.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>blocks</strong> (<em>GeoDataFrame</em>) – Input spatial units to calculate pressure. As per the paper these are city blocks.</p></li>
+<li><p><strong>pois</strong> (<em>GeoDataFrame</em>) – Input points of interest for pressure calculations</p></li>
+<li><p><strong>demand_column</strong> (<em>str</em>) – Key for demand values in each spatial unit.</p></li>
+<li><p><strong>operation</strong> (<em>str</em>) – Spatial operation to use. One of the operations supported by GeoPandas</p></li>
+<li><p><strong>buffer_size</strong> (<em>int</em>) – Buffer size. Defaults to 1250</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>blocks</strong> – Input blocks dataframe with pressure values (ds). Unaggregated, if grouped into a higher resolution, sum ‘ds’.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>GeoDataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">surface</span> <span class="o">=</span> <span class="n">urbanpy</span><span class="o">.</span><span class="n">accessibility</span><span class="o">.</span><span class="n">pressure_map</span><span class="p">(</span><span class="n">blocks</span><span class="p">,</span> <span class="n">pois</span><span class="p">,</span> <span class="s1">&#39;pop_2020&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">surface</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="go">POB16  | ds        |    geometry</span>
+<span class="go">    69         | 0.784091  |        POLYGON ((301151.794 8670216.675, 301167.165 8...</span>
+<span class="go">    84         | 0.617647  |        POLYGON ((282595.509 8677560.543, 282627.393 8...</span>
+<span class="go">    117        | 2.785714  |        POLYGON ((279276.449 8681335.243, 279323.599 8...</span>
+<span class="go">    41         | 20.500000 |    POLYGON ((313155.536 8677088.663, 313180.700 8...</span>
+<span class="go">    59         | 1.404762  |        POLYGON ((280125.735 8684068.209, 280098.318 8..</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<p>Van Eck, J. R., &amp; de Jong, T. (1999). Accessibility analysis and spatial competition effects in the context of GIS-supported service location planning. Computers, environment and urban systems, 23(2), 75-89.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="urbanpy.accessibility.travel_times">
+<span class="sig-prename descclassname"><span class="pre">urbanpy.accessibility.</span></span><span class="sig-name descname"><span class="pre">travel_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pois</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'poi'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nearest_neighbor_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'haversine'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/urbanpy/accessibility/accessibility.html#travel_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#urbanpy.accessibility.travel_times" title="Link to this definition"></a></dt>
+<dd><p>Calculate travel times (durations) and distances from each input geometry to the nearest poi with an active osrm server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputs</strong> (<em>GeoDataFrame</em>) – Input grid-spatial units to calculate pressure.</p></li>
+<li><p><strong>pois</strong> (<em>GeoDataFrame</em>) – Input points of interest for travel distance and durations calculations</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>gdf</strong> – Input geodataframe with travel distances and durantions to nearest poi.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
