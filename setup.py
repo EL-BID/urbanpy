@@ -9,7 +9,7 @@ with open("requirements.txt", "r") as f:
 setuptools.setup(
     name="urbanpy",
     version="__version__",  # This will be replaced with the commit tag
-    author="Andres Regal, Claudio Ortega & Antonio Vasquez Brust",
+    author="Andres Regal, Claudio Ortega & Antonio Vazquez Brust",
     author_email="a.regalludowieg@up.edu.pe",
     description="A library to download, process and visualize high resolution urban data.",
     long_description=long_description,
