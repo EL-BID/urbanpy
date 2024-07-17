@@ -60,7 +60,7 @@ def nominatim_osm(query: str, expected_position: "int | None" = 0, email: str = 
     geometry	 | place_id	 | osm_type	| osm_id     | display_name	| place_rank  |  category | type	       | importance	| icon
     MULTIPOLYGON | 235480647 | relation	| 1944670.0  | Lima, Peru	| 12	      |  boundary |	administrative | 0.703484	| https://nominatim.openstreetmap.org/images/map...
     """
-    if email === "":
+    if email == "":
         raise ValueError("Please provide an email to avoid violating Nominatim API rules.")
     osm_url = "https://nominatim.openstreetmap.org/search.php"
     osm_parameters = {
