@@ -19,8 +19,8 @@ class GeomTest(unittest.TestCase):
         """
 
         # Example test values
-        gdf1 = up.download.nominatim_osm(query="Jesús María, Lima, Peru")
-        gdf2 = up.download.nominatim_osm(query="Lince, Lima, Peru")
+        gdf1 = up.download.nominatim_osm(query="Jesús María, Lima, Peru", email="claudio.rtega2701@gmail.com")
+        gdf2 = up.download.nominatim_osm(query="Lince, Lima, Peru", email="claudio.rtega2701@gmail.com")
 
         # Merged
         merged_geom = up.geom.merge_geom_downloads([gdf1, gdf2])
@@ -44,7 +44,7 @@ class GeomTest(unittest.TestCase):
         # Example test values
         datasets_df = up.download.search_hdx_dataset("bolivia")
         pop_df = up.download.get_hdx_dataset(datasets_df, 0)
-        polygon_gdf = up.download.nominatim_osm("La Paz, Bolivia", 1)
+        polygon_gdf = up.download.nominatim_osm("La Paz, Bolivia", 1, email="claudio.rtega2701@gmail.com")
 
         # Filter pop
         filtered_points_gdf = up.geom.filter_population(pop_df, polygon_gdf)
