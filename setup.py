@@ -6,9 +6,12 @@ with open("README.md", "r") as fh:
 with open("requirements.txt", "r") as f:
     install_requires = f.read().split("\n")[:-1]
 
+# Set a development version for source installs
+__version__ = "dev"
+
 setuptools.setup(
     name="urbanpy",
-    version="__version__",  # This will be replaced with the commit tag
+    version=__version__,  # This will be replaced with the commit tag
     author="Andres Regal, Claudio Ortega & Antonio Vazquez Brust",
     author_email="a.regalludowieg@up.edu.pe",
     description="A library to download, process and visualize high resolution urban data.",

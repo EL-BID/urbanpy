@@ -86,15 +86,16 @@ jobs:
         export PATH=/home/runner/.local/bin/:$PATH
 
         VERSION=$( echo $GITHUB_REF | /bin/sed 's#.*/v##' )
-        PLACEHOLDER='__version__'
+        SETUP_PLACEHOLDER='__version__ = "dev"'
         SETUP_FILE='setup.py'
+        DOCS_PLACEHOLDER='__version__'
         DOCS_CONF_FILE='docs/source/conf.py'
-
+        
         grep "$PLACEHOLDER" "$SETUP_FILE"
-        /bin/sed -i "s/$PLACEHOLDER/${VERSION}/" "$SETUP_FILE"
+        /bin/sed -i "s/$SETUP_PLACEHOLDER/__version__ = \"${VERSION}\"/g" "$SETUP_FILE"
 
         grep "$PLACEHOLDER" "$DOCS_CONF_FILE"
-        /bin/sed -i "s/$PLACEHOLDER/${VERSION}/" "$DOCS_CONF_FILE"
+        /bin/sed -i "s/$DOCS_PLACEHOLDER/${VERSION}/" "$DOCS_CONF_FILE"
       shell: bash
     - name: Install dependencies
       run: |
