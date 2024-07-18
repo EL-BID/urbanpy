@@ -86,11 +86,11 @@ jobs:
         export PATH=/home/runner/.local/bin/:$PATH
 
         VERSION=$( echo $GITHUB_REF | /bin/sed 's#.*/v##' )
-        SETUP_PLACEHOLDER='__version__ = "dev"'
+        SETUP_PLACEHOLDER='__version__ = "0.dev0"'
         SETUP_FILE='setup.py'
         DOCS_PLACEHOLDER='__version__'
         DOCS_CONF_FILE='docs/source/conf.py'
-        
+
         grep "$PLACEHOLDER" "$SETUP_FILE"
         /bin/sed -i "s/$SETUP_PLACEHOLDER/__version__ = \"${VERSION}\"/g" "$SETUP_FILE"
 
