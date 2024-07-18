@@ -7,7 +7,7 @@ with open("requirements.txt", "r") as f:
     install_requires = f.read().split("\n")[:-1]
 
 # Set a development version for source installs
-__version__ = "dev"
+__version__ = "0.dev0"
 
 setuptools.setup(
     name="urbanpy",
