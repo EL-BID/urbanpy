@@ -165,7 +165,8 @@ def gen_hexagons(resolution: int, city: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     # Get every polygon in Multipolygon shape
     city_poly = city.explode(index_parts=True).reset_index(drop=True)
 
-    for _, geo in city_poly.iterrows():
+    total = len(city_poly)  # For rich library to how much progress is needed
+    for _, geo in track(city_poly.iterrows(), total=total):
         hexagons = h3.polyfill(
             geo["geometry"].__geo_interface__, res=resolution, geo_json_conformant=True
         )
