@@ -102,7 +102,7 @@ $ source .env/bin/activate
 
 ## License
 
-Copyright © 2020. Banco Interamericano de Desarrollo ("BID"). Uso autorizado. [AM-331-A3](/LICENSE.md)
+UrbanPy is licensed under the [GPL-3](LICENSE) license.
 
 ## Authors
 
