@@ -472,6 +472,14 @@ def hdx_dataset(resource):
         stacklevel=2,
     )
 
-    hdx_url = f"https://data.humdata.org/dataset/{resource}"
+    if not resource.ends_with(".csv"):
+        raise AttributeError("This function only expects a CSV file.")
+
+    if not resource.starts_with("https://data.humdata.org/dataset/"):
+        hdx_url = f"https://data.humdata.org/dataset/{resource}"
+    else:
+        hdx_url = hdx_url
+
     dataset = pd.read_csv(hdx_url)
+    
     return dataset
