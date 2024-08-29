@@ -400,15 +400,22 @@ def get_hdx_dataset(
         df = pd.read_csv(urls)
 
     if mask:
-        df["geometry"] = df.apply(
-            lambda row: Point(row["longitude"], row["latitude"]), axis=1
-        )
-        df = gpd.GeoDataFrame(df)
-
         if isinstance(mask, GeoDataFrame):
             mask = mask.unary_union
+        minx, miny, maxx, maxy = mask.bounds
 
-        return df[df.geometry.intersects(mask)]
+        df_filtered = df[
+            (df["longitude"] >= minx)
+            & (df["longitude"] <= maxx)
+            & (df["latitude"] >= miny)
+            & (df["latitude"] <= maxy)
+        ]
+        df_filtered.loc[:, "geometry"] = df_filtered.apply(
+            lambda row: Point(row["longitude"], row["latitude"]), axis=1
+        )
+        gdf = gpd.GeoDataFrame(df_filtered)
+
+        return gdf[gdf.geometry.intersects(mask)]
     else:
         return df
 
