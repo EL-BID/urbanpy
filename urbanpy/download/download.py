@@ -10,7 +10,7 @@ from geopandas import GeoDataFrame, GeoSeries
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
 from pandas import DataFrame
-from shapely.geometry import MultiPolygon, Polygon
+from shapely.geometry import MultiPolygon, Polygon, Point
 
 from urbanpy.utils import (
     HDX_POPULATION_TYPES,
@@ -35,7 +35,9 @@ hdx_config = Configuration.create(
 )
 
 
-def nominatim_osm(query: str, expected_position: "int | None" = 0, email: str = "" ) -> GeoDataFrame:
+def nominatim_osm(
+    query: str, expected_position: "int | None" = 0, email: str = ""
+) -> GeoDataFrame:
     """
     Download OpenStreetMaps data for a specific city.
 
@@ -61,13 +63,15 @@ def nominatim_osm(query: str, expected_position: "int | None" = 0, email: str = 
     MULTIPOLYGON | 235480647 | relation	| 1944670.0  | Lima, Peru	| 12	      |  boundary |	administrative | 0.703484	| https://nominatim.openstreetmap.org/images/map...
     """
     if email == "":
-        raise ValueError("Please provide an email to avoid violating Nominatim API rules.")
+        raise ValueError(
+            "Please provide an email to avoid violating Nominatim API rules."
+        )
     osm_url = "https://nominatim.openstreetmap.org/search.php"
     osm_parameters = {
         "q": query,
-        "polygon_geojson": "1", 
-        "format": "geojson", 
-        "email": email
+        "polygon_geojson": "1",
+        "format": "geojson",
+        "email": email,
     }
 
     response = requests.get(osm_url, params=osm_parameters)
@@ -75,7 +79,7 @@ def nominatim_osm(query: str, expected_position: "int | None" = 0, email: str = 
     gdf = gpd.GeoDataFrame.from_features(all_results["features"], crs="EPSG:4326")
     if expected_position is None:
         return gdf
-    
+
     return gdf.iloc[expected_position : expected_position + 1]
 
 
@@ -163,6 +167,7 @@ def overpass_pois(bounds, facilities=None, custom_query=None):
             overpass_url, params={"data": custom_query, "bbox": bbox_string}
         )
         return response
+
 
 def overpass(
     type_of_data: str,
@@ -352,7 +357,11 @@ def search_hdx_dataset(
         return resources_csv_df[["created", "name", "population", "size_mb", "url"]]
 
 
-def get_hdx_dataset(resources_df: DataFrame, ids: Union[int, list]) -> DataFrame:
+def get_hdx_dataset(
+    resources_df: DataFrame,
+    ids: Union[int, list],
+    mask: Union[GeoDataFrame, Polygon, MultiPolygon] = None,
+) -> DataFrame:
     """
     HDX dataset download.
 
@@ -384,10 +393,31 @@ def get_hdx_dataset(resources_df: DataFrame, ids: Union[int, list]) -> DataFrame
 
     urls = resources_df.loc[ids, "url"]
 
+    print(urls)
     if isinstance(ids, list) and len(ids) > 1:
-        return pd.concat([pd.read_csv(url) for url in urls])
+        df = pd.concat([pd.read_csv(url) for url in urls])
     else:
-        return pd.read_csv(urls)
+        df = pd.read_csv(urls)
+
+    if mask:
+        if isinstance(mask, GeoDataFrame):
+            mask = mask.unary_union
+        minx, miny, maxx, maxy = mask.bounds
+
+        df_filtered = df[
+            (df["longitude"] >= minx)
+            & (df["longitude"] <= maxx)
+            & (df["latitude"] >= miny)
+            & (df["latitude"] <= maxy)
+        ]
+        df_filtered.loc[:, "geometry"] = df_filtered.apply(
+            lambda row: Point(row["longitude"], row["latitude"]), axis=1
+        )
+        gdf = gpd.GeoDataFrame(df_filtered)
+
+        return gdf[gdf.geometry.intersects(mask)]
+    else:
+        return df
 
 
 def hdx_fb_population(country, map_type):
