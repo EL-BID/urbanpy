@@ -1,4 +1,3 @@
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=EL-BID_urbanpy&metric=alert_status)](https://sonarcloud.io/dashboard?id=EL-BID_urbanpy)
 [![Test and deploy](https://github.com/EL-BID/urbanpy/actions/workflows/main.yml/badge.svg)](https://github.com/EL-BID/urbanpy/actions/workflows/main.yml)
 [![Downloads](https://static.pepy.tech/badge/urbanpy)](https://pepy.tech/project/urbanpy)
 [![Downloads](https://static.pepy.tech/badge/urbanpy/month)](https://pepy.tech/project/urbanpy)
