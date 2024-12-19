@@ -343,7 +343,7 @@ def resolution_downsampling(
     gdf_coarse = gdf.copy()
     coarse_hex_col = "hex_{}".format(coarse_resolution)
     gdf_coarse[coarse_hex_col] = gdf_coarse[hex_col].apply(
-        lambda x: h3.h3_to_parent(x, coarse_resolution)
+        lambda x: h3.cell_to_parent(x, res=coarse_resolution)
     )
     dfc = gdf_coarse.groupby([coarse_hex_col]).agg(agg).reset_index()
     gdfc_geometry = dfc[coarse_hex_col].apply(geo_boundary_to_polygon)
