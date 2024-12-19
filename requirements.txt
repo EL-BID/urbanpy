@@ -20,7 +20,7 @@ fonttools==4.53.1
 frictionless==5.17.0
 geopandas==1.0.1
 googlemaps==4.10.0
-h3==3.7.7
+h3==4.1.2
 hdx-python-api==6.3.2
 hdx-python-country==3.7.7
 hdx-python-utilities==3.7.3
