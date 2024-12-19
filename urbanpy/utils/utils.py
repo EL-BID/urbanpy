@@ -5,7 +5,7 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 from geopandas import GeoDataFrame, GeoSeries
-from h3 import h3
+import h3
 from pandas import DataFrame
 from shapely.geometry import MultiPolygon, Polygon
 from shapely.validation import make_valid
