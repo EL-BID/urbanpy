@@ -5,7 +5,8 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 from geopandas import GeoDataFrame, GeoSeries
-from h3 import h3
+import h3
+import shapely
 from pandas import DataFrame
 from shapely.geometry import MultiPolygon, Polygon
 from shapely.validation import make_valid
@@ -166,9 +167,9 @@ def geo_boundary_to_polygon(x):
         Polygon representing H3 hexagon area
 
     """
-    return Polygon(
-        [bound[::-1] for bound in h3.h3_to_geo_boundary(x)]
-    )  #  format as x,y (lon, lat)
+    lat_lng_points = h3.cell_to_boundary(x)
+    lng_lat_points = [(lng, lat) for lat, lng in lat_lng_points]
+    return shapely.Polygon(lng_lat_points)  #  format as x,y (lon, lat)
 
 
 def create_duration_labels(durations):
