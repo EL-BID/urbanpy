@@ -48,25 +48,25 @@ $ pip install urbanpy
 
 Then use `import urbanpy` in your python scripts to use the library.
 
-If you plan to use the [OSRM Server](http://project-osrm.org/) route or distance matrix calculation functionalities* you must have Docker installed in your system, refer to Docker [Installation](https://www.docker.com/products/docker-desktop). For Windows users, make sure to run the following command in powershell to avoid execution errors.
+If you plan to use the [OSRM Server](http://project-osrm.org/) route or distance matrix calculation functionalities\* you must have Docker installed in your system, refer to Docker [Installation](https://www.docker.com/products/docker-desktop). For Windows users, make sure to run the following command in powershell to avoid execution errors.
 
 ```powershell
     Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
 ```
 
-
 ### Additional Dependecies Notes
 
 - It is important to note that for travel time computation, if needed, a method is implements the Open Source Routing Machine (OSRM). This method pulls, extracts and adds graph weights to the downloaded network and runs the routing server. Make sure to have docker installed for the library to work correctly. Also, verify in the docker settings that containers can use the necessary cpu cores and ram memory (it depends in the country size).
 
-- Urbanpy provides a simple approximation with nearest neighbor search using a BallTree and haversine distance, but the difference between real travel time and the approximation may vary from city to city.  
+- Urbanpy provides a simple approximation with nearest neighbor search using a BallTree and haversine distance, but the difference between real travel time and the approximation may vary from city to city.
 
 - Additionally, the use of spatial libraries like osmnx, geopandas and h3 require certain extra packages. Specifically, for rtree (spatial indexing to allow spatial joins) libspatialindex is required. OSMnx and Geopandas requiere GDAL as well. If not handled by installing geopandas's dependencies, installing fiona, pyproj and shapely should satisfy the requirements. Another way to ensure all dependencies are met, installing osmnx via conda should suffice. H3 requires cc, make, and cmake in your $PATH when installing, otherwise installation will not be successful. Please refer to [h3's documentation](https://github.com/uber/h3) for a more
-detailed guide on installation options and requirements.
+  detailed guide on installation options and requirements.
 
 # Examples
 
 UrbanPy lets you download and visualize city boundaries extremely easy:
+
 ```python
 import urbanpy as up
 
@@ -77,7 +77,7 @@ boundaries.plot()
 Since `boundaries` is a GeoDataFrame it can be easily plotted with the method `.plot()`. You can also generate hexagons to fill the city boundaries in a oneliner.
 
 ```python
-hexs, hexs_centroids = up.geom.gen_hexagons(resolution=9, city=boundaries)
+hexes = up.geom.gen_hexagons(resolution=9, city=boundaries)
 ```
 
 Also check our [example notebooks](https://nbviewer.org/github/EL-BID/urbanpy/tree/master/notebooks/), and if you have examples or visualizations of your own, we encourage you to share contribute.
@@ -114,7 +114,7 @@ UrbanPy's original authors are Claudio Ortega ([socials](https://www.linkedin.co
 [code of conduct](CODE_OF_CONDUCT.md). By participating, you are expected to
 uphold this code.**
 
-*Current support is tested on Linux Ubuntu 18.04 & Mac OS Catalina, coming soon we will test and support Windows 10.
+\*Current support is tested on Linux Ubuntu 18.04 & Mac OS Catalina, coming soon we will test and support Windows 10.
 
 ## Citation
 
@@ -141,6 +141,7 @@ If you use this library or find the documentation useful for your research, plea
 </a>
 
 ## Use Cases
+
 [Urbanpy applied to the education sector in Brasil](https://github.com/EL-BID/IADB-education-1)
 This repo is for code, documentation, and discussion for work associated with a skills-based volunteering project in collaboration with the IADB and urbanpy.
 

@@ -1,10 +1,11 @@
 import pandas as pd
 import geopandas as gpd
 import osmnx as ox
-from h3 import h3
+import h3
 from rich.progress import track
 from urbanpy.utils import geo_boundary_to_polygon
 from typing import Sequence, Union
+import shapely
 
 __all__ = [
     "merge_geom_downloads",
@@ -167,11 +168,12 @@ def gen_hexagons(resolution: int, city: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
 
     total = len(city_poly)  # For rich library to how much progress is needed
     for _, geo in track(city_poly.iterrows(), total=total):
-        hexagons = h3.polyfill(
-            geo["geometry"].__geo_interface__, res=resolution, geo_json_conformant=True
-        )
+        hexagons = h3.geo_to_cells(geo["geometry"], res=resolution)
         for hexagon in hexagons:
-            h3_polygons.append(geo_boundary_to_polygon(hexagon))
+            lat_lng_points = h3.cell_to_boundary(hexagon)
+            lng_lat_points = [(lng, lat) for lat, lng in lat_lng_points]
+
+            h3_polygons.append(shapely.Polygon(lng_lat_points))
             h3_indexes.append(hexagon)
 
     # Create hexagon dataframe
@@ -341,7 +343,7 @@ def resolution_downsampling(
     gdf_coarse = gdf.copy()
     coarse_hex_col = "hex_{}".format(coarse_resolution)
     gdf_coarse[coarse_hex_col] = gdf_coarse[hex_col].apply(
-        lambda x: h3.h3_to_parent(x, coarse_resolution)
+        lambda x: h3.cell_to_parent(x, res=coarse_resolution)
     )
     dfc = gdf_coarse.groupby([coarse_hex_col]).agg(agg).reset_index()
     gdfc_geometry = dfc[coarse_hex_col].apply(geo_boundary_to_polygon)
