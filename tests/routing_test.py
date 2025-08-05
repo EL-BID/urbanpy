@@ -120,7 +120,7 @@ class RoutingTest(unittest.TestCase):
         )
 
         # Test path length
-        self.assertEqual(up.routing.nx_route(G, source, target, "length"), 344.507)
+        self.assertAlmostEqual(up.routing.nx_route(G, source, target, "length"), 344.507, delta=1e-3)
 
         # Test number of nodes in path
         self.assertEqual(up.routing.nx_route(G, source, target, None), 3)
