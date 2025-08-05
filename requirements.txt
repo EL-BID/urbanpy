@@ -7,7 +7,7 @@ charset-normalizer==3.3.2
 ckanapi==4.8
 click==8.1.7
 contourpy==1.2.1
-cryptography==43.0.1
+cryptography==44.0.1
 cycler==0.12.1
 defopt==6.4.0
 descartes==1.1.0
