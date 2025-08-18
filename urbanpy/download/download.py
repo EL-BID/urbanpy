@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple, Union, List
 from warnings import warn
 
 import geopandas as gpd
@@ -11,6 +11,12 @@ from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
 from pandas import DataFrame
 from shapely.geometry import MultiPolygon, Polygon, Point
+
+try:
+    import ee
+    EE_AVAILABLE = True
+except ImportError:
+    EE_AVAILABLE = False
 
 from urbanpy.utils import (
     HDX_POPULATION_TYPES,
@@ -28,11 +34,16 @@ __all__ = [
     "get_hdx_dataset",
     "hdx_fb_population",
     "hdx_dataset",
+    "google_satellite_embeddings"
 ]
 
-hdx_config = Configuration.create(
-    hdx_site="prod", user_agent="urbanpy", hdx_read_only=True
-)
+# Initialize HDX configuration only if not already created
+try:
+    hdx_config = Configuration.read()
+except Exception:
+    hdx_config = Configuration.create(
+        hdx_site="prod", user_agent="urbanpy", hdx_read_only=True
+    )
 
 
 def nominatim_osm(
@@ -513,3 +524,228 @@ def hdx_dataset(resource):
     dataset = pd.read_csv(hdx_url)
     
     return dataset
+
+
+# GEE Downloads
+
+def google_satellite_embeddings(
+    gdf: gpd.GeoDataFrame,
+    year: int = 2024,
+    bands: Optional[List[str]] = None,
+    reducer: str = 'mean',
+    scale: int = 10,
+    tile_scale: int = 1
+) -> gpd.GeoDataFrame:
+    """
+    Download Google Earth Engine satellite embeddings for geometries.
+    
+    Uses Google's AlphaEarth Foundations satellite embedding dataset to extract
+    64-dimensional learned representations that encode temporal trajectories of 
+    surface conditions. Each embedding captures spectral, spatial, and temporal 
+    context from multi-sensor Earth observation data.
+    
+    Parameters
+    ----------
+    gdf : GeoDataFrame
+        Input geometries (H3 hexagons, admin areas, etc.)
+    year : int, default 2024
+        Year for satellite data (2017-2024 available)
+    bands : list, optional
+        Embedding bands to download (A00-A63). If None, uses all 64 bands.
+        For faster processing, consider using semantic bands A00-A07.
+    reducer : str, default 'mean'
+        Reduction method for pixels within each geometry: 'mean', 'median', 'first'
+    scale : int, default 10
+        Pixel resolution in meters (native is 10m)
+    tile_scale : int, default 1
+        Tile scale factor for memory management (increase for large areas)
+    
+    Returns
+    -------
+    GeoDataFrame
+        Input geometries with embedding columns (A00, A01, ...) added
+        
+    Examples
+    --------
+    >>> # Download city and create hexagons
+    >>> lima = up.download.nominatim_osm("Lima, Peru", email="user@email.com")
+    >>> hexes = up.geom.gen_hexagons(8, lima)
+    >>> 
+    >>> # Download all 64 embedding bands
+    >>> embeddings = up.download.google_satellite_embeddings(hexes, year=2023)
+    >>> 
+    >>> # Download only semantic bands for faster processing
+    >>> semantic_bands = [f'A{i:02d}' for i in range(8)]  # A00-A07
+    >>> embeddings = up.download.google_satellite_embeddings(
+    ...     hexes, year=2023, bands=semantic_bands
+    ... )
+    >>> 
+    >>> # Use with different reducer methods
+    >>> embeddings_median = up.download.google_satellite_embeddings(
+    ...     hexes, year=2023, reducer='median'
+    ... )
+    
+    Notes
+    -----
+    Requires Earth Engine authentication. Run `ee.Authenticate()` and `ee.Initialize()`
+    before using this function.
+    
+    The embeddings are "linearly composable", meaning they can be aggregated 
+    while retaining semantic meaning. Use `up.geom.resolution_downsampling()` 
+    to aggregate fine H3 hexagons to coarser resolutions.
+    
+    References
+    ----------
+    Brown, C. F., et al. (2025). AlphaEarth Foundations: An embedding field model 
+    for accurate and efficient global mapping from sparse label data. 
+    arXiv preprint arXiv.2507.22291.
+    """
+    
+    if not EE_AVAILABLE:
+        raise ImportError(
+            "Earth Engine not available. Install with: pip install earthengine-api"
+        )
+
+    if len(gdf) > 5000:
+        raise ValueError(f"Too many geometries ({len(gdf)}). Maximum 5,000 supported. Try batch processing.")
+    
+    if year < 2017 or year > 2024:
+        raise ValueError(f"Year {year} not supported. Available years: 2017-2024")
+    
+    if reducer not in ['mean', 'median', 'first']:
+        raise ValueError(f"Unsupported reducer: {reducer}. Use 'mean', 'median', or 'first'")
+    
+    if scale < 1:
+        raise ValueError(f"Scale must be positive, got {scale}")
+    
+    # Use all 64 bands by default
+    if bands is None:
+        bands = [f'A{i:02d}' for i in range(64)]
+    
+    # Validate bands
+    valid_bands = [f'A{i:02d}' for i in range(64)]
+    invalid_bands = [b for b in bands if b not in valid_bands]
+    if invalid_bands:
+        raise ValueError(f"Invalid bands: {invalid_bands}. Valid bands are A00-A63")
+    
+    # Load collection and filter
+    collection = ee.ImageCollection('GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL')
+    start_date = f"{year}-01-01"
+    end_date = f"{year}-12-31"
+    
+    # Filter by date and bounds
+    bounds = gdf.total_bounds
+    roi = ee.Geometry.Rectangle([bounds[0], bounds[1], bounds[2], bounds[3]])
+    
+    filtered = collection.filterDate(start_date, end_date).filterBounds(roi)
+    
+    if filtered.size().getInfo() == 0:
+        warn(f"No satellite data found for year {year}. Returning GeoDataFrame with NaN values.")
+        return _add_embedding_nan_columns(gdf, bands)
+    
+    # Create mosaic and select bands
+    image = filtered.mosaic().select(bands)
+    
+    # Convert GeoDataFrame to EE FeatureCollection
+    fc = _gdf_to_ee_fc(gdf)
+    
+    # Set up reducer
+    if reducer == 'mean':
+        ee_reducer = ee.Reducer.mean()
+    elif reducer == 'median':
+        ee_reducer = ee.Reducer.median()
+    elif reducer == 'first':
+        ee_reducer = ee.Reducer.first()
+    
+    # Use reduceRegions for efficient computation
+    result_fc = image.reduceRegions(
+        collection=fc,
+        reducer=ee_reducer,
+        scale=scale,
+        tileScale=tile_scale
+    )
+    
+    # Convert back to GeoDataFrame and join with original
+    return _join_ee_embedding_results(gdf, result_fc, bands)
+
+
+def _add_embedding_nan_columns(gdf: gpd.GeoDataFrame, bands: List[str]) -> gpd.GeoDataFrame:
+    """Add NaN columns for failed downloads."""
+    result = gdf.copy()
+    for band in bands:
+        result[band] = np.nan
+    return result
+
+
+def _gdf_to_ee_fc(gdf: gpd.GeoDataFrame) -> 'ee.FeatureCollection':
+    """Convert GeoDataFrame to Earth Engine FeatureCollection."""
+    import ee
+    
+    features = []
+    
+    for idx, row in gdf.iterrows():
+        # Convert geometry to GEE format
+        geom_dict = row.geometry.__geo_interface__
+        ee_geom = ee.Geometry(geom_dict)
+        
+        # Preserve original properties
+        properties = {
+            'urbanpy_index': int(idx),  # Keep track of original index
+        }
+        
+        # Add other properties (like hex ID if present)
+        for col in gdf.columns:
+            if col != 'geometry':
+                value = row[col]
+                if pd.notna(value):
+                    if isinstance(value, (np.integer, int)):
+                        properties[col] = int(value)
+                    elif isinstance(value, (np.floating, float)):
+                        properties[col] = float(value)
+                    else:
+                        properties[col] = str(value)
+        
+        features.append(ee.Feature(ee_geom, properties))
+    
+    return ee.FeatureCollection(features)
+
+
+def _join_ee_embedding_results(
+    original_gdf: gpd.GeoDataFrame, 
+    result_fc: 'ee.FeatureCollection', 
+    bands: List[str]
+) -> gpd.GeoDataFrame:
+    """Join Earth Engine results back to original GeoDataFrame."""
+    
+    # Get the results as a list of dictionaries
+    result_list = result_fc.getInfo()['features']
+    
+    # Create DataFrame from results
+    result_data = []
+    for feature in result_list:
+        props = feature['properties']
+        
+        row = {'urbanpy_index': props.get('urbanpy_index')}
+        
+        # Extract embedding values
+        for band in bands:
+            row[band] = props.get(band, np.nan)
+        
+        result_data.append(row)
+    
+    result_df = pd.DataFrame(result_data)
+    result_df = result_df.set_index('urbanpy_index')
+    
+    # Join back to original GeoDataFrame
+    output_gdf = original_gdf.copy()
+    
+    # Add embedding columns
+    for band in bands:
+        output_gdf[band] = np.nan
+        if band in result_df.columns:
+            # Map results back by index
+            for idx in output_gdf.index:
+                if idx in result_df.index:
+                    output_gdf.loc[idx, band] = result_df.loc[idx, band]
+    
+    return output_gdf
