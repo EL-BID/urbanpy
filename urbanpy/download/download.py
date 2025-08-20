@@ -543,6 +543,9 @@ def google_satellite_embeddings(
     64-dimensional learned representations that encode temporal trajectories of 
     surface conditions. Each embedding captures spectral, spatial, and temporal 
     context from multi-sensor Earth observation data.
+
+    Reduces each geometry to a single embedding vector using the specified reducer.
+
     
     Parameters
     ----------
@@ -552,7 +555,6 @@ def google_satellite_embeddings(
         Year for satellite data (2017-2024 available)
     bands : list, optional
         Embedding bands to download (A00-A63). If None, uses all 64 bands.
-        For faster processing, consider using semantic bands A00-A07.
     reducer : str, default 'mean'
         Reduction method for pixels within each geometry: 'mean', 'median', 'first'
     scale : int, default 10
@@ -574,12 +576,6 @@ def google_satellite_embeddings(
     >>> # Download all 64 embedding bands
     >>> embeddings = up.download.google_satellite_embeddings(hexes, year=2023)
     >>> 
-    >>> # Download only semantic bands for faster processing
-    >>> semantic_bands = [f'A{i:02d}' for i in range(8)]  # A00-A07
-    >>> embeddings = up.download.google_satellite_embeddings(
-    ...     hexes, year=2023, bands=semantic_bands
-    ... )
-    >>> 
     >>> # Use with different reducer methods
     >>> embeddings_median = up.download.google_satellite_embeddings(
     ...     hexes, year=2023, reducer='median'
@@ -593,12 +589,6 @@ def google_satellite_embeddings(
     The embeddings are "linearly composable", meaning they can be aggregated 
     while retaining semantic meaning. Use `up.geom.resolution_downsampling()` 
     to aggregate fine H3 hexagons to coarser resolutions.
-    
-    References
-    ----------
-    Brown, C. F., et al. (2025). AlphaEarth Foundations: An embedding field model 
-    for accurate and efficient global mapping from sparse label data. 
-    arXiv preprint arXiv.2507.22291.
     """
     
     if not EE_AVAILABLE:
