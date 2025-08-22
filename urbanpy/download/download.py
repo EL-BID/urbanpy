@@ -671,6 +671,7 @@ def _gdf_to_ee_fc(gdf: gpd.GeoDataFrame) -> 'ee.FeatureCollection':
     """Convert GeoDataFrame to Earth Engine FeatureCollection."""
     import ee
     
+    
     features = []
     
     for idx, row in gdf.iterrows():
