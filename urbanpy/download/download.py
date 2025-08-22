@@ -709,7 +709,14 @@ def _join_ee_embedding_results(
     """Join Earth Engine results back to original GeoDataFrame."""
     
     # Get the results as a list of dictionaries
-    result_list = result_fc.getInfo()['features']
+    try:
+        result_list = result_fc.getInfo()['features']
+    except Exception as e:
+        warn(
+            f"Failed to retrieve results from Earth Engine. This may be due to network issues, timeouts, or quota limits. "
+            f"Consider reducing the size of your dataset. Original error: {e}"
+        )
+        raise
     
     # Create DataFrame from results
     result_data = []
