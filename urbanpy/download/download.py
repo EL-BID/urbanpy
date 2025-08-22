@@ -11,6 +11,7 @@ from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
 from pandas import DataFrame
 from shapely.geometry import MultiPolygon, Polygon, Point
+from hdx.api.configuration import ConfigurationError
 
 try:
     import ee
@@ -37,10 +38,18 @@ __all__ = [
     "google_satellite_embeddings"
 ]
 
+# Module-level constants for GEE/AlphaEarth
+GEE_MAX_FEATURES_PER_REQUEST = 5000
+ALPHAEARTH_YEAR_MIN = 2017
+ALPHAEARTH_YEAR_MAX = 2024
+ALPHAEARTH_DEFAULT_YEAR = 2024
+ALPHAEARTH_NUM_BANDS = 64
+VALID_EMBEDDING_BANDS = [f'A{i:02d}' for i in range(ALPHAEARTH_NUM_BANDS)]
+
 # Initialize HDX configuration only if not already created
 try:
     hdx_config = Configuration.read()
-except Exception:
+except ConfigurationError:
     hdx_config = Configuration.create(
         hdx_site="prod", user_agent="urbanpy", hdx_read_only=True
     )
@@ -530,7 +539,7 @@ def hdx_dataset(resource):
 
 def google_satellite_embeddings(
     gdf: gpd.GeoDataFrame,
-    year: int = 2024,
+    year: int = ALPHAEARTH_DEFAULT_YEAR,
     bands: Optional[List[str]] = None,
     reducer: str = 'mean',
     scale: int = 10,
@@ -543,16 +552,14 @@ def google_satellite_embeddings(
     64-dimensional learned representations that encode temporal trajectories of 
     surface conditions. Each embedding captures spectral, spatial, and temporal 
     context from multi-sensor Earth observation data.
-
     Reduces each geometry to a single embedding vector using the specified reducer.
-
     
     Parameters
     ----------
     gdf : GeoDataFrame
         Input geometries (H3 hexagons, admin areas, etc.)
-    year : int, default 2024
-        Year for satellite data (2017-2024 available)
+    year : int, default ALPHAEARTH_DEFAULT_YEAR
+        Year for satellite data (ALPHAEARTH_YEAR_MIN-ALPHAEARTH_YEAR_MAX available)
     bands : list, optional
         Embedding bands to download (A00-A63). If None, uses all 64 bands.
     reducer : str, default 'mean'
@@ -565,7 +572,8 @@ def google_satellite_embeddings(
     Returns
     -------
     GeoDataFrame
-        Input geometries with embedding columns (A00, A01, ...) added
+        Input geometries with embedding columns (A00, A01, ...) added.
+        If no satellite data is found, returns original GeoDataFrame unchanged.
         
     Examples
     --------
@@ -586,6 +594,10 @@ def google_satellite_embeddings(
     Requires Earth Engine authentication. Run `ee.Authenticate()` and `ee.Initialize()`
     before using this function.
     
+    **GEE Limitations**: Maximum GEE_MAX_FEATURES_PER_REQUEST geometries per request due to Earth Engine's
+    "Collection query aborted after accumulating over 5000 elements" limit when
+    retrieving results. For larger datasets, process in batches.
+    
     The embeddings are "linearly composable", meaning they can be aggregated 
     while retaining semantic meaning. Use `up.geom.resolution_downsampling()` 
     to aggregate fine H3 hexagons to coarser resolutions.
@@ -595,12 +607,19 @@ def google_satellite_embeddings(
         raise ImportError(
             "Earth Engine not available. Install with: pip install earthengine-api"
         )
-
-    if len(gdf) > 5000:
-        raise ValueError(f"Too many geometries ({len(gdf)}). Maximum 5,000 supported. Try batch processing.")
     
-    if year < 2017 or year > 2024:
-        raise ValueError(f"Year {year} not supported. Available years: 2017-2024")
+    # GEE system limitation: getInfo() fails with > GEE_MAX_FEATURES_PER_REQUEST features
+    if len(gdf) > GEE_MAX_FEATURES_PER_REQUEST:
+        raise ValueError(
+            f"Too many geometries ({len(gdf)}). Maximum {GEE_MAX_FEATURES_PER_REQUEST:,} supported due to "
+            f"Earth Engine's 'Collection query aborted after accumulating over 5000 elements' "
+            f"limitation. Process in batches or use fewer geometries."
+        )
+    
+    if year < ALPHAEARTH_YEAR_MIN or year > ALPHAEARTH_YEAR_MAX:
+        raise ValueError(
+            f"Year {year} not supported. Available years: {ALPHAEARTH_YEAR_MIN}-{ALPHAEARTH_YEAR_MAX}"
+        )
     
     if reducer not in ['mean', 'median', 'first']:
         raise ValueError(f"Unsupported reducer: {reducer}. Use 'mean', 'median', or 'first'")
@@ -608,15 +627,16 @@ def google_satellite_embeddings(
     if scale < 1:
         raise ValueError(f"Scale must be positive, got {scale}")
     
-    # Use all 64 bands by default
+    # Use all embedding bands by default
     if bands is None:
-        bands = [f'A{i:02d}' for i in range(64)]
+        bands = VALID_EMBEDDING_BANDS.copy()
     
     # Validate bands
-    valid_bands = [f'A{i:02d}' for i in range(64)]
-    invalid_bands = [b for b in bands if b not in valid_bands]
+    invalid_bands = [b for b in bands if b not in VALID_EMBEDDING_BANDS]
     if invalid_bands:
-        raise ValueError(f"Invalid bands: {invalid_bands}. Valid bands are A00-A63")
+        raise ValueError(
+            f"Invalid bands: {invalid_bands}. Valid bands are A00-A{ALPHAEARTH_NUM_BANDS-1:02d}"
+        )
     
     # Load collection and filter
     collection = ee.ImageCollection('GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL')
@@ -629,11 +649,9 @@ def google_satellite_embeddings(
     
     filtered = collection.filterDate(start_date, end_date).filterBounds(roi)
     
-    if filtered.size().getInfo() == 0:
-        warn(f"No satellite data found for year {year}. Returning GeoDataFrame with NaN values.")
-        return _add_embedding_nan_columns(gdf, bands)
-    
     # Create mosaic and select bands
+    # Note: If collection is empty, mosaic() will create an empty image
+    # and reduceRegions will return empty results, which we handle downstream
     image = filtered.mosaic().select(bands)
     
     # Convert GeoDataFrame to EE FeatureCollection
@@ -656,68 +674,45 @@ def google_satellite_embeddings(
     )
     
     # Convert back to GeoDataFrame and join with original
-    return _join_ee_embedding_results(gdf, result_fc, bands)
-
-
-def _add_embedding_nan_columns(gdf: gpd.GeoDataFrame, bands: List[str]) -> gpd.GeoDataFrame:
-    """Add NaN columns for failed downloads."""
-    result = gdf.copy()
-    for band in bands:
-        result[band] = np.nan
-    return result
+    return _join_ee_embedding_results(gdf, result_fc, bands, year)
 
 
 def _gdf_to_ee_fc(gdf: gpd.GeoDataFrame) -> 'ee.FeatureCollection':
     """Convert GeoDataFrame to Earth Engine FeatureCollection."""
     import ee
     
-    
-    features = []
-    
-    for idx, row in gdf.iterrows():
-        # Convert geometry to GEE format
-        geom_dict = row.geometry.__geo_interface__
-        ee_geom = ee.Geometry(geom_dict)
-        
-        # Preserve original properties
-        properties = {
-            'urbanpy_index': int(idx),  # Keep track of original index
-        }
-        
-        # Add other properties (like hex ID if present)
-        for col in gdf.columns:
-            if col != 'geometry':
-                value = row[col]
-                if pd.notna(value):
-                    if isinstance(value, (np.integer, int)):
-                        properties[col] = int(value)
-                    elif isinstance(value, (np.floating, float)):
-                        properties[col] = float(value)
-                    else:
-                        properties[col] = str(value)
-        
-        features.append(ee.Feature(ee_geom, properties))
-    
-    return ee.FeatureCollection(features)
+    return ee.FeatureCollection(
+        gdf.reset_index(names='urbanpy_index')
+        .apply(lambda row: ee.Feature(
+            ee.Geometry(row.geometry.__geo_interface__), 
+            row.drop('geometry').to_dict()
+        ), axis=1).to_list()
+    )
 
 
 def _join_ee_embedding_results(
     original_gdf: gpd.GeoDataFrame, 
     result_fc: 'ee.FeatureCollection', 
-    bands: List[str]
+    bands: List[str],
+    year: int
 ) -> gpd.GeoDataFrame:
-    """Join Earth Engine results back to original GeoDataFrame."""
+    """Join Earth Engine results back to original GeoDataFrame using pandas merge."""
     
-    # Get the results as a list of dictionaries
     try:
+        # Get the results as a list of dictionaries
         result_list = result_fc.getInfo()['features']
     except Exception as e:
-        warn(
-            f"Failed to retrieve results from Earth Engine. This may be due to network issues, timeouts, or quota limits. "
-            f"Consider reducing the size of your dataset. Original error: {e}"
-        )
-        raise
+        # Handle case where no data is available
+        warn(f"No satellite embedding data found for year {year}. "
+             f"Returning original GeoDataFrame unchanged.")
+        return original_gdf.copy()
     
+    # Check if we got any results
+    if not result_list:
+        warn(f"No satellite embedding data found for year {year}. "
+             f"Returning original GeoDataFrame unchanged.")
+        return original_gdf.copy()
+        
     # Create DataFrame from results
     result_data = []
     for feature in result_list:
@@ -731,19 +726,24 @@ def _join_ee_embedding_results(
         
         result_data.append(row)
     
+    if not result_data:
+        warn(f"No valid embedding data extracted for year {year}. "
+             f"Returning original GeoDataFrame unchanged.")
+        return original_gdf.copy()
+    
     result_df = pd.DataFrame(result_data)
-    result_df = result_df.set_index('urbanpy_index')
-    
-    # Join back to original GeoDataFrame
-    output_gdf = original_gdf.copy()
-    
-    # Add embedding columns
-    for band in bands:
-        output_gdf[band] = np.nan
-        if band in result_df.columns:
-            # Map results back by index
-            for idx in output_gdf.index:
-                if idx in result_df.index:
-                    output_gdf.loc[idx, band] = result_df.loc[idx, band]
-    
-    return output_gdf
+
+    original_with_index = original_gdf.reset_index(names='urbanpy_index')
+
+    # Left join to preserve all original geometries
+    merged = original_with_index.merge(
+        result_df, 
+        on='urbanpy_index', 
+        how='left'
+    )
+
+    # Restore original index
+    merged = merged.set_index('urbanpy_index')
+    merged.index.name = original_gdf.index.name
+
+    return merged
