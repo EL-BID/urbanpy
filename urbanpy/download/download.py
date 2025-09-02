@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple, Union, List
 from warnings import warn
 
 import geopandas as gpd
@@ -11,6 +11,14 @@ from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
 from pandas import DataFrame
 from shapely.geometry import MultiPolygon, Polygon, Point
+from hdx.api.configuration import ConfigurationError
+
+try:
+    import ee
+
+    EE_AVAILABLE = True
+except ImportError:
+    EE_AVAILABLE = False
 
 from urbanpy.utils import (
     HDX_POPULATION_TYPES,
@@ -28,11 +36,24 @@ __all__ = [
     "get_hdx_dataset",
     "hdx_fb_population",
     "hdx_dataset",
+    "google_satellite_embeddings",
 ]
 
-hdx_config = Configuration.create(
-    hdx_site="prod", user_agent="urbanpy", hdx_read_only=True
-)
+# Module-level constants for GEE/AlphaEarth
+GEE_MAX_FEATURES_PER_REQUEST = 5000
+ALPHAEARTH_YEAR_MIN = 2017
+ALPHAEARTH_YEAR_MAX = 2024
+ALPHAEARTH_DEFAULT_YEAR = 2024
+ALPHAEARTH_NUM_BANDS = 64
+VALID_EMBEDDING_BANDS = [f"A{i:02d}" for i in range(ALPHAEARTH_NUM_BANDS)]
+
+# Initialize HDX configuration only if not already created
+try:
+    hdx_config = Configuration.read()
+except ConfigurationError:
+    hdx_config = Configuration.create(
+        hdx_site="prod", user_agent="urbanpy", hdx_read_only=True
+    )
 
 
 def nominatim_osm(
@@ -511,5 +532,197 @@ def hdx_dataset(resource):
         hdx_url = hdx_url
 
     dataset = pd.read_csv(hdx_url)
-    
+
     return dataset
+
+
+# GEE Downloads
+
+
+def google_satellite_embeddings(
+    gdf: gpd.GeoDataFrame,
+    year: int = ALPHAEARTH_DEFAULT_YEAR,
+    bands: Optional[List[str]] = None,
+    reducer: str = "mean",
+    scale: int = 10,
+    tile_scale: int = 1,
+) -> gpd.GeoDataFrame:
+    """
+    Download Google Earth Engine satellite embeddings for geometries.
+
+    Uses Google's AlphaEarth Foundations satellite embedding dataset to extract
+    64-dimensional learned representations that encode temporal trajectories of
+    surface conditions. Each embedding captures spectral, spatial, and temporal
+    context from multi-sensor Earth observation data.
+    Reduces each geometry to a single embedding vector using the specified reducer.
+
+    Parameters
+    ----------
+    gdf : GeoDataFrame
+        Input geometries (H3 hexagons, admin areas, etc.)
+    year : int, default ALPHAEARTH_DEFAULT_YEAR
+        Year for satellite data (ALPHAEARTH_YEAR_MIN-ALPHAEARTH_YEAR_MAX available)
+    bands : list, optional
+        Embedding bands to download (A00-A63). If None, uses all 64 bands.
+    reducer : str, default 'mean'
+        Reduction method for pixels within each geometry: 'mean', 'median', 'first'
+    scale : int, default 10
+        Pixel resolution in meters (native is 10m)
+    tile_scale : int, default 1
+        Tile scale factor for memory management (increase for large areas)
+
+    Returns
+    -------
+    GeoDataFrame
+        Input geometries with embedding columns (A00, A01, ...) added.
+        If no satellite data is found, returns original GeoDataFrame unchanged.
+
+    Examples
+    --------
+    >>> # Download city and create hexagons
+    >>> lima = up.download.nominatim_osm("Lima, Peru", email="user@email.com")
+    >>> hexes = up.geom.gen_hexagons(8, lima)
+    >>>
+    >>> # Download all 64 embedding bands
+    >>> embeddings = up.download.google_satellite_embeddings(hexes, year=2023)
+    >>>
+    >>> # Use with different reducer methods
+    >>> embeddings_median = up.download.google_satellite_embeddings(
+    ...     hexes, year=2023, reducer='median'
+    ... )
+
+    Notes
+    -----
+    Requires Earth Engine authentication. Run `ee.Authenticate()` and `ee.Initialize()`
+    before using this function.
+
+    **GEE Limitations**: Maximum GEE_MAX_FEATURES_PER_REQUEST geometries per request due to Earth Engine's
+    "Collection query aborted after accumulating over 5000 elements" limit when
+    retrieving results. For larger datasets, process in batches.
+
+    The embeddings are "linearly composable", meaning they can be aggregated
+    while retaining semantic meaning. Use `up.geom.resolution_downsampling()`
+    to aggregate fine H3 hexagons to coarser resolutions.
+    """
+
+    if not EE_AVAILABLE:
+        raise ImportError(
+            "Earth Engine not available. Install with: pip install earthengine-api"
+        )
+
+    # GEE system limitation: getInfo() fails with > GEE_MAX_FEATURES_PER_REQUEST features
+    if len(gdf) > GEE_MAX_FEATURES_PER_REQUEST:
+        raise ValueError(
+            f"Too many geometries ({len(gdf)}). Maximum {GEE_MAX_FEATURES_PER_REQUEST:,} supported due to "
+            f"Earth Engine's 'Collection query aborted after accumulating over 5000 elements' "
+            f"limitation. Process in batches or use fewer geometries."
+        )
+
+    if year < ALPHAEARTH_YEAR_MIN or year > ALPHAEARTH_YEAR_MAX:
+        raise ValueError(
+            f"Year {year} not supported. Available years: {ALPHAEARTH_YEAR_MIN}-{ALPHAEARTH_YEAR_MAX}"
+        )
+
+    if reducer not in ["mean", "median", "first"]:
+        raise ValueError(
+            f"Unsupported reducer: {reducer}. Use 'mean', 'median', or 'first'"
+        )
+
+    if scale < 1:
+        raise ValueError(f"Scale must be positive, got {scale}")
+
+    # Use all embedding bands by default
+    if bands is None:
+        bands = VALID_EMBEDDING_BANDS.copy()
+
+    # Validate bands
+    invalid_bands = [b for b in bands if b not in VALID_EMBEDDING_BANDS]
+    if invalid_bands:
+        raise ValueError(
+            f"Invalid bands: {invalid_bands}. Valid bands are A00-A{ALPHAEARTH_NUM_BANDS-1:02d}"
+        )
+
+    # Load collection and filter
+    collection = ee.ImageCollection("GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL")
+    start_date = f"{year}-01-01"
+    end_date = f"{year}-12-31"
+
+    # Filter by date and bounds
+    bounds = gdf.total_bounds
+    roi = ee.Geometry.Rectangle([bounds[0], bounds[1], bounds[2], bounds[3]])
+
+    filtered = collection.filterDate(start_date, end_date).filterBounds(roi)
+
+    # Create mosaic and select bands
+    # Note: If collection is empty, mosaic() will create an empty image
+    # and reduceRegions will return empty results, which we handle downstream
+    image = filtered.mosaic().select(bands)
+
+    # Convert GeoDataFrame to EE FeatureCollection
+    fc = _gdf_to_ee_fc(gdf)
+
+    # Set up reducer
+    if reducer == "mean":
+        ee_reducer = ee.Reducer.mean()
+    elif reducer == "median":
+        ee_reducer = ee.Reducer.median()
+    elif reducer == "first":
+        ee_reducer = ee.Reducer.first()
+
+    # Use reduceRegions for efficient computation
+    result_fc = image.reduceRegions(
+        collection=fc, reducer=ee_reducer, scale=scale, tileScale=tile_scale
+    )
+
+    # Convert back to GeoDataFrame and join with original
+    return _format_ee_embedding_results(gdf, result_fc, bands, year)
+
+
+def _gdf_to_ee_fc(gdf: gpd.GeoDataFrame) -> "ee.FeatureCollection":
+    """Convert GeoDataFrame to Earth Engine FeatureCollection."""
+
+    return ee.FeatureCollection(
+        gdf.reset_index(names="urbanpy_index")
+        .apply(
+            lambda row: ee.Feature(
+                ee.Geometry(row.geometry.__geo_interface__),
+                row.drop("geometry").to_dict(),
+            ),
+            axis=1,
+        )
+        .to_list()
+    )
+
+
+def _format_ee_embedding_results(
+    original_gdf: gpd.GeoDataFrame,
+    result_fc: "ee.FeatureCollection",
+    bands: List[str],
+    year: int,
+) -> gpd.GeoDataFrame:
+    """Format Earth Engine results into a GeoDataFrame."""
+
+    try:
+        # Get the results as a list of dictionaries
+        result_list = result_fc.getInfo()["features"]
+    except Exception as e:
+        # Handle case where no data is available
+        warn(
+            f"No satellite embedding data found for year {year}. "
+            f"Returning original GeoDataFrame unchanged."
+        )
+        return original_gdf.copy()
+
+    # Check if we got any results
+    if not result_list or len(result_list) == 0:
+        warn(
+            f"No satellite embedding data found for year {year}. "
+            f"Returning original GeoDataFrame unchanged."
+        )
+        return original_gdf.copy()
+
+    result_gdf = gpd.GeoDataFrame.from_features(result_list, crs=original_gdf.crs)
+    result_gdf = result_gdf.set_index("urbanpy_index")
+    result_gdf.index.name = original_gdf.index.name
+
+    return result_gdf
