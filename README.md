@@ -150,6 +150,3 @@ This repo is for code, documentation, and discussion for work associated with a 
 <a href="https://www.autodash.org/">
   <img src="https://www.autodash.org/static/images/logo.png" width=64 height=64 /><p>AutoDash</p>
 </a>
-
-
-<!-- Security scan triggered at 2025-09-02 00:13:58 -->
