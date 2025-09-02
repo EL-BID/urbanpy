@@ -705,9 +705,6 @@ def _format_ee_embedding_results(
     try:
         # Get the results as a list of dictionaries
         result_list = result_fc.getInfo()["features"]
-        print(f"Retrieved {len(result_list)} features from Earth Engine")
-        print(result_list[0])
-        print(result_list[5])
     except Exception as e:
         # Handle case where no data is available
         warn(
