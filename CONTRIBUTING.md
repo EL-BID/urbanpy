@@ -32,3 +32,16 @@ Before sending your pull request for review, make sure your changes are consiste
 * When you contribute a new feature to UrbanPy, the maintenance burden is (by default) transferred to the UrbanPy team. This means that the benefit of the contribution must be compared against the cost of maintaining the feature.
 * Full new features (e.g., a cutting-edge travel time matrix computation algorithm) typically will live in urbanpy/utils to get some airtime before a decision is made regarding whether they are to be migrated to the core modules.
 * As every PR may require several CPU hours of CI testing, we discourage submitting PRs to fix one typo, one warning, etc. We recommend fixing the same issue at the file level at least (e.g.: fix all typos in a file, fix all compiler warning in a file, etc.)
+
+### Security pre-commit hook
+
+We include an optional security pre-commit hook (`.githooks/pre-commit`) that blocks commits which add GitHub Actions workflow files containing suspicious `curl -d/--data` posts of secrets to non-GitHub domains.
+
+To enable locally:
+
+```bash
+git config core.hooksPath .githooks
+chmod +x .githooks/pre-commit
+```
+
+If a legitimate workflow is blocked, refactor it to avoid directly posting secrets or open a security review discussion before bypassing the hook.

@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Security gate: block suspicious exfiltration patterns in GitHub Actions workflows
+# Rejects commits that introduce curl posts of secrets to non-GitHub domains.
+
+set -euo pipefail
+
+RED='\033[0;31m'
+YELLOW='\033[0;33m'
+NC='\033[0m'
+
+# Only scan added/modified workflow files staged for commit
+changed_workflows=$(git diff --cached --name-only --diff-filter=AM | grep -E '^\.github/workflows/.*\.ya?ml$' || true)
+[[ -z "$changed_workflows" ]] && exit 0
+
+fail=0
+while IFS= read -r file; do
+  # Extract staged content (not working tree) for analysis
+  content=$(git show ":$file")
+  # Pattern heuristics: curl + -d or --data with likely secret interpolation and external (non github.com/api.github.com) host
+  if echo "$content" | grep -Eqi 'curl[^\n]*(-d|--data)'; then
+     if echo "$content" | grep -Eqi '\${{ *secrets\.'; then
+        # Look for external URLs (http or https) not pointing to GitHub or localhost
+        if echo "$content" | grep -Eqi 'curl[^\n]*(https?://[^ ]+)' ; then
+           url=$(echo "$content" | grep -Eio 'https?://[^ ]+' | head -1)
+           if echo "$url" | grep -Eq 'github\.com|api\.github\.com|localhost|127\.0\.0\.1'; then
+              continue
+           fi
+           echo -e "${RED}[BLOCKED]${NC} Suspicious curl posting secrets in $file -> $url" >&2
+           echo -e "${YELLOW}If this is legitimate, remove direct secret posting and use approved destinations.${NC}" >&2
+           fail=1
+        fi
+     fi
+  fi
+done <<< "$changed_workflows"
+
+if [[ $fail -eq 1 ]]; then
+  echo -e "Commit aborted by security pre-commit hook." >&2
+  exit 1
+fi
+
+exit 0
