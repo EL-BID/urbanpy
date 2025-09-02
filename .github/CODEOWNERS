@@ -1,0 +1,8 @@
+# CODEOWNERS
+# Require designated reviewers for any GitHub Actions workflow changes.
+# Add or adjust owners as appropriate (teams preferred if available, e.g. @EL-BID/engineering )
+
+.github/workflows/*  @Claudio9701
+
+# (Optional) You can uncomment to require a default owner for everything else
+# *  @Claudio9701
