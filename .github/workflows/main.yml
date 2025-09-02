@@ -12,6 +12,8 @@
 # 4. https://github.com/grst/python-ci-versioneer
 
 name: Test and deploy
+permissions:
+  contents: read
 
 on: [push, pull_request]
 
