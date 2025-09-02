@@ -675,7 +675,7 @@ def google_satellite_embeddings(
     )
 
     # Convert back to GeoDataFrame and join with original
-    return _join_ee_embedding_results(gdf, result_fc, bands, year)
+    return _format_ee_embedding_results(gdf, result_fc, bands, year)
 
 
 def _gdf_to_ee_fc(gdf: gpd.GeoDataFrame) -> "ee.FeatureCollection":
@@ -694,17 +694,20 @@ def _gdf_to_ee_fc(gdf: gpd.GeoDataFrame) -> "ee.FeatureCollection":
     )
 
 
-def _join_ee_embedding_results(
+def _format_ee_embedding_results(
     original_gdf: gpd.GeoDataFrame,
     result_fc: "ee.FeatureCollection",
     bands: List[str],
     year: int,
 ) -> gpd.GeoDataFrame:
-    """Join Earth Engine results back to original GeoDataFrame using pandas merge."""
+    """Format Earth Engine results into a GeoDataFrame."""
 
     try:
         # Get the results as a list of dictionaries
         result_list = result_fc.getInfo()["features"]
+        print(f"Retrieved {len(result_list)} features from Earth Engine")
+        print(result_list[0])
+        print(result_list[5])
     except Exception as e:
         # Handle case where no data is available
         warn(
@@ -714,42 +717,15 @@ def _join_ee_embedding_results(
         return original_gdf.copy()
 
     # Check if we got any results
-    if not result_list:
+    if not result_list or len(result_list) == 0:
         warn(
             f"No satellite embedding data found for year {year}. "
             f"Returning original GeoDataFrame unchanged."
         )
         return original_gdf.copy()
 
-    # Create DataFrame from results
-    result_data = []
-    for feature in result_list:
-        props = feature["properties"]
+    result_gdf = gpd.GeoDataFrame.from_features(result_list, crs=original_gdf.crs)
+    result_gdf = result_gdf.set_index("urbanpy_index")
+    result_gdf.index.name = original_gdf.index.name
 
-        row = {"urbanpy_index": props.get("urbanpy_index")}
-
-        # Extract embedding values
-        for band in bands:
-            row[band] = props.get(band, np.nan)
-
-        result_data.append(row)
-
-    if not result_data:
-        warn(
-            f"No valid embedding data extracted for year {year}. "
-            f"Returning original GeoDataFrame unchanged."
-        )
-        return original_gdf.copy()
-
-    result_df = pd.DataFrame(result_data)
-
-    original_with_index = original_gdf.reset_index(names="urbanpy_index")
-
-    # Left join to preserve all original geometries
-    merged = original_with_index.merge(result_df, on="urbanpy_index", how="left")
-
-    # Restore original index
-    merged = merged.set_index("urbanpy_index")
-    merged.index.name = original_gdf.index.name
-
-    return merged
+    return result_gdf
