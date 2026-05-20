@@ -14,12 +14,12 @@ __all__ = [
 ]
 
 
-# Gaussian friction function for distance decay
+# Gaussian friction function for distance decay. Accepts scalar or array input.
 def friction(dm, d0):
-    if dm > d0:
-        return 0
-    else:
-        return np.exp(-0.5 * (dm / d0) ** 2) / (1 - np.exp(-0.5))
+    dm = np.asarray(dm, dtype=float)
+    return np.where(
+        dm > d0, 0.0, np.exp(-0.5 * (dm / d0) ** 2) / (1.0 - np.exp(-0.5))
+    )
 
 
 def hu_access_map(units, pois, population_column, weight=1, d0=1250):
@@ -105,10 +105,12 @@ def hu_access_map(units, pois, population_column, weight=1, d0=1250):
     merge["poi_geom"] = merge["geometry"].centroid
     merge = merge[~merge["centroid"].isna() | ~merge["centroid"].isnull()]
 
-    # Compute friction
-    merge["friction"] = merge.progress_apply(
-        lambda r: friction(r["poi_geom"].distance(r["centroid"]), d0), axis=1
-    )
+    # Compute friction (vectorized: distance via numpy on geometry x/y arrays)
+    poi_x = np.fromiter((p.x for p in merge["poi_geom"]), dtype=float, count=len(merge))
+    poi_y = np.fromiter((p.y for p in merge["poi_geom"]), dtype=float, count=len(merge))
+    ctr_x = np.fromiter((p.x for p in merge["centroid"]), dtype=float, count=len(merge))
+    ctr_y = np.fromiter((p.y for p in merge["centroid"]), dtype=float, count=len(merge))
+    merge["friction"] = friction(np.hypot(poi_x - ctr_x, poi_y - ctr_y), d0)
 
     # Remove 0 population values
     merge = merge[merge[population_column] > 0]
@@ -138,10 +140,12 @@ def hu_access_map(units, pois, population_column, weight=1, d0=1250):
     # Eliminate null geometries
     merge = merge[~merge["geometry_y"].isna() | ~merge["geometry_y"].isnull()]
 
-    # Compute friction
-    merge["friction"] = merge.progress_apply(
-        lambda r: friction(r["centroid"].distance(r["geometry_y"]), d0), axis=1
-    )
+    # Compute friction (vectorized over centroid vs POI geometry)
+    ctr_x = np.fromiter((p.x for p in merge["centroid"]), dtype=float, count=len(merge))
+    ctr_y = np.fromiter((p.y for p in merge["centroid"]), dtype=float, count=len(merge))
+    poi_x = np.fromiter((p.x for p in merge["geometry_y"]), dtype=float, count=len(merge))
+    poi_y = np.fromiter((p.y for p in merge["geometry_y"]), dtype=float, count=len(merge))
+    merge["friction"] = friction(np.hypot(ctr_x - poi_x, ctr_y - poi_y), d0)
 
     # Compute accesibility Ai
     df_ai = merge[["idx_unit", "idx_poi", "friction", "Rj"]]
@@ -256,9 +260,10 @@ def travel_times(inputs, pois, col_label="poi", nearest_neighbor_dist="haversine
         Input geodataframe with travel distances and durantions to nearest poi.
     """
     gdf = inputs.copy()
-    # Calculate the Nearest Facility for each Hexagon
-    gdf["lon"] = gdf.geometry.centroid.x
-    gdf["lat"] = gdf.geometry.centroid.y
+    # Cache centroids once so we don't recompute them inside the per-row lambda below.
+    centroids = gdf.geometry.centroid
+    gdf["lon"] = centroids.x
+    gdf["lat"] = centroids.y
 
     dists, ixs = nn_search(
         tree_features=pois[["lat", "lon"]].values,
@@ -268,14 +273,12 @@ def travel_times(inputs, pois, col_label="poi", nearest_neighbor_dist="haversine
 
     gdf[f"nearest_{col_label}_ix"] = ixs
 
-    # Calculate travel times and distances
-    distance_duration = gdf.progress_apply(
-        lambda row: osrm_route(
-            origin=row.geometry.centroid,
-            destination=pois.iloc[row[f"nearest_{col_label}_ix"]]["geometry"],
-        ),
-        result_type="expand",
-        axis=1,
+    # Calculate travel times and distances using the cached centroid array.
+    centroid_list = list(centroids)
+    nearest_geoms = pois.geometry.iloc[ixs.ravel()].reset_index(drop=True).tolist()
+    distance_duration = pd.DataFrame(
+        [osrm_route(origin=o, destination=d) for o, d in zip(centroid_list, nearest_geoms)],
+        index=gdf.index,
     )
 
     # Add columns to dataframe
