@@ -50,7 +50,7 @@ def choropleth_map(gdf, color_column, df_filter=None, **kwargs):
         gdff = gdf.copy()
 
     gdff = gdff.reset_index()[["index", color_column, "geometry"]].dropna()
-    lon, lat = gdff.geometry.unary_union.centroid.xy
+    lon, lat = gdff.geometry.union_all().centroid.xy
 
     fig = px.choropleth_mapbox(
         gdff,

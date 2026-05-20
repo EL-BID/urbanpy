@@ -47,7 +47,10 @@ def merge_geom_downloads(
     geometry
     MULTIPOLYGON (((-76.80277 -12.47562, -76.80261...)))
     """
-    concat = gpd.GeoDataFrame(geometry=[pd.concat(gdfs).unary_union], crs=crs)
+    merged_geom = gpd.GeoSeries(
+        pd.concat([g.geometry for g in gdfs], ignore_index=True), crs=crs
+    ).union_all()
+    concat = gpd.GeoDataFrame(geometry=[merged_geom], crs=crs)
     return concat
 
 
@@ -159,29 +162,21 @@ def gen_hexagons(resolution: int, city: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     888e62c841fffff | POLYGON ((-77.22689 -12.07104, -77.23122 -12.0...))
     888e62c847fffff | POLYGON ((-77.23072 -12.07929, -77.23504 -12.0...))
     """
-    # Polyfill the city boundaries
-    h3_polygons = list()
-    h3_indexes = list()
-
-    # Get every polygon in Multipolygon shape
+    # Dedup hex IDs across (multi)polygon parts before materializing geometries
+    # so we never build the same shapely Polygon twice.
+    hex_ids = set()
     city_poly = city.explode(index_parts=True).reset_index(drop=True)
+    for _, geo in track(city_poly.iterrows(), total=len(city_poly)):
+        hex_ids.update(h3.geo_to_cells(geo["geometry"], res=resolution))
 
-    total = len(city_poly)  # For rich library to how much progress is needed
-    for _, geo in track(city_poly.iterrows(), total=total):
-        hexagons = h3.geo_to_cells(geo["geometry"], res=resolution)
-        for hexagon in hexagons:
-            lat_lng_points = h3.cell_to_boundary(hexagon)
-            lng_lat_points = [(lng, lat) for lat, lng in lat_lng_points]
-
-            h3_polygons.append(shapely.Polygon(lng_lat_points))
-            h3_indexes.append(hexagon)
-
-    # Create hexagon dataframe
-    city_hexagons = gpd.GeoDataFrame(h3_indexes, geometry=h3_polygons).drop_duplicates()
-    city_hexagons.crs = "EPSG:4326"
-    city_hexagons = city_hexagons.rename(
-        columns={0: "hex"}
-    )  # Format column name for readability
+    hex_ids = list(hex_ids)
+    h3_polygons = [
+        shapely.Polygon([(lng, lat) for lat, lng in h3.cell_to_boundary(hx)])
+        for hx in hex_ids
+    ]
+    city_hexagons = gpd.GeoDataFrame(
+        {"hex": hex_ids}, geometry=h3_polygons, crs="EPSG:4326"
+    )
 
     return city_hexagons
 
@@ -416,7 +411,10 @@ def osmnx_coefficient_computation(
         888e666c2dfffff	| POLYGON ((-76.93109 -11.79031, -76.93540 -11.7... | NaN
         888e62d4b3fffff	| POLYGON ((-76.87935 -12.03688, -76.88366 -12.0... | 1.044654
     """
-    # May be a lengthy download depending on the amount of features
+    # Accumulate per-row stats and assign in one pass to avoid repeated
+    # .loc[i, col] = ... reindex/upcasts inside the loop.
+    all_stats = list(basic_stats) + list(extended_stats)
+    rows = []
     for index, row in track(
         gdf.iterrows(),
         total=gdf.shape[0],
@@ -426,12 +424,14 @@ def osmnx_coefficient_computation(
             graph = ox.graph_from_polygon(row["geometry"], net_type)
             b_stats = ox.basic_stats(graph)
             ext_stats = ox.extended_stats(graph, connectivity, anc, ecc, bc, cc)
-
-            for stat in basic_stats:
-                gdf.loc[index, stat] = b_stats.get(stat)
-            for stat in extended_stats:
-                gdf.loc[index, stat] = ext_stats.get(stat)
+            rows.append(
+                {s: b_stats.get(s) for s in basic_stats}
+                | {s: ext_stats.get(s) for s in extended_stats}
+            )
         except Exception as err:
             print(f"On record {index}: ", err)
+            rows.append({s: None for s in all_stats})
 
+    stats_df = pd.DataFrame(rows, index=gdf.index, columns=all_stats)
+    gdf[all_stats] = stats_df
     return gdf
