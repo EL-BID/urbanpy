@@ -3,13 +3,15 @@ import subprocess
 import sys
 import pathlib
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 import googlemaps
 import pandas as pd
 import numpy as np
 import networkx as nx
 import osmnx as ox
 import geopandas as gpd
-from shapely.geometry import Point
+from shapely.geometry import Point, MultiPoint
 from typing import Union, Tuple
 from rich.progress import Progress
 
@@ -28,6 +30,24 @@ __all__ = [
 
 ROUTING_MODUEL_DIR = pathlib.Path(__file__).parent.resolve()
 CONTAINER_NAME = "osrm_routing_server"
+
+
+def _build_session() -> requests.Session:
+    """Module-level session with connection pooling and retry/backoff."""
+    s = requests.Session()
+    retry = Retry(
+        total=3,
+        backoff_factor=0.5,
+        status_forcelist=(500, 502, 503, 504),
+        allowed_methods=("GET", "POST"),
+    )
+    adapter = HTTPAdapter(max_retries=retry, pool_connections=16, pool_maxsize=32)
+    s.mount("http://", adapter)
+    s.mount("https://", adapter)
+    return s
+
+
+_SESSION = _build_session()
 
 
 def check_container_is_running(container_name: str) -> bool:
@@ -235,18 +255,17 @@ def osrm_route(
     url = f"http://localhost:5000/route/v1/profile/{orig};{dest}"
 
     try:
-        response = requests.get(url, params={"overview": "false"})
-    except requests.exceptions.ConnectionError as e:
+        response = _SESSION.get(url, params={"overview": "false"})
+    except requests.exceptions.ConnectionError:
         print("Waiting for server to be ready ...")
         time.sleep(5)
-        response = requests.get(url, params={"overview": "false"})
+        response = _SESSION.get(url, params={"overview": "false"})
 
     try:
         data = response.json()["routes"][0]
         distance, duration = data["distance"], data["duration"]
         return distance, duration
-    except Exception as err:
-        # print(err)
+    except Exception:
         return np.nan, np.nan
 
 
@@ -386,7 +405,7 @@ def ors_api(locations, origin, destination, profile, metrics, api_key):
         "Content-Type": "application/json; charset=utf-8",
     }
 
-    r = requests.post(
+    r = _SESSION.post(
         f"https://api.openrouteservice.org/v2/matrix/{profile}",
         json=body,
         headers=headers,
@@ -441,30 +460,41 @@ def compute_osrm_dist_matrix(origins, destinations):
 
     """
 
-    dist_matrix = np.zeros(shape=(origins.shape[0], destinations.shape[0]))
-    dur_matrix = np.zeros(shape=(origins.shape[0], destinations.shape[0]))
+    if isinstance(origins, gpd.GeoSeries):
+        origins = origins.to_frame("geometry")
+    if isinstance(destinations, gpd.GeoSeries):
+        destinations = destinations.to_frame("geometry")
 
-    if type(origins) == gpd.GeoSeries:
-        origins = origins.to_frame()
+    n_orig, n_dest = origins.shape[0], destinations.shape[0]
+    orig_points = list(origins.geometry)
+    dest_points = list(destinations.geometry)
+    coords = ";".join(f"{p.x},{p.y}" for p in orig_points + dest_points)
+    sources = ";".join(str(i) for i in range(n_orig))
+    destinations_idx = ";".join(str(i + n_orig) for i in range(n_dest))
 
-    if type(destinations) == gpd.GeoSeries:
-        destinations = destinations.to_frame()
-
-    with Progress() as progress:
-        pb_orig = progress.add_task(
-            total=origins.shape[0], description="[red]Origins processed"
+    url = f"http://localhost:5000/table/v1/profile/{coords}"
+    try:
+        response = _SESSION.get(
+            url,
+            params={
+                "sources": sources,
+                "destinations": destinations_idx,
+                "annotations": "distance,duration",
+            },
         )
-        pb_dest = progress.add_task(
-            total=destinations.shape[0], description="[blue]Destinations"
-        )
-
-        for i, orig in origins.iterrows():
-            for j, dest in destinations.iterrows():
-                dist, dur = osrm_route(orig.geometry, dest.geometry)
-                dist_matrix[i, j] = dist
-                dur_matrix[i, j] = dur
-                progress.update(pb_dest, advance=1)
-            progress.update(pb_orig, advance=1)
+        data = response.json()
+        dist_matrix = np.array(data["distances"], dtype=float)
+        dur_matrix = np.array(data["durations"], dtype=float)
+    except Exception:
+        # Fall back to per-pair /route if /table is unavailable (older OSRM builds)
+        dist_matrix = np.full((n_orig, n_dest), np.nan)
+        dur_matrix = np.full((n_orig, n_dest), np.nan)
+        with Progress() as progress:
+            pb = progress.add_task(total=n_orig * n_dest, description="OSRM /route")
+            for i, orig in enumerate(orig_points):
+                for j, dest in enumerate(dest_points):
+                    dist_matrix[i, j], dur_matrix[i, j] = osrm_route(orig, dest)
+                    progress.update(pb, advance=1)
 
     return dist_matrix, dur_matrix
 
@@ -661,7 +691,7 @@ def isochrone_from_api(locations, time_range, profile, api, api_key):
             "Content-Type": "application/json; charset=utf-8",
         }
 
-        call = requests.post(
+        call = _SESSION.post(
             f"https://api.openrouteservice.org/v2/isochrones/{profile}",
             json=body,
             headers=headers,
@@ -682,7 +712,7 @@ def isochrone_from_api(locations, time_range, profile, api, api_key):
         for ix, (lon, lat) in enumerate(locations):
             pair = ",".join([str(lon), str(lat)])
             url = f"https://api.mapbox.com/isochrone/v1/mapbox/{profile}/{pair}?contours_minutes={contour_min}&polygons=true&access_token={api_key}"
-            call = requests.get(url)
+            call = _SESSION.get(url)
             if call.status_code == 200:
                 if features == {}:
                     features_ = call.json()
@@ -754,22 +784,28 @@ def isochrone_from_graph(graph, locations, time_range, profile):
     G = ox.project_graph(graph)
 
     meters_per_minute = travel_speed * 1000 / 60  # km per hour to m per minute
-    for u, v, k, data in G.edges(data=True, keys=True):
-        data["time"] = data["length"] / meters_per_minute
+    for u, v, k, edata in G.edges(data=True, keys=True):
+        edata["time"] = edata["length"] / meters_per_minute
 
-    data = []
+    rows = []
+    sorted_times = sorted(time_range, reverse=True)
+    node_data = dict(G.nodes(data=True))
 
     for ix, center_node in enumerate(center_nodes):
-        for trip_time in sorted(time_range, reverse=True):
-            subgraph = nx.ego_graph(G, center_node, radius=trip_time, distance="time")
+        # Compute single-source shortest-path travel times once per center,
+        # then threshold the node set for each trip_time. Avoids re-running
+        # ego_graph (Dijkstra) for every (center, time) pair.
+        dist = nx.single_source_dijkstra_path_length(G, center_node, weight="time")
+        for trip_time in sorted_times:
+            reachable_nodes = [n for n, d in dist.items() if d <= trip_time]
             node_points = [
-                Point((data["lon"], data["lat"]))
-                for node, data in subgraph.nodes(data=True)
+                Point((node_data[n]["lon"], node_data[n]["lat"]))
+                for n in reachable_nodes
             ]
-            bounding_poly = gpd.GeoSeries(node_points).unary_union.convex_hull
-            data.append([ix, trip_time, bounding_poly])
+            bounding_poly = MultiPoint(node_points).convex_hull if node_points else None
+            rows.append([ix, trip_time, bounding_poly])
 
-    isochrones = gpd.GeoDataFrame(data, columns=["group_index", "contour", "geometry"])
+    isochrones = gpd.GeoDataFrame(rows, columns=["group_index", "contour", "geometry"])
     isochrones.crs = "EPSG:4326"
 
     return isochrones
