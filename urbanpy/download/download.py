@@ -149,15 +149,11 @@ def overpass_pois(bounds, facilities=None, custom_query=None):
         df_geom = gpd.points_from_xy(df["lon"], df["lat"])
         gdf = gpd.GeoDataFrame(df, geometry=df_geom, crs="EPSG:4326")
 
-        gdf["poi_type"] = gdf["tags"].apply(
-            lambda tag: tag["amenity"] if "amenity" in tag.keys() else np.NaN
-        )
+        gdf["poi_type"] = gdf["tags"].apply(lambda tag: tag.get("amenity", np.nan))
 
         if facilities == "food":
             # Food facilities also have its POI type wthin the shop tag (See query)
-            also_poi_type = gdf["tags"].apply(
-                lambda tag: tag["shop"] if "shop" in tag.keys() else np.NaN
-            )
+            also_poi_type = gdf["tags"].apply(lambda tag: tag.get("shop", np.nan))
             gdf["poi_type"] = gdf["poi_type"].fillna(also_poi_type)
 
         return gdf
@@ -409,11 +405,11 @@ def get_hdx_dataset(
             & (df["longitude"] <= maxx)
             & (df["latitude"] >= miny)
             & (df["latitude"] <= maxy)
-        ]
-        df_filtered.loc[:, "geometry"] = df_filtered.apply(
-            lambda row: Point(row["longitude"], row["latitude"]), axis=1
+        ].copy()
+        df_filtered["geometry"] = gpd.points_from_xy(
+            df_filtered["longitude"], df_filtered["latitude"]
         )
-        gdf = gpd.GeoDataFrame(df_filtered)
+        gdf = gpd.GeoDataFrame(df_filtered, crs="EPSG:4326")
 
         return gdf[gdf.geometry.intersects(mask)]
     else:
@@ -502,13 +498,13 @@ def hdx_dataset(resource):
         stacklevel=2,
     )
 
-    if not resource.ends_with(".csv"):
+    if not resource.endswith(".csv"):
         raise AttributeError("This function only expects a CSV file.")
 
-    if not resource.starts_with("https://data.humdata.org/dataset/"):
+    if not resource.startswith("https://data.humdata.org/dataset/"):
         hdx_url = f"https://data.humdata.org/dataset/{resource}"
     else:
-        hdx_url = hdx_url
+        hdx_url = resource
 
     dataset = pd.read_csv(hdx_url)
     
