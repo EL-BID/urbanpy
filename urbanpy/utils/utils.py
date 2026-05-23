@@ -9,7 +9,6 @@ import h3
 import shapely
 from pandas import DataFrame
 from shapely.geometry import MultiPolygon, Polygon
-from shapely.validation import make_valid
 from sklearn.neighbors import BallTree
 
 __all__ = [
@@ -303,12 +302,21 @@ def process_overpass_relations(
 
     #  Process way members
     df_ways = pd.DataFrame.from_dict(rels_ways)
-    df_ways["shell"] = df_ways["geometry"].apply(shell_from_geometry)
-    df_ways = df_ways[df_ways["shell"].apply(len) > 2]
-    df_ways["geometry"] = df_ways["shell"].apply(Polygon)
+    # Build polygons in one pass and drop degenerates inline, instead of
+    # three sequential .apply() passes over the same column.
+    polys = []
+    keep = []
+    for geom in df_ways["geometry"]:
+        if len(geom) > 2:
+            polys.append(Polygon([(r["lon"], r["lat"]) for r in geom]))
+            keep.append(True)
+        else:
+            keep.append(False)
+    df_ways = df_ways[keep].copy()
+    df_ways["geometry"] = polys
     gdf_ways = gpd.GeoDataFrame(df_ways, crs="EPSG:4326")
-    # buffer(0) is faster but shapely recommends make_valid()
-    gdf_ways.geometry = gdf_ways.geometry.apply(make_valid)
+    # buffer(0) is faster but shapely recommends make_valid(); vectorized call.
+    gdf_ways.geometry = shapely.make_valid(gdf_ways.geometry.values)
 
     # Merge members and return gdf
     gdf_members = gpd.GeoDataFrame(pd.concat([gdf_nodes, gdf_ways]), crs="EPSG:4326")
@@ -371,14 +379,13 @@ def overpass_to_gdf(
         if ov_keys is not None:
             #  Extract relevant data from osm tags
             gdf["poi_type"] = gdf["tags"].apply(
-                lambda tag: tag[ov_keys[0]] if ov_keys[0] in tag.keys() else np.NaN
+                lambda tag: tag.get(ov_keys[0], np.nan)
             )
             for k in ov_keys:
-                # Use other keys to complete NaNs
-                gdf["poi_type"].fillna(
-                    value=gdf["tags"].apply(
-                        lambda tag: tag[k] if k in tag.keys() else np.NaN
-                    )
+                # Use other keys to complete NaNs. The previous code dropped
+                # the result of .fillna(), making the fallback loop a no-op.
+                gdf["poi_type"] = gdf["poi_type"].fillna(
+                    value=gdf["tags"].apply(lambda tag: tag.get(k, np.nan))
                 )
                 if gdf["poi_type"].isna().sum() == 0:
                     break
