@@ -77,6 +77,12 @@ jobs:
   deploy:
     needs: release
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/urbanpy
+    permissions:
+      contents: read
+      id-token: write
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python
@@ -107,9 +113,7 @@ jobs:
       run: |
         python setup.py sdist bdist_wheel 
     - name: Publish distribution to PyPi
-      uses: pypa/gh-action-pypi-publish@master
-      with:
-        password: ${{ secrets.PYPI_API_TOKEN }}
+      uses: pypa/gh-action-pypi-publish@release/v1
     - uses: ammaraskar/sphinx-action@master
       with:
         docs-folder: "docs/"
