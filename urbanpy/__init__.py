@@ -1,6 +1,6 @@
 from importlib.metadata import PackageNotFoundError, version
 
-from . import accessibility, download, geom, models, plotting, routing, utils
+from . import accessibility, download, geofabrik, geom, models, plotting, routing, utils
 from .errors import BoundaryIssue, BoundaryValidationError, UrbanPyError
 
 try:
@@ -23,6 +23,7 @@ __all__ = [
     "BoundaryIssue",
     "BoundaryValidationError",
     "download",
+    "geofabrik",
     "geom",
     "models",
     "plotting",
