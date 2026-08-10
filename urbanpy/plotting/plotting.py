@@ -33,7 +33,7 @@ def choropleth_map(gdf, color_column, df_filter=None, **kwargs):
         Pandas Series containing true/false values that satisfy a
         condition (e.g. (df['population'] > 100))
 
-    **kwargs: Any parameter of plotly.px.choroplethmapbox.
+    **kwargs: Any parameter of plotly.express.choropleth_map.
 
     Examples
     --------
@@ -52,13 +52,13 @@ def choropleth_map(gdf, color_column, df_filter=None, **kwargs):
     gdff = gdff.reset_index()[["index", color_column, "geometry"]].dropna()
     lon, lat = gdff.geometry.union_all().centroid.xy
 
-    fig = px.choropleth_mapbox(
+    fig = px.choropleth_map(
         gdff,
         geojson=gdff[["geometry"]].__geo_interface__,
         color=color_column,
         locations="index",
         center={"lat": lat[0], "lon": lon[0]},
-        mapbox_style="carto-positron",
+        map_style="carto-positron",
         **kwargs
     )
     
