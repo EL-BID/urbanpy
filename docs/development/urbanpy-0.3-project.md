@@ -158,6 +158,10 @@ with documented `uv` commands.
 - Remove long-lived PyPI tokens; use a protected GitHub environment and OIDC
   trusted publishing with `id-token: write` only in the publish job.
 - Triage the current “License Compliance” failure instead of suppressing it.
+- Resolve the 42 open Dependabot alerts observed at roadmap creation, prioritizing
+  the high-severity SonarQube scan Action alert and direct/runtime exposure. Do not
+  close alerts merely by deleting a manifest until replacement resolution is
+  locked, installed, tested, and rescanned.
 - Generate a dependency inventory and CycloneDX SBOM from the `uv` resolution.
 - Scan locked dependencies for known vulnerabilities and define severity/SLA and
   exception-expiry policy.
@@ -319,6 +323,8 @@ Required before new architecture work is merged:
 - SonarQube remains operational and is no longer best-effort;
 - default-branch rules require human review and successful checks;
 - current license-compliance failure has an owner and documented disposition;
+- no known high-severity dependency/workflow alert lacks a patched resolution or
+  time-bounded EL-BID-approved exception;
 - old issues and PRs are triaged into the Project.
 
 ### Phase 1 — 0.3.0a1 foundation
@@ -429,4 +435,3 @@ Before an issue moves to Ready it has:
   installation are verified before trusted publication.
 - Documentation, citation, governance, security, support, and release ownership
   are current, and no P0/P1 issue or unowned high risk remains.
-

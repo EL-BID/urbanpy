@@ -65,6 +65,10 @@ Findings:
 - The same PR received duplicate test/docs runs from overlapping push and PR events.
 - The License Compliance status reports 104 issues and has no result URL. The exact
   findings require owner/tool investigation; the failure must not be waived blindly.
+- GitHub reports 42 open Dependabot vulnerabilities on the default branch (30 high,
+  9 moderate, and 3 low at audit time). Most originate from the monolithic pinned
+  `requirements.txt`; one high-severity alert affects the SonarQube scan Action and
+  requires upgrading to a fixed release as part of Phase 0.
 - SonarQube dependency installation and coverage are marked best-effort, failures
   are suppressed, and `sonar.sources=.` makes source/test/notebook scope ambiguous.
 - The scan job can pass without proving that tests or coverage succeeded and does
@@ -183,4 +187,3 @@ The original plans were directionally sound but incomplete. This review adds:
 - Greptile pricing: <https://www.greptile.com/pricing>
 - conda-forge package contribution:
   <https://conda-forge.org/docs/maintainer/adding_pkgs/>
-
