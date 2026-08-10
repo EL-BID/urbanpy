@@ -1,0 +1,11 @@
+# Repository and public API ownership
+* @Claudio9701 @a-regal
+
+# Security, release, and automation changes need an administrator review.
+/.github/ @Claudio9701
+/pyproject.toml @Claudio9701
+/uv.lock @Claudio9701
+/sonar-project.properties @Claudio9701
+
+# Routing lifecycle changes carry operational and data-download risk.
+/urbanpy/routing/ @Claudio9701

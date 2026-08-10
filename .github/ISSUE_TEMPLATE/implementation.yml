@@ -1,0 +1,39 @@
+name: Implementation task
+description: Define a bounded task suitable for a maintainer or coding agent.
+title: "[Task]: "
+labels: [agent:ready]
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome
+      description: Describe the user-visible or operational result, not only files to edit.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: In scope / out of scope
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: "- [ ] A deterministic test demonstrates ..."
+    validations:
+      required: true
+  - type: input
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Blocking issues or PRs, or "None".
+    validations:
+      required: true
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Highest risk area
+      options: [Normal library change, Public API, External data contract, OSRM or Docker, Security or CI, Release]
+    validations:
+      required: true

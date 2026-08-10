@@ -1,34 +1,67 @@
-# Contributing guidelines
+# Contributing to UrbanPy
 
-## Pull request checklist
+Thank you for helping UrbanPy become a dependable geospatial library. Please
+follow the [code of conduct](CODE_OF_CONDUCT.md) in every project interaction.
 
-Before sending a pull request, be sure to follow this list.
+## Propose the change
 
-* Read the [contributing guidelines](CONTRIBUTING.md)
-* Read the [code of conduct](CODE_OF_CONDUCT.md)
-* Check if your changes comply with the [style guide](https://github.com/google/styleguide/blob/gh-pages/pyguide.md)
+Search existing issues first. Bugs should include a minimal reproduction,
+UrbanPy/Python versions, CRS and data details, and redacted logs. Larger changes
+need an issue with explicit scope, acceptance criteria, dependencies, and public
+API implications before implementation begins.
 
-## How to become a contributor and submit your own code
+## Set up development
 
-We'd love to accept your changes, suggestions and patches! Be sure that your
-changes, source code, and other ideas/implementations do not cause intellectual property
-issues.
+Install [uv](https://docs.astral.sh/uv/), clone the repository, then run:
 
-## Contributing code
+```console
+uv sync --locked --all-groups
+uv run pytest
+```
 
-If you have any improvements or new functionality that is interesting for UrbanPy,
-send us your pull requests! If you are new to pull requests, see Github's [how to guide](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests).
+Python 3.11 is the local baseline. The supported range is declared in
+`pyproject.toml` and exercised in CI. The committed `uv.lock` is authoritative
+for development and CI; published users receive the bounded dependencies from
+`pyproject.toml`.
 
-UrbanPy team members will be assigned to review your pull requests. Once the pull requests are approved and pass continuous integration checks, a UrbanPy team member will apply ready to pull label to your change. This means we are working on getting your pull request submitted to our internal repository. After the change has been submitted internally, your pull request will be merged automatically on GitHub.
+Trunk provides one convenient frontend for repository checks:
 
-## Contribution guidelines and standards
+```console
+trunk check
+```
 
-Before sending your pull request for review, make sure your changes are consistent with the guidelines and follow the Google coding style.
+Trunk does not replace the underlying commands. When it is unavailable, run:
 
-### General guidelines and philosophy for contribution
+```console
+uv run ruff check urbanpy tests
+uv run pytest
+uv build
+uv run sphinx-build --fail-on-warning --keep-going -b html docs/source docs/_build/html
+```
 
-* Include unit tests when you contribute new features, as they help to a) prove that your code works correctly, and b) guard against future breaking changes to lower the maintenance cost.
-* Bug fixes also generally require unit tests, because the presence of bugs usually indicates insufficient test coverage.
-* When you contribute a new feature to UrbanPy, the maintenance burden is (by default) transferred to the UrbanPy team. This means that the benefit of the contribution must be compared against the cost of maintaining the feature.
-* Full new features (e.g., a cutting-edge travel time matrix computation algorithm) typically will live in urbanpy/utils to get some airtime before a decision is made regarding whether they are to be migrated to the core modules.
-* As every PR may require several CPU hours of CI testing, we discourage submitting PRs to fix one typo, one warning, etc. We recommend fixing the same issue at the file level at least (e.g.: fix all typos in a file, fix all compiler warning in a file, etc.)
+## Test policy
+
+The normal test suite is deterministic and disables network sockets. Use
+synthetic geometries and captured provider payloads for unit and contract tests.
+Tests that intentionally call a real provider must use `@pytest.mark.live`;
+tests requiring Docker must use `@pytest.mark.docker`. Run those suites only in
+an explicitly prepared environment:
+
+```console
+uv run pytest -m live --socket-enabled
+uv run pytest -m docker --socket-enabled
+```
+
+Never place credentials or personal email addresses in tests or fixtures.
+
+## Pull requests
+
+Keep pull requests focused and link the issue they implement. Dependency-ordered
+stacked PRs are welcome when each layer is independently reviewable; identify
+the base and next PR in every description. Add regression tests for fixes and
+documentation/changelog entries for user-visible behavior.
+
+All required checks must pass. SonarQube is mandatory under EL-BID policy and
+must not be removed, bypassed, or converted to a best-effort check. A maintainer
+reviews and merges changes; automation and coding agents never merge or release
+on their own.
