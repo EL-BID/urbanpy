@@ -12,30 +12,27 @@ accessibility workflows. Version 0.3 is currently an alpha modernization: use a
 stable 0.2 release for established production deployments and test 0.3 against
 your data before upgrading.
 
-# Functional goals
+## Capabilities
 
-- [x] Download open source spatial data (Limits & Points of Interests)
-- [x] Allow for the use of a grid system or administrative boundaries as spatial units.
-- [x] Origin-destination matrix calculation by any mode using a routing API
-- [x] Obtain travel time from spatial units to the closest facilities
-- [x] Consolidate the results as tables and/or shapefiles (georeferenced datasets)
-- [x] Visualise the results as maps
-
-# UX goals
-
-- [ ] Atomic functions (one purpose per function)
-- [x] Use the power of Python Geospatial Ecosystem under the hood
-- [x] Allow to flexible processing pipelines (custom layer/metrics aggregations)
-- [x] Clear documentation with usage and examples
-- [x] Clear and replicable example notebooks
+- Download open spatial boundaries, points of interest, street networks, and
+  selected population datasets.
+- Generate H3 grids and combine native GeoPandas, Shapely, OSMnx, and NetworkX
+  objects in custom analysis pipelines.
+- Calculate origin-destination matrices, routes, isochrones, nearest-facility
+  travel times, and accessibility indicators.
+- Operate an optional reproducible local OSRM service from canonical Geofabrik
+  extracts without platform-specific shell scripts.
+- Produce GeoDataFrame outputs and interactive Plotly maps.
 
 ## Main modules
 
-- download: Main functions for data download from Nominatin API, OverPass API and HDX population data
-- geom: Spatial operations, grid partitioning, spatial filtering and street network statistics
-- plotting: Visualization wrappers for plotly interactive choropleth maps
-- routing: Distance matrix computations (may require your own API keys)
-- utils: Data handling helpers
+- `download`: Nominatim, Overpass, OSMnx, and selected HDX provider helpers.
+- `geom`: spatial operations, H3 grids, filtering, overlays, and network statistics.
+- `plotting`: interactive Plotly choropleth maps.
+- `routing`: provider routing, isochrones, matrices, and local OSRM lifecycle.
+- `accessibility`: nearest-facility and accessibility indicators.
+- `models`: stable validated coordinate, region, routing, and lifecycle values.
+- `utils`: lower-level geospatial data helpers.
 
 ## Installation
 
@@ -64,16 +61,22 @@ and processing time; begin with a small canonical Geofabrik region.
 
 # Examples
 
-UrbanPy lets you download and visualize city boundaries extremely easy:
+Download and visualize a city boundary while identifying your application to
+the public Nominatim service:
 
 ```python
 import urbanpy as up
 
-boundaries = up.download.nominatim_osm('Lima, Peru', expected_position=2, email="your@email.com")
+boundaries = up.download.nominatim_osm(
+    "Lima, Peru",
+    expected_position=2,
+    email="your-project-contact@example.org",
+)
 boundaries.plot()
 ```
 
-Since `boundaries` is a GeoDataFrame it can be easily plotted with the method `.plot()`. You can also generate hexagons to fill the city boundaries in a oneliner.
+Because `boundaries` is a GeoDataFrame, it works directly with the normal
+GeoPandas API. Generate an H3 grid over the selected geometry:
 
 ```python
 hexes = up.geom.gen_hexagons(resolution=9, city=boundaries)

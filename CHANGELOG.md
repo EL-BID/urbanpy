@@ -18,6 +18,13 @@ versioning and uses the headings from [Keep a Changelog](https://keepachangelog.
 - A Docker-independent typed OSRM route/table client.
 - Hermetic provider contract tests, mandatory SonarQube enforcement, Trunk code
   quality, dependency auditing, and agent governance.
+- A shared identified HTTP session with bounded safe retries and explicit
+  connect/read timeouts for provider clients.
+- Protected OIDC publishing workflows that build once, validate artifacts,
+  generate dependency/SBOM evidence, attest provenance, and promote the same
+  reviewed bundle to TestPyPI or PyPI.
+- Public API stability documentation, explicit module exports, dependency-license
+  evidence, and advisory AI-review policy for stacked pull requests.
 
 ### Changed
 
@@ -26,6 +33,10 @@ versioning and uses the headings from [Keep a Changelog](https://keepachangelog.
 - OSRM durations are documented in seconds, matching the upstream API.
 - Geospatial outputs retain their input or declared CRS in the corrected paths.
 - HDX searches use the current client and return stable UrbanPy provider errors.
+- Overpass POI bounds are validated as WGS84 ``(west, south, east, north)``
+  values through the public ``BoundingBox`` contract.
+- Plotly choropleths use the current MapLibre-backed trace instead of the
+  deprecated Mapbox trace.
 
 ### Fixed
 
