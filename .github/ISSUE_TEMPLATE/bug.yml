@@ -1,0 +1,44 @@
+name: Bug report
+description: Report reproducible incorrect behavior in UrbanPy.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Observed behavior
+      description: Include the smallest reproducible example and complete error.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: UrbanPy and Python versions
+      placeholder: urbanpy 0.2.2, Python 3.11
+    validations:
+      required: true
+  - type: dropdown
+    id: external
+    attributes:
+      label: External service involved
+      options: [None, Geofabrik, HDX, Nominatim, OSRM, OSMnx or Overpass, Other]
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Environment and additional context
+      description: OS, architecture, relevant data/CRS, and redacted logs.
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety check
+      options:
+        - label: I removed API keys, tokens, credentials, and personal data.
+          required: true

@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: UrbanPy questions and ideas
+    url: https://github.com/EL-BID/urbanpy/discussions
+    about: Ask usage questions or discuss ideas before a full proposal.
