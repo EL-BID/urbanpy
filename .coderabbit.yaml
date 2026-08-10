@@ -1,0 +1,31 @@
+reviews:
+  auto_review:
+    enabled: true
+    drafts: true
+    auto_incremental_review: true
+    base_branches:
+      - .*
+  path_instructions:
+    - path: urbanpy/**
+      instructions: |
+        Apply AGENTS.md. Focus on public API compatibility, coordinate order,
+        CRS and unit semantics, provider-boundary validation, and safe errors.
+        SonarQube is mandatory and must never be weakened or bypassed.
+    - path: urbanpy/routing/**
+      instructions: |
+        Require shell-free cross-platform OSRM lifecycle behavior, pinned
+        images, explicit timeouts, ownership checks, and failure cleanup.
+        Geofabrik identifiers and URLs must come from the official catalog.
+    - path: tests/**
+      instructions: |
+        Require deterministic assertions and meaningful error-path coverage.
+        Unit tests must not depend on network access or a local Docker daemon.
+    - path: .github/workflows/**
+      instructions: |
+        Flag unpinned actions, excessive token permissions, secret exposure,
+        non-hermetic PR gates, or changes that weaken SonarQube and license
+        compliance. Publishing must use protected OIDC environments.
+    - path: docs/**
+      instructions: |
+        Check examples against the current public API and flag missing CRS,
+        coordinate-order, unit, provider-policy, or migration information.
