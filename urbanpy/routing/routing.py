@@ -698,7 +698,9 @@ def isochrone_from_graph(graph, locations, time_range, profile):
         travel_speed = profiles[profile]
 
     center_nodes = [ox.nearest_nodes(graph, x, y) for x, y in locations]
-    G = ox.project_graph(graph)
+    # Edge lengths are already expressed in meters by OSMnx. Keep the graph in
+    # its input CRS so returned polygons and CRS metadata remain consistent.
+    G = graph.copy()
 
     meters_per_minute = travel_speed * 1000 / 60  # km per hour to m per minute
     for u, v, k, edata in G.edges(data=True, keys=True):
@@ -716,13 +718,15 @@ def isochrone_from_graph(graph, locations, time_range, profile):
         for trip_time in sorted_times:
             reachable_nodes = [n for n, d in dist.items() if d <= trip_time]
             node_points = [
-                Point((node_data[n]["lon"], node_data[n]["lat"]))
-                for n in reachable_nodes
+                Point((node_data[n]["x"], node_data[n]["y"])) for n in reachable_nodes
             ]
             bounding_poly = MultiPoint(node_points).convex_hull if node_points else None
             rows.append([ix, trip_time, bounding_poly])
 
-    isochrones = gpd.GeoDataFrame(rows, columns=["group_index", "contour", "geometry"])
-    isochrones.crs = "EPSG:4326"
+    isochrones = gpd.GeoDataFrame(
+        rows,
+        columns=["group_index", "contour", "geometry"],
+        crs=graph.graph.get("crs", "EPSG:4326"),
+    )
 
     return isochrones

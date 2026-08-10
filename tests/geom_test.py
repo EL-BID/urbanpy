@@ -62,3 +62,22 @@ def test_hexagon_generation_merge_and_downsampling():
     assert merged["population"].sum() == 10
     assert coarse["population"].sum() == 10
     assert coarse.crs == hexagons.crs
+
+
+def test_merge_shape_hex_can_be_rerun_on_its_own_result():
+    hexagons = geom.gen_hexagons(8, _city())
+    points = gpd.GeoDataFrame(
+        {"population": [3, 7]},
+        geometry=[Point(-77.03, -12.08), Point(-77.01, -12.06)],
+        crs="EPSG:4326",
+    )
+
+    first = geom.merge_shape_hex(
+        hexagons, points, {"population": "sum"}, predicate="within"
+    )
+    second = geom.merge_shape_hex(
+        first, points, {"population": "sum"}, predicate="within"
+    )
+
+    assert second["population"].equals(first["population"])
+    assert second.crs == first.crs

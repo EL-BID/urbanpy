@@ -233,7 +233,11 @@ def merge_shape_hex(
     888e628debfffff | POLYGON ((-76.67982 -12.18998, -76.68413 -12.1... | NaN
     888e6299b3fffff | POLYGON ((-76.78876 -11.97286, -76.79307 -11.9... | 3225.658803
     """
-    joined = gpd.sjoin(shape, hexs, how=how, predicate=predicate)
+    # A previous result contains the aggregate columns. Exclude them from the
+    # right-hand join so a second call cannot create `_left`/`_right` suffixes
+    # and make the requested aggregation columns disappear.
+    join_hexs = hexs.drop(columns=list(agg), errors="ignore")
+    joined = gpd.sjoin(shape, join_hexs, how=how, predicate=predicate)
 
     # Uses index right based on the order of points and hex. Right takes hex index
     hex_merge = joined.groupby("index_right").agg(agg)

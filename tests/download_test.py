@@ -36,9 +36,7 @@ def test_nominatim_parses_captured_geojson():
         ],
     }
     with responses.RequestsMock() as captured:
-        captured.get(
-            "https://nominatim.openstreetmap.org/search.php", json=payload
-        )
+        captured.get("https://nominatim.openstreetmap.org/search.php", json=payload)
         result = download.nominatim_osm("Lima, Peru", email="dev@example.org")
 
     assert list(result["display_name"]) == ["Lima, Peru"]
@@ -63,7 +61,9 @@ def test_search_hdx_dataset_uses_captured_provider_records(monkeypatch):
         },
     ]
     monkeypatch.setattr(
-        download_module.Dataset, "search_in_hdx", lambda _query: [object()]
+        download_module.Dataset,
+        "search_in_hdx",
+        lambda _query, **_kwargs: [object()],
     )
     monkeypatch.setattr(
         download_module.Dataset, "get_all_resources", lambda _datasets: records
@@ -79,6 +79,33 @@ def test_search_hdx_dataset_uses_captured_provider_records(monkeypatch):
         "size_mb": 1.0,
         "url": "https://example.org/population.csv",
     }
+
+
+def test_hdx_single_resource_list_is_a_valid_download_selection(monkeypatch):
+    resources = download_module.pd.DataFrame(
+        {"url": ["https://example.org/population.csv"]}, index=[7]
+    )
+    expected = download_module.pd.DataFrame({"population": [10]})
+    read_csv = monkeypatch.setattr(
+        download_module.pd, "read_csv", lambda _url: expected.copy()
+    )
+
+    result = download.get_hdx_dataset(resources, [7])
+
+    assert result.equals(expected)
+    assert read_csv is None
+
+
+def test_hdx_provider_errors_are_stable_and_hide_provider_details(monkeypatch):
+    def fail(*_args, **_kwargs):
+        raise download_module.HDXError("provider response containing internals")
+
+    monkeypatch.setattr(download_module.Dataset, "search_in_hdx", fail)
+
+    with pytest.raises(download.HDXProviderError) as captured:
+        download.search_hdx_dataset("Peru")
+
+    assert "provider response" not in str(captured.value)
 
 
 def test_osmnx_graph_validates_required_arguments(capsys):

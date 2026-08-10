@@ -17,9 +17,7 @@ __all__ = [
 # Gaussian friction function for distance decay. Accepts scalar or array input.
 def friction(dm, d0):
     dm = np.asarray(dm, dtype=float)
-    return np.where(
-        dm > d0, 0.0, np.exp(-0.5 * (dm / d0) ** 2) / (1.0 - np.exp(-0.5))
-    )
+    return np.where(dm > d0, 0.0, np.exp(-0.5 * (dm / d0) ** 2) / (1.0 - np.exp(-0.5)))
 
 
 def hu_access_map(units, pois, population_column, weight=1, d0=1250):
@@ -85,12 +83,14 @@ def hu_access_map(units, pois, population_column, weight=1, d0=1250):
     units["centroid"] = units.geometry.centroid
 
     # Create buffer GeoDataFrame
-    buffers_poi = gpd.GeoDataFrame(pois["idx"], geometry=pois["buffer"])
-    buffers_units = gpd.GeoDataFrame(units["idx"], geometry=units["buffer"])
+    buffers_poi = gpd.GeoDataFrame(pois["idx"], geometry=pois["buffer"], crs=pois.crs)
+    buffers_units = gpd.GeoDataFrame(
+        units["idx"], geometry=units["buffer"], crs=units.crs
+    )
 
     # Compute catchment area (Rj) for each poi
     join = gpd.sjoin(
-        buffers_poi, units[["idx", "geometry"]], op="intersects", how="left"
+        buffers_poi, units[["idx", "geometry"]], predicate="intersects", how="left"
     )
     join = join.rename(columns={"idx_left": "idx_poi", "idx_right": "idx_unit"})
     merge = pd.merge(
@@ -126,7 +126,7 @@ def hu_access_map(units, pois, population_column, weight=1, d0=1250):
 
     # Compute block accesibility
     join = gpd.sjoin(
-        buffers_units, pois[["idx", "geometry"]], op="intersects", how="left"
+        buffers_units, pois[["idx", "geometry"]], predicate="intersects", how="left"
     )
     join = join.rename(columns={"idx_left": "idx_unit", "idx_right": "idx_poi"})
 
@@ -143,8 +143,12 @@ def hu_access_map(units, pois, population_column, weight=1, d0=1250):
     # Compute friction (vectorized over centroid vs POI geometry)
     ctr_x = np.fromiter((p.x for p in merge["centroid"]), dtype=float, count=len(merge))
     ctr_y = np.fromiter((p.y for p in merge["centroid"]), dtype=float, count=len(merge))
-    poi_x = np.fromiter((p.x for p in merge["geometry_y"]), dtype=float, count=len(merge))
-    poi_y = np.fromiter((p.y for p in merge["geometry_y"]), dtype=float, count=len(merge))
+    poi_x = np.fromiter(
+        (p.x for p in merge["geometry_y"]), dtype=float, count=len(merge)
+    )
+    poi_y = np.fromiter(
+        (p.y for p in merge["geometry_y"]), dtype=float, count=len(merge)
+    )
     merge["friction"] = friction(np.hypot(ctr_x - poi_x, ctr_y - poi_y), d0)
 
     # Compute accesibility Ai
@@ -171,7 +175,7 @@ def hu_access_map(units, pois, population_column, weight=1, d0=1250):
 
     del df_ai["idx"]
 
-    access_map = gpd.GeoDataFrame(df_ai, geometry=df_ai["geometry"])
+    access_map = gpd.GeoDataFrame(df_ai, geometry=df_ai["geometry"], crs=units.crs)
 
     return access_map
 
@@ -218,28 +222,30 @@ def pressure_map(blocks, pois, demand_column, operation="intersects", buffer_siz
     ----------
     Van Eck, J. R., & de Jong, T. (1999). Accessibility analysis and spatial competition effects in the context of GIS-supported service location planning. Computers, environment and urban systems, 23(2), 75-89.
     """
-    if not pois.crs.is_projected:
-        pois_proj = project_gdf(pois)
-
-    if not blocks.crs.is_projected:
-        blocks_proj = project_gdf(blocks)
+    pois_proj = pois if pois.crs.is_projected else project_gdf(pois)
+    blocks_proj = blocks if blocks.crs.is_projected else project_gdf(blocks)
 
     idx_blocks = [f"block_{i}" for i in blocks.index]
     blocks_proj["idx"] = idx_blocks
 
     buffers = gpd.GeoDataFrame(
-        idx_blocks, columns=["idx"], geometry=blocks_proj.geometry.buffer(buffer_size)
+        idx_blocks,
+        columns=["idx"],
+        geometry=blocks_proj.geometry.buffer(buffer_size),
+        crs=blocks_proj.crs,
     )
 
-    merge = gpd.sjoin(buffers, pois_proj, op=operation)
+    merge = gpd.sjoin(buffers, pois_proj, predicate=operation)
     nj = merge.groupby("idx").count()["index_right"]
     nj.name = "nj"
     nj = nj.reset_index()
 
-    blocks = pd.merge(blocks, nj, how="left")
-    blocks["ds"] = blocks[demand_column] / (blocks_proj["nj"] + 1)
+    result = blocks.copy()
+    result["idx"] = idx_blocks
+    result = result.merge(nj, how="left", on="idx")
+    result["ds"] = result[demand_column] / (result["nj"].fillna(0) + 1)
 
-    return blocks
+    return gpd.GeoDataFrame(result, geometry="geometry", crs=blocks.crs)
 
 
 def travel_times(inputs, pois, col_label="poi", nearest_neighbor_dist="haversine"):
@@ -277,7 +283,10 @@ def travel_times(inputs, pois, col_label="poi", nearest_neighbor_dist="haversine
     centroid_list = list(centroids)
     nearest_geoms = pois.geometry.iloc[ixs.ravel()].reset_index(drop=True).tolist()
     distance_duration = pd.DataFrame(
-        [osrm_route(origin=o, destination=d) for o, d in zip(centroid_list, nearest_geoms)],
+        [
+            osrm_route(origin=o, destination=d)
+            for o, d in zip(centroid_list, nearest_geoms)
+        ],
         index=gdf.index,
     )
 

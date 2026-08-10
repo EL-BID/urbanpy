@@ -9,6 +9,7 @@ import requests
 from geopandas import GeoDataFrame, GeoSeries
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
+from hdx.data.hdxobject import HDXError
 from pandas import DataFrame
 from shapely.geometry import MultiPolygon, Polygon, Point
 
@@ -18,6 +19,7 @@ from urbanpy.utils import (
     overpass_to_gdf,
     to_overpass_query,
 )
+from urbanpy.errors import UrbanPyError
 
 __all__ = [
     "nominatim_osm",
@@ -28,11 +30,16 @@ __all__ = [
     "get_hdx_dataset",
     "hdx_fb_population",
     "hdx_dataset",
+    "HDXProviderError",
 ]
 
 hdx_config = Configuration.create(
     hdx_site="prod", user_agent="urbanpy", hdx_read_only=True
 )
+
+
+class HDXProviderError(UrbanPyError):
+    """HDX could not complete a dataset search or returned invalid metadata."""
 
 
 def nominatim_osm(
@@ -323,12 +330,21 @@ def search_hdx_dataset(
     12 | 2019-06-11	| PER_youth_15_24_2019-06-01_csv.zip	            | Youth (ages 15-24)	                    | 16.61	  | https://data.humdata.org/dataset/4e74db39-87f1...
     """
     # Get dataset list
-    datasets = Dataset.search_in_hdx(f"title:{country.lower()}-{repository}")
+    try:
+        datasets = Dataset.search_in_hdx(
+            f"title:{country.lower()}-{repository}", rows=100
+        )
+        resources_records = Dataset.get_all_resources(datasets)
+    except HDXError as error:
+        raise HDXProviderError(
+            "HDX dataset search failed; retry later or run the live provider check."
+        ) from error
 
-    resources_records = Dataset.get_all_resources(datasets)
     resources_df = pd.DataFrame.from_records(resources_records)
     if resources_df.shape[0] == 0:
-        print("No datasets found")
+        return pd.DataFrame(
+            columns=["created", "name", "population", "size_mb", "url"]
+        ).rename_axis("id")
 
     else:
         resources_csv_df = resources_df[
@@ -387,15 +403,16 @@ def get_hdx_dataset(
 
     """
 
-    urls = resources_df.loc[ids, "url"]
-
-    print(urls)
-    if isinstance(ids, list) and len(ids) > 1:
-        df = pd.concat([pd.read_csv(url) for url in urls])
+    selected = resources_df.loc[ids, "url"]
+    if isinstance(selected, pd.Series):
+        urls = selected.tolist()
+        if not urls:
+            raise ValueError("ids did not select any HDX resources")
+        df = pd.concat([pd.read_csv(url) for url in urls], ignore_index=True)
     else:
-        df = pd.read_csv(urls)
+        df = pd.read_csv(selected)
 
-    if mask:
+    if mask is not None:
         if isinstance(mask, GeoDataFrame):
             mask = mask.unary_union
         minx, miny, maxx, maxy = mask.bounds
@@ -455,6 +472,11 @@ def hdx_fb_population(country, map_type):
         resources_df["population"] == HDX_POPULATION_TYPES[map_type]
     ].index.tolist()
 
+    if not dataset_ix:
+        raise ValueError(
+            f"No {map_type!r} population resource is available for {country!r}."
+        )
+
     population = get_hdx_dataset(resources_df, dataset_ix)
 
     return population
@@ -507,5 +529,5 @@ def hdx_dataset(resource):
         hdx_url = resource
 
     dataset = pd.read_csv(hdx_url)
-    
+
     return dataset
