@@ -1,6 +1,7 @@
 from importlib.metadata import PackageNotFoundError, version
 
-from . import accessibility, download, geom, plotting, routing, utils
+from . import accessibility, download, geom, models, plotting, routing, utils
+from .errors import BoundaryIssue, BoundaryValidationError, UrbanPyError
 
 try:
     __version__ = version("urbanpy")
@@ -19,9 +20,13 @@ except PackageNotFoundError:  # pragma: no cover - source tree without installat
 __all__ = [
     "__version__",
     "accessibility",
+    "BoundaryIssue",
+    "BoundaryValidationError",
     "download",
     "geom",
+    "models",
     "plotting",
     "routing",
     "utils",
+    "UrbanPyError",
 ]

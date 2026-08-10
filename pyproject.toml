@@ -143,7 +143,13 @@ target-version = "py311"
 select = ["E9", "F63", "F7", "F82"]
 
 [tool.mypy]
-python_version = "3.11"
+# Current NumPy stubs use PEP 695 syntax. Runtime CI separately proves Python
+# 3.11 support; the static-analysis environment therefore targets 3.12.
+python_version = "3.12"
 plugins = ["pydantic.mypy"]
 show_error_codes = true
 warn_unused_configs = true
+
+[[tool.mypy.overrides]]
+module = ["urbanpy.errors", "urbanpy.models.*"]
+strict = true

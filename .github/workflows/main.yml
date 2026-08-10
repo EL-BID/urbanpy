@@ -52,6 +52,9 @@ jobs:
       - name: Check source
         run: uv run --python 3.11 ruff check urbanpy tests
 
+      - name: Type-check strict boundary modules
+        run: uv run --python 3.11 mypy urbanpy/errors.py urbanpy/models
+
       - name: Run hermetic tests with coverage
         run: uv run --python 3.11 pytest --cov=urbanpy --cov-report=term-missing --cov-report=xml
 
