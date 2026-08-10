@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use UrbanPy, please cite the software and its reference paper."
+title: "UrbanPy"
+type: software
+version: 0.3.0a0
+license: GPL-3.0-only
+repository-code: "https://github.com/EL-BID/urbanpy"
+url: "https://el-bid.github.io/urbanpy/"
+authors:
+  - family-names: Regal
+    given-names: Andres
+  - family-names: Ortega
+    given-names: Claudio
+  - family-names: Vazquez Brust
+    given-names: Antonio
+preferred-citation:
+  type: conference-paper
+  title: "UrbanPy: A Library to Download, Process and Visualize High Resolution Urban Data to Support Transportation and Urban Planning Decisions"
+  year: 2022
+  doi: 10.1007/978-3-031-06862-1_34
+  collection-title: "Production and Operations Management"
+  publisher:
+    name: Springer International Publishing
+  authors:
+    - family-names: Regal
+      given-names: Andres
+    - family-names: Ortega
+      given-names: Claudio
+    - family-names: Vazquez Brust
+      given-names: Antonio
+    - family-names: Rodriguez
+      given-names: Michelle
+    - family-names: Zambrano-Barragan
+      given-names: Patricio

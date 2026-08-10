@@ -1,44 +1,55 @@
 Installation
 ============
 
-For users
-~~~~~~~~~
+Users
+-----
 
-To install the urbanpy library you can use:
+Install the stable release from PyPI in a virtual environment:
 
-.. code:: sh
+.. code-block:: console
 
-    $ pip install urbanpy
+   python -m pip install urbanpy
 
-Then use ``import urbanpy`` in your python scripts to use the library.
+Then verify the import and version:
 
-If you plan to use the `OSRM Server <http://project-osrm.org/>`__ route
-or distance matrix calculation functionalities\* you must have Docker
-installed in your system, refer to Docker
-`Installation <https://www.docker.com/products/docker-desktop>`__.
+.. code-block:: pycon
 
-For developers
-~~~~~~~~~~~~~~
+   >>> import urbanpy
+   >>> urbanpy.__version__
 
-If you plan to contribute or customize urbanpy first clone this repo and
-cd into it. Then, we strongly recommend you to create a virtual
-environment. You can use conda, this installation manage some
-complicated C spatial library dependencies:
+UrbanPy supports the Python versions declared in ``pyproject.toml`` and tested
+in CI. Current geospatial dependencies publish wheels for common platforms. If
+your platform must compile a dependency, follow that dependency's system
+toolchain documentation.
 
-.. code:: sh
+Local OSRM is optional. Install and start Docker, then follow :doc:`osrm`.
+Normal geometry operations and calls to independently operated routing services
+do not require Docker.
 
-    $ conda env create -f environment.yml
-    $ conda activate urbanpy
+Prereleases
+-----------
 
-Or if you are more confident about your setup, you can use pip:
+Version 0.3 alpha, beta, and release-candidate builds are evaluation releases.
+Install a specific prerelease only when intentionally testing its migration:
 
-.. code:: sh
+.. code-block:: console
 
-    $ python3 -m venv .env
-    $ source .env/bin/activate
-    (.env) $ pip install -r requirements.txt
+   python -m pip install --pre "urbanpy==0.3.0a0"
 
+Do not assume cache, model, or deprecated API stability between alpha builds.
+Review the project changelog and test representative geospatial data first.
 
-\*Current support is tested on Linux Ubuntu 18.04 & Mac OS Catalina,
+Developers
+----------
 
-coming soon we will test and support Windows 10.
+Install `uv <https://docs.astral.sh/uv/>`__, clone the repository, then run:
+
+.. code-block:: console
+
+   uv sync --locked --all-groups
+   uv run pytest
+   trunk check
+
+The committed ``uv.lock`` is authoritative for development and CI. Runtime
+users receive the compatible dependency ranges declared in ``pyproject.toml``.
+See :doc:`../contributing` for test markers and pull-request requirements.
