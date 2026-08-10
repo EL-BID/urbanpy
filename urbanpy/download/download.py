@@ -5,7 +5,6 @@ import geopandas as gpd
 import numpy as np
 import osmnx as ox
 import pandas as pd
-import requests
 from geopandas import GeoDataFrame, GeoSeries
 from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
@@ -20,6 +19,7 @@ from urbanpy.utils import (
     to_overpass_query,
 )
 from urbanpy.errors import UrbanPyError
+from urbanpy._http import build_session
 
 __all__ = [
     "nominatim_osm",
@@ -36,6 +36,7 @@ __all__ = [
 hdx_config = Configuration.create(
     hdx_site="prod", user_agent="urbanpy", hdx_read_only=True
 )
+_SESSION = build_session()
 
 
 class HDXProviderError(UrbanPyError):
@@ -81,7 +82,8 @@ def nominatim_osm(
         "email": email,
     }
 
-    response = requests.get(osm_url, params=osm_parameters)
+    response = _SESSION.get(osm_url, params=osm_parameters)
+    response.raise_for_status()
     all_results = response.json()
     gdf = gpd.GeoDataFrame.from_features(all_results["features"], crs="EPSG:4326")
     if expected_position is None:
@@ -148,7 +150,7 @@ def overpass_pois(bounds, facilities=None, custom_query=None):
             out body geom;
             """
         # Request data
-        response = requests.get(
+        response = _SESSION.get(
             overpass_url, params={"data": overpass_query, "bbox": bbox_string}
         )
         data = response.json()
@@ -166,7 +168,7 @@ def overpass_pois(bounds, facilities=None, custom_query=None):
         return gdf
 
     else:
-        response = requests.get(
+        response = _SESSION.get(
             overpass_url, params={"data": custom_query, "bbox": bbox_string}
         )
         return response
@@ -211,7 +213,7 @@ def overpass(
         ),  # Parse query dict to build Overpass QL query
         "bbox": bbox_string,
     }
-    response = requests.get(overpass_url, params=params)
+    response = _SESSION.get(overpass_url, params=params)
     try:
         data = response.json()
     except Exception as e:
