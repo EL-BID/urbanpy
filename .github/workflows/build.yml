@@ -46,14 +46,12 @@ jobs:
             -Dsonar.qualitygate.timeout=300
 
       - name: Report failed quality-gate conditions
-        if: failure() && github.event_name == 'pull_request'
+        if: failure()
         env:
-          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           curl --fail --silent --show-error --user "$SONAR_TOKEN:" \
             --get "$SONAR_HOST_URL/api/qualitygates/project_status" \
             --data-urlencode "projectKey=EL-BID_urbanpy" \
-            --data-urlencode "pullRequest=$PULL_REQUEST_NUMBER" \
             | jq '{status: .projectStatus.status, conditions: [.projectStatus.conditions[] | {metricKey, status, actualValue, errorThreshold, comparator}]}'
