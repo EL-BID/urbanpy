@@ -1,0 +1,76 @@
+name: Release build
+
+on:
+  push:
+    tags:
+      - v[0-9]*
+
+permissions:
+  contents: read
+
+env:
+  UV_FROZEN: "true"
+
+jobs:
+  build:
+    name: Build and attest immutable artifacts
+    runs-on: ubuntu-latest
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: 0.12.3
+          enable-cache: true
+
+      - name: Install release environment
+        run: |
+          uv python install 3.11
+          uv sync --group release --group security --python 3.11
+
+      - name: Validate tag and source version
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: uv run --python 3.11 python scripts/release.py "$RELEASE_TAG"
+
+      - name: Build once
+        run: uv build --out-dir artifact/release
+
+      - name: Validate distributions
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          uv run --python 3.11 python scripts/release.py "$RELEASE_TAG" --artifacts artifact/release
+          uvx --from twine==7.0.0 twine check artifact/release/*
+          uvx --from check-wheel-contents==0.6.3 check-wheel-contents artifact/release/*.whl
+
+      - name: Generate dependency evidence and CycloneDX SBOM
+        run: |
+          mkdir -p artifact/evidence
+          uv export --no-dev --no-hashes --no-emit-project --output-file artifact/evidence/requirements.txt
+          uvx --from pip-audit==2.10.1 pip-audit --requirement artifact/evidence/requirements.txt --format cyclonedx-json --output artifact/evidence/sbom.cdx.json
+
+      - name: Install and import the built wheel in a clean environment
+        run: |
+          python -m venv "$RUNNER_TEMP/urbanpy-wheel-smoke"
+          "$RUNNER_TEMP/urbanpy-wheel-smoke/bin/python" -m pip install artifact/release/*.whl
+          "$RUNNER_TEMP/urbanpy-wheel-smoke/bin/python" -c "import urbanpy; print(urbanpy.__version__)"
+
+      - name: Attest package provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: artifact/release/*
+
+      - name: Upload immutable release bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: urbanpy-release-${{ github.ref_name }}
+          path: artifact
+          if-no-files-found: error
+          retention-days: 30
