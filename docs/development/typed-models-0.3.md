@@ -136,6 +136,12 @@ safe structured context.
   coupling tests to concrete clients.
 - Type-check code examples that claim to be supported.
 
+For ``0.3.0a0``, ``py.typed`` is intentionally deferred. CI strictly checks the
+new boundary/client modules, but several legacy exported geospatial functions do
+not yet have a supported complete annotation surface. Shipping the marker now
+would overstate the package-wide contract. Add it only after every public export
+is checked and a built-wheel type-consumer test passes.
+
 ## Initial shared model slice
 
 The Pydantic epic should not block all OSRM work. Its first independently
@@ -204,8 +210,9 @@ module X” is not sufficiently defined.
 - Benchmarks compare import time, single-object validation, catalog parsing, and
   representative large GeoDataFrame operations. Large frames receive no per-row
   Pydantic pass by default.
-- Built-wheel tests confirm `py.typed`, public imports, and generated schemas are
-  actually packaged.
+- Built-wheel tests confirm public imports and generated schemas. They must also
+  confirm that `py.typed` is absent while the explicit alpha deferral applies,
+  then confirm its presence once the package-wide typing gate is met.
 - SonarQube continues to analyze migrated code and remains required.
 
 ## Acceptance criteria
