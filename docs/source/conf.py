@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath("../.."))
 # sys.path.insert(0, os.path.abspath('../../urbanpy/plotting'))
 # sys.path.insert(0, os.path.abspath('../../urbanpy/routing'))
 # sys.path.insert(0, os.path.abspath('../../urbanpy/utils'))
-import sphinx_rtd_theme
+from urbanpy import __version__
 
 # -- Project information -----------------------------------------------------
 
@@ -29,7 +29,7 @@ copyright = "2023, IADB"
 author = "Andres Regal, Claudio Ortega & Antonio Vasquez Brust"
 
 # The full version, including alpha/beta/rc tags
-release = "__version__"
+release = __version__
 
 
 # -- General configuration ---------------------------------------------------

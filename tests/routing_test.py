@@ -1,16 +1,16 @@
 import unittest
+
 import geopandas as gpd
 import numpy as np
+import pytest
 
-import sys
-
-sys.path.append("../urbanpy")
 import urbanpy as up
 
 
 class RoutingTest(unittest.TestCase):
     # TODO implement tests for google distance matrix and ors distance matrix
 
+    @pytest.mark.docker
     def test_osrm_matrix(self):
         """
         Test OSRM distance and duration matrix
@@ -99,6 +99,7 @@ class RoutingTest(unittest.TestCase):
         # Close OSRM routing Server
         up.routing.stop_osrm_server("peru", "south-america", "foot")
 
+    @pytest.mark.live
     def test_nx_route(self):
         """
         Test path finding interface with networkx.
@@ -133,13 +134,6 @@ class RoutingTest(unittest.TestCase):
 
         # Test number of nodes
         self.assertEqual(up.routing.nx_route(G, source, target, None), -1)
-
-    def test_google_matrix(self):
-        pass
-
-    def test_ors_matrix(self):
-        pass
-
 
 if __name__ == "__main__":
     unittest.main()

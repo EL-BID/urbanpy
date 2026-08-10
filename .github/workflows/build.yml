@@ -1,45 +1,46 @@
 name: SonarQube
 
 on:
-  push:
-    branches:
-      - main
-      - master
-      - develop
   pull_request:
     types: [opened, synchronize, reopened]
+  push:
+    branches: [master, develop]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sonar-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   sonarqube:
     name: SonarQube Scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out full history
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          python-version: '3.x'
+          version: "0.12.3"
+          enable-cache: true
 
-      - name: Install dependencies (best effort)
-        continue-on-error: true
-        run: |
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          if [ -f pyproject.toml ]; then pip install . || true; fi
-          pip install coverage pytest || true
+      - name: Install locked test environment
+        run: uv sync --group test --python 3.11
 
-      - name: Run tests with coverage (best effort)
-        continue-on-error: true
-        run: |
-          if [ -d tests ] || [ -d test ]; then
-            coverage run -m pytest || true
-            coverage xml -o coverage.xml || true
-          fi
+      - name: Generate required coverage report
+        run: uv run --python 3.11 pytest --cov=urbanpy --cov-report=xml
 
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v5
+      - name: Scan and wait for the mandatory quality gate
+        uses: SonarSource/sonarqube-scan-action@22918119ff8e1ca75a623e15c8296b6ea4fbe28f # v8.2.1
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          args: >-
+            -Dsonar.qualitygate.wait=true
+            -Dsonar.qualitygate.timeout=300

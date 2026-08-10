@@ -1,10 +1,8 @@
 import unittest
+
 import numpy as np
-from shapely.geometry import Point, Polygon, LineString
+from shapely.geometry import LineString, Point, Polygon
 
-import sys
-
-sys.path.append("../urbanpy")
 import urbanpy as up
 
 
@@ -15,11 +13,11 @@ class UtilTest(unittest.TestCase):
         """
 
         p = Point(-77.0, -12.0)
-        l = LineString([[-77.0, -12.0], [-78.0, -13.0]])
+        line = LineString([[-77.0, -12.0], [-78.0, -13.0]])
         poly = Polygon([(-77.0, -12.0), (-78.0, -11.0), (-77.0, -11.0)])
 
         swapped_p = up.utils.swap_xy(p)
-        swapped_l = up.utils.swap_xy(l)
+        swapped_l = up.utils.swap_xy(line)
         swapped_poly = up.utils.swap_xy(poly)
 
         self.assertEqual(list(swapped_p.coords), [(-12.0, -77.0)])
