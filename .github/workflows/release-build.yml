@@ -55,6 +55,7 @@ jobs:
           mkdir -p artifact/evidence
           uv export --no-dev --no-hashes --no-emit-project --output-file artifact/evidence/requirements.txt
           uvx --from pip-audit==2.10.1 pip-audit --requirement artifact/evidence/requirements.txt --format cyclonedx-json --output artifact/evidence/sbom.cdx.json
+          uv run --python 3.11 python scripts/check_licenses.py --output artifact/evidence/dependency-licenses.json
 
       - name: Install and import the built wheel in a clean environment
         run: |

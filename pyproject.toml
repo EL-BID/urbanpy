@@ -108,6 +108,7 @@ include = [
   "/CONTRIBUTING.md",
   "/GOVERNANCE.md",
   "/LICENSE",
+  "/license-policy.toml",
   "/README.md",
   "/RELEASING.md",
   "/SECURITY.md",

@@ -116,7 +116,7 @@ jobs:
           uvx --from check-wheel-contents==0.6.3 check-wheel-contents dist/*.whl
 
   security:
-    name: Dependency audit
+    name: Dependency and license audit
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -128,11 +128,28 @@ jobs:
           version: 0.12.3
           enable-cache: true
 
+      - name: Install locked runtime and security environment
+        run: |
+          uv python install 3.11
+          uv sync --group security --python 3.11
+
       - name: Export locked runtime dependencies
         run: uv export --no-dev --no-hashes --no-emit-project --output-file requirements-audit.txt
 
       - name: Audit known vulnerabilities
         run: uvx --from pip-audit==2.10.1 pip-audit --requirement requirements-audit.txt
+
+      - name: Enforce reviewed runtime license policy
+        run: uv run --python 3.11 python scripts/check_licenses.py --output dependency-licenses.json
+
+      - name: Upload dependency evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: dependency-evidence
+          path: |
+            dependency-licenses.json
+            requirements-audit.txt
+          if-no-files-found: error
 
   docs:
     name: Documentation

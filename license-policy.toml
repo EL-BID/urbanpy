@@ -1,0 +1,39 @@
+# This is an engineering gate, not legal advice. EL-BID maintainers own final
+# dependency-license approval. Exact metadata changes fail closed for review.
+[policy]
+allowed = [
+  "0BSD",
+  "0BSD OR CC0-1.0",
+  "Apache Software License",
+  "Apache Software License; BSD License",
+  "Apache-2.0",
+  "Apache-2.0 OR BSD-2-Clause",
+  "BSD License",
+  "BSD License; GNU General Public License (GPL); Public Domain",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0",
+  "BSD-3-Clause AND ISC",
+  "GNU General Public License v2 or later (GPLv2+)",
+  "GPL-3.0-only",
+  "ISC License (ISCL)",
+  "MIT",
+  "MIT License",
+  "MIT OR AFL-2.1",
+  "Mozilla Public License 2.0 (MPL 2.0)",
+  "MPL-2.0",
+  "MPL-2.0 AND MIT",
+  "PSF-2.0",
+  "Python Software Foundation License",
+  "The Unlicense (Unlicense)",
+]
+
+[packages.defopt]
+license = "MIT"
+source = "https://github.com/anntzer/defopt/blob/main/LICENSE.txt"
+disposition = "Version 7.0.0 omits license metadata; the official source license is MIT."
+
+[packages.text-unidecode]
+license = "GNU General Public License v2 or later (GPLv2+)"
+source = "https://github.com/kmike/text-unidecode/blob/master/LICENSE"
+disposition = "The package offers GPL/GPLv2+ or Artistic terms; UrbanPy relies on the GPLv2+ option, which can be used under GPLv3."
