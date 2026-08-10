@@ -1,7 +1,4 @@
 import warnings
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 import googlemaps
 import pandas as pd
 import numpy as np
@@ -13,6 +10,7 @@ from typing import Union, Tuple
 from rich.progress import Progress
 
 from urbanpy.geofabrik import GeofabrikCatalog
+from urbanpy._http import build_session
 from urbanpy.models import Coordinate, OSRMConfig, TravelProfile
 from urbanpy.routing.osrm import OSRMManager
 from urbanpy.routing.osrm_client import OSRMClient, OSRMClientError
@@ -31,22 +29,7 @@ __all__ = [
 ]
 
 
-def _build_session() -> requests.Session:
-    """Module-level session with connection pooling and retry/backoff."""
-    s = requests.Session()
-    retry = Retry(
-        total=3,
-        backoff_factor=0.5,
-        status_forcelist=(500, 502, 503, 504),
-        allowed_methods=("GET", "POST"),
-    )
-    adapter = HTTPAdapter(max_retries=retry, pool_connections=16, pool_maxsize=32)
-    s.mount("http://", adapter)
-    s.mount("https://", adapter)
-    return s
-
-
-_SESSION = _build_session()
+_SESSION = build_session()
 
 
 def start_osrm_server(country: str, continent: str, profile: str) -> None:
@@ -536,14 +519,14 @@ def nx_route(graph, source, target, weight, length=True):
         try:
             path_length = nx.shortest_path_length(graph, source, target, weight=weight)
             return path_length
-        except:
+        except (nx.NetworkXNoPath, nx.NodeNotFound):
             # If there is no path within the graph
             return -1
     else:
         try:
             path = nx.shortest_path(graph, source, target, weight=weight)
             return path
-        except:
+        except (nx.NetworkXNoPath, nx.NodeNotFound):
             # If there is no path within the graph
             return -1
 

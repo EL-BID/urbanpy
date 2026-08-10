@@ -123,7 +123,7 @@ def test_overpass_accepts_a_local_polygon_mask(monkeypatch):
             return {"elements": []}
 
     monkeypatch.setattr(
-        download_module.requests, "get", lambda *_args, **_kwargs: Response()
+        download_module._SESSION, "get", lambda *_args, **_kwargs: Response()
     )
     monkeypatch.setattr(
         download_module, "overpass_to_gdf", lambda *_args: ("gdf", None)

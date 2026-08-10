@@ -48,8 +48,8 @@ tests requiring Docker must use `@pytest.mark.docker`. Run those suites only in
 an explicitly prepared environment:
 
 ```console
-uv run pytest -m live --socket-enabled
-uv run pytest -m docker --socket-enabled
+uv run pytest -o addopts="" -m live tests/live_provider_test.py
+uv run pytest -o addopts="" -m docker tests/osrm_docker_test.py
 ```
 
 Never place credentials or personal email addresses in tests or fixtures.

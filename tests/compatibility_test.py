@@ -51,6 +51,18 @@ def test_osmnx_v2_nearest_nodes_uses_longitude_then_latitude(monkeypatch):
     assert result.geometry.notna().all()
 
 
+def test_networkx_route_is_deterministic_without_live_osm():
+    graph = nx.Graph()
+    graph.add_edge(1, 2, length=4.0)
+    graph.add_edge(2, 3, length=5.0)
+    graph.add_node(9)
+
+    assert routing.nx_route(graph, 1, 3, "length") == 9.0
+    assert routing.nx_route(graph, 1, 3, None) == 2
+    assert routing.nx_route(graph, 1, 3, None, length=False) == [1, 2, 3]
+    assert routing.nx_route(graph, 1, 9, "length") == -1
+
+
 def test_pressure_map_preserves_crs_for_already_projected_inputs():
     blocks = gpd.GeoDataFrame(
         {"demand": [10]},
