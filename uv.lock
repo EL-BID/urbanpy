@@ -3476,6 +3476,7 @@ lint = [
 release = [
     { name = "build" },
     { name = "check-wheel-contents" },
+    { name = "packaging" },
     { name = "twine" },
 ]
 security = [
@@ -3538,6 +3539,7 @@ lint = [
 release = [
     { name = "build", specifier = ">=1.2" },
     { name = "check-wheel-contents", specifier = ">=0.6" },
+    { name = "packaging", specifier = ">=24" },
     { name = "twine", specifier = ">=6" },
 ]
 security = [{ name = "pip-audit", specifier = ">=2.7" }]
