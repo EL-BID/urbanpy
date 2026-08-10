@@ -1,15 +1,16 @@
-[![Test and deploy](https://github.com/EL-BID/urbanpy/actions/workflows/main.yml/badge.svg)](https://github.com/EL-BID/urbanpy/actions/workflows/main.yml)
+[![CI](https://github.com/EL-BID/urbanpy/actions/workflows/main.yml/badge.svg)](https://github.com/EL-BID/urbanpy/actions/workflows/main.yml)
+[![SonarQube](https://github.com/EL-BID/urbanpy/actions/workflows/build.yml/badge.svg)](https://github.com/EL-BID/urbanpy/actions/workflows/build.yml)
 [![Downloads](https://static.pepy.tech/badge/urbanpy)](https://pepy.tech/project/urbanpy)
 [![Downloads](https://static.pepy.tech/badge/urbanpy/month)](https://pepy.tech/project/urbanpy)
 [![Downloads](https://static.pepy.tech/badge/urbanpy/week)](https://pepy.tech/project/urbanpy)
-![analytics image (flat)](https://raw.githubusercontent.com/vitr/google-analytics-beacon/master/static/badge.svg)
-![analytics](https://www.google-analytics.com/collect?v=1&cid=555&t=pageview&ec=repo&ea=open&dp=/urbanpy/readme&dt=&tid=UA-4677001-16)
+# UrbanPy 🏙️
 
-# Welcome to UrbanPy :city_sunrise:
+**Download, process, route, and visualize high-resolution urban geospatial data.**
 
-**A library to download, process and visualize high resolution urban data in an easy and fast way.**
-
-UrbanPy is an open source project to automate data extraction, measurement, and visualization of urban accessibility metrics.
+UrbanPy is an EL-BID open-source Python library for reproducible urban data and
+accessibility workflows. Version 0.3 is currently an alpha modernization: use a
+stable 0.2 release for established production deployments and test 0.3 against
+your data before upgrading.
 
 # Functional goals
 
@@ -40,28 +41,26 @@ UrbanPy is an open source project to automate data extraction, measurement, and 
 
 ### For users
 
-To install the urbanpy library you can use:
+Install the stable release from PyPI:
 
 ```sh
-$ pip install urbanpy
+python -m pip install urbanpy
 ```
 
 Then use `import urbanpy` in your python scripts to use the library.
 
-If you plan to use the [OSRM Server](http://project-osrm.org/) route or distance matrix calculation functionalities\* you must have Docker installed in your system, refer to Docker [Installation](https://www.docker.com/products/docker-desktop). For Windows users, make sure to run the following command in powershell to avoid execution errors.
+The normal routing, geometry, and provider clients do not require a local OSRM
+container. To prepare and operate a local OSRM service, install Docker and follow
+the [OSRM guide](https://el-bid.github.io/urbanpy/usage/osrm.html). UrbanPy 0.3
+uses a cross-platform Python lifecycle; it never requires weakening PowerShell's
+execution policy.
 
-```powershell
-    Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
-```
+### Geospatial dependencies
 
-### Additional Dependecies Notes
-
-- It is important to note that for travel time computation, if needed, a method is implements the Open Source Routing Machine (OSRM). This method pulls, extracts and adds graph weights to the downloaded network and runs the routing server. Make sure to have docker installed for the library to work correctly. Also, verify in the docker settings that containers can use the necessary cpu cores and ram memory (it depends in the country size).
-
-- Urbanpy provides a simple approximation with nearest neighbor search using a BallTree and haversine distance, but the difference between real travel time and the approximation may vary from city to city.
-
-- Additionally, the use of spatial libraries like osmnx, geopandas and h3 require certain extra packages. Specifically, for rtree (spatial indexing to allow spatial joins) libspatialindex is required. OSMnx and Geopandas requiere GDAL as well. If not handled by installing geopandas's dependencies, installing fiona, pyproj and shapely should satisfy the requirements. Another way to ensure all dependencies are met, installing osmnx via conda should suffice. H3 requires cc, make, and cmake in your $PATH when installing, otherwise installation will not be successful. Please refer to [h3's documentation](https://github.com/uber/h3) for a more
-  detailed guide on installation options and requirements.
+Current GeoPandas, Shapely, OSMnx, and H3 releases provide wheels for common
+platforms. If installation must compile a dependency, install that project's
+documented system toolchain. Large OSRM regions require substantial disk, memory,
+and processing time; begin with a small canonical Geofabrik region.
 
 # Examples
 
@@ -80,28 +79,24 @@ Since `boundaries` is a GeoDataFrame it can be easily plotted with the method `.
 hexes = up.geom.gen_hexagons(resolution=9, city=boundaries)
 ```
 
-Also check our [example notebooks](https://nbviewer.org/github/EL-BID/urbanpy/tree/master/notebooks/), and if you have examples or visualizations of your own, we encourage you to share contribute.
+See the [documentation](https://el-bid.github.io/urbanpy/) and
+[example notebooks](https://nbviewer.org/github/EL-BID/urbanpy/tree/master/notebooks/).
 
 ### For developers
 
-If you plan to contribute or customize urbanpy first clone this repo and cd into it. Then, we strongly recommend you to create a virtual environment. You can use conda, this installation manage some complicated C spatial library dependencies:
+Install [uv](https://docs.astral.sh/uv/), clone the repository, and create the
+locked development environment:
 
 ```sh
-$ conda env create -n urbanpy -f environment.yml python=3.6
-$ conda activate urbanpy
-```
-
-Or if you are more confident about your setup, you can use pip:
-
-```sh
-$ python3 -m venv .env
-$ source .env/bin/activate
-(.env) $ pip install -r requirements.txt
+uv sync --locked --all-groups
+uv run pytest
+trunk check
 ```
 
 ## License
 
-UrbanPy is licensed under the [GPL-3](LICENSE) license.
+UrbanPy is licensed under [GPL-3.0-only](LICENSE). Data downloaded through
+UrbanPy remains subject to each provider's terms and license.
 
 ## Authors
 
@@ -114,7 +109,10 @@ UrbanPy's original authors are Claudio Ortega ([socials](https://www.linkedin.co
 [code of conduct](CODE_OF_CONDUCT.md). By participating, you are expected to
 uphold this code.**
 
-\*Current support is tested on Linux Ubuntu 18.04 & Mac OS Catalina, coming soon we will test and support Windows 10.
+See [SUPPORT.md](SUPPORT.md), [GOVERNANCE.md](GOVERNANCE.md), and
+[SECURITY.md](SECURITY.md) for maintenance, decision-making, and private
+vulnerability reporting. Supported Python versions are tested in CI; OSRM
+platform claims require separate Docker release evidence.
 
 ## Citation
 
@@ -129,7 +127,7 @@ If you use this library or find the documentation useful for your research, plea
     publisher="Springer International Publishing",
     address="Cham",
     pages="463--473",
-    isbn="978-3-031-06862-1"
+    isbn="978-3-031-06862-1",
     url="https://doi.org/10.1007/978-3-031-06862-1_34"
 }
 ```

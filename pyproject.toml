@@ -8,7 +8,8 @@ version = "0.3.0a0"
 description = "Download, process, route, and visualize high-resolution urban geospatial data."
 readme = "README.md"
 requires-python = ">=3.11"
-license = { file = "LICENSE" }
+license = "GPL-3.0-only"
+license-files = ["LICENSE"]
 authors = [
   { name = "Andres Regal" },
   { name = "Claudio Ortega" },
@@ -58,6 +59,7 @@ dependencies = [
 
 [project.urls]
 Documentation = "https://el-bid.github.io/urbanpy/"
+Changelog = "https://github.com/EL-BID/urbanpy/blob/master/CHANGELOG.md"
 Issues = "https://github.com/EL-BID/urbanpy/issues"
 Repository = "https://github.com/EL-BID/urbanpy"
 
@@ -100,9 +102,14 @@ default-groups = ["dev"]
 [tool.hatch.build.targets.sdist]
 include = [
   "/CODE_OF_CONDUCT.md",
+  "/CHANGELOG.md",
+  "/CITATION.cff",
   "/CONTRIBUTING.md",
+  "/GOVERNANCE.md",
   "/LICENSE",
   "/README.md",
+  "/SECURITY.md",
+  "/SUPPORT.md",
   "/docs",
   "/pyproject.toml",
   "/tests",

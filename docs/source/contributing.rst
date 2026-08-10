@@ -1,62 +1,39 @@
-Contributing guidelines
-=======================
+Contributing
+============
 
-Pull request checklist
-----------------------
+Search existing issues before proposing work. Reproducible bug reports should
+include UrbanPy and Python versions, operating system, CRS, a small synthetic
+example, and redacted logs. Never put credentials, personal data, or private
+provider payloads in an issue or fixture.
 
-Before sending a pull request, be sure to follow this list.
-
--  Read the `contributing guidelines <CONTRIBUTING.md>`__
--  Read the `code of conduct <CODE_OF_CONDUCT.md>`__
--  Check if your changes comply with the `style
-   guide <https://github.com/google/styleguide/blob/gh-pages/pyguide.md>`__
-
-How to become a contributor and submit your own code
-----------------------------------------------------
-
-We'd love to accept your changes, suggestions and patches! Be sure that
-your changes, source code, and other ideas/implementations do not cause
-intellectual property issues.
-
-Contributing code
+Development setup
 -----------------
 
-If you have any improvements or new functionality that is interesting
-for UrbanPy, send us your pull requests! If you are new to pull
-requests, see Github's `how to
-guide <https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests>`__.
+.. code-block:: console
 
-UrbanPy team members will be assigned to review your pull requests. Once
-the pull requests are approved and pass continuous integration checks, a
-UrbanPy team member will apply ready to pull label to your change. This
-means we are working on getting your pull request submitted to our
-internal repository. After the change has been submitted internally,
-your pull request will be merged automatically on GitHub.
+   uv sync --locked --all-groups
+   uv run pytest
+   trunk check
 
-Contribution guidelines and standards
--------------------------------------
+The default tests disable network sockets. Captured provider contracts belong
+in the normal suite; real-provider tests use ``@pytest.mark.live`` and Docker
+tests use ``@pytest.mark.docker``. Run those only in an explicitly prepared
+environment.
 
-Before sending your pull request for review, make sure your changes are
-consistent with the guidelines and follow the Google coding style.
+Pull requests
+-------------
 
-General guidelines and philosophy for contribution
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Keep changes focused, link an issue with acceptance criteria, and add regression
+tests for fixes. Dependency-ordered stacked pull requests are welcome when each
+layer remains independently reviewable. Update documentation and the changelog
+for user-visible behavior.
 
--  Include unit tests when you contribute new features, as they help to
-   a) prove that your code works correctly, and b) guard against future
-   breaking changes to lower the maintenance cost.
--  Bug fixes also generally require unit tests, because the presence of
-   bugs usually indicates insufficient test coverage.
--  When you contribute a new feature to UrbanPy, the maintenance burden
-   is (by default) transferred to the UrbanPy team. This means that the
-   benefit of the contribution must be compared against the cost of
-   maintaining the feature.
--  Full new features (e.g., a cutting-edge travel time matrix
-   computation algorithm) typically will live in urbanpy/utils to get
-   some airtime before a decision is made regarding whether they are to
-   be migrated to the core modules.
--  As every PR may require several CPU hours of CI testing, we
-   discourage submitting PRs to fix one typo, one warning, etc. We
-   recommend fixing the same issue at the file level at least (e.g.: fix
-   all typos in a file, fix all compiler warning in a file, etc.)
+Required CI, security, dependency-compliance, and documentation checks must
+pass. SonarQube is mandatory under EL-BID policy and is never best effort. A
+human maintainer reviews and merges changes; automation and agents do not
+approve, merge, or release their own work.
 
+Read the full `repository contribution guide
+<https://github.com/EL-BID/urbanpy/blob/master/CONTRIBUTING.md>`__, `governance
+policy <https://github.com/EL-BID/urbanpy/blob/master/GOVERNANCE.md>`__, and
+:doc:`code_of_conduct` before contributing.
