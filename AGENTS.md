@@ -45,3 +45,6 @@ as public, long-lived library code.
 - Agents may open issues and PRs, but must not merge, release, change repository
   secrets, weaken branch protection, or dismiss security/license findings.
   Escalate those decisions to a maintainer.
+- Treat automated AI review as advisory. Address valid findings with tests, but
+  never let an AI reviewer approve, merge, dismiss findings, or replace a human
+  maintainer decision. See `docs/development/automated-ai-review.md`.
