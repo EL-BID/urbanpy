@@ -58,6 +58,7 @@ Project links
    usage/quickstart
    usage/geofabrik
    usage/osrm
+   usage/api-stability
    usage/support
 
 .. toctree::

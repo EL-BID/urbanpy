@@ -7,6 +7,7 @@ from shapely.geometry import Polygon
 
 from urbanpy import download
 from urbanpy.download import download as download_module
+from urbanpy.errors import BoundaryValidationError
 
 
 def test_nominatim_requires_contact_email():
@@ -133,3 +134,46 @@ def test_overpass_accepts_a_local_polygon_mask(monkeypatch):
     )
 
     assert download.overpass("node", {"amenity": "school"}, mask) == ("gdf", None)
+
+
+@pytest.mark.parametrize(
+    "bounds",
+    [
+        [-77.1, -12.2, -77.1, -12.0],
+        [-181.0, -12.2, -76.9, -12.0],
+        [-77.1, -12.2, -76.9],
+    ],
+)
+def test_overpass_pois_rejects_invalid_bounding_boxes_without_network(bounds):
+    with pytest.raises(BoundaryValidationError, match="Invalid bounding box"):
+        download.overpass_pois(bounds, facilities="health")
+
+
+def test_overpass_pois_uses_validated_canonical_bbox(monkeypatch):
+    class Response:
+        @staticmethod
+        def json():
+            return {
+                "elements": [
+                    {
+                        "type": "node",
+                        "id": 1,
+                        "lon": -77.0,
+                        "lat": -12.1,
+                        "tags": {"amenity": "clinic"},
+                    }
+                ]
+            }
+
+    captured = {}
+
+    def fake_get(_url, *, params):
+        captured.update(params)
+        return Response()
+
+    monkeypatch.setattr(download_module._SESSION, "get", fake_get)
+
+    result = download.overpass_pois([-77.1, -12.2, -76.9, -12.0], facilities="health")
+
+    assert result.iloc[0]["poi_type"] == "clinic"
+    assert captured["bbox"] == "-77.1,-12.2,-76.9,-12.0"

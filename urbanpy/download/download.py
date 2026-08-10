@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Union
+from typing import Optional, Sequence, Tuple, Union
 from warnings import warn
 
 import geopandas as gpd
@@ -10,16 +10,18 @@ from hdx.api.configuration import Configuration
 from hdx.data.dataset import Dataset
 from hdx.data.hdxobject import HDXError
 from pandas import DataFrame
+from pydantic import ValidationError
 from shapely.geometry import MultiPolygon, Polygon, Point
 
+from urbanpy._http import build_session
+from urbanpy.errors import BoundaryIssue, BoundaryValidationError, UrbanPyError
+from urbanpy.models import BoundingBox
 from urbanpy.utils import (
     HDX_POPULATION_TYPES,
     get_hdx_label,
     overpass_to_gdf,
     to_overpass_query,
 )
-from urbanpy.errors import UrbanPyError
-from urbanpy._http import build_session
 
 __all__ = [
     "nominatim_osm",
@@ -92,7 +94,11 @@ def nominatim_osm(
     return gdf.iloc[expected_position : expected_position + 1]
 
 
-def overpass_pois(bounds, facilities=None, custom_query=None):
+def overpass_pois(
+    bounds: Sequence[float],
+    facilities: str | None = None,
+    custom_query: str | None = None,
+):
     """
     Download POIs using Overpass API.
 
@@ -128,9 +134,15 @@ def overpass_pois(bounds, facilities=None, custom_query=None):
     node |	367830072 |	-0.953488 |	-80.740739 | {'amenity': 'hospital', 'name': 'Clínica Cente... | POINT (-80.74074 -0.95349)	| hospital
     node |	3206491590|	-1.040708 |	-80.665107 | {'amenity': 'hospital', 'name': 'Clínica Monte... | POINT (-80.66511 -1.04071)	| hospital
     """
-    minx, miny, maxx, maxy = bounds
+    try:
+        bbox = BoundingBox.from_sequence(bounds)
+    except ValidationError as error:
+        raise BoundaryValidationError.from_pydantic("bounding box", error) from error
+    except (TypeError, ValueError) as error:
+        issue = BoundaryIssue("<root>", str(error), "bounding_box")
+        raise BoundaryValidationError("bounding box", (issue,)) from error
 
-    bbox_string = f"{minx},{miny},{maxx},{maxy}"
+    bbox_string = ",".join(str(value) for value in bbox.as_tuple())
 
     overpass_url = "https://overpass-api.de/api/interpreter"
 

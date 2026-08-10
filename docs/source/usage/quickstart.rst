@@ -7,7 +7,11 @@ UrbanPy lets you download and visualize city boundaries extremely easy:
 
     import urbanpy as up
 
-    boundaries = up.download.nominatim_osm('Lima, Peru', expected_position=2)
+    boundaries = up.download.nominatim_osm(
+        'Lima, Peru',
+        expected_position=2,
+        email='you@example.org',
+    )
     boundaries.plot()
 
 Since ``boundaries`` is a GeoDataFrame it can be easily plotted with the
@@ -20,4 +24,4 @@ boundaries in a oneliner.
 
 Also check our `example notebooks </notebooks>`__, and if you have
 examples or visualizations of your own, we encourage you to share
-contribute.
+or contribute them.

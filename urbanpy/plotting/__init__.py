@@ -1,3 +1,5 @@
-from .plotting import *
+"""Plotting helpers exposed by UrbanPy."""
 
-__all__ = plotting.__all__
+from .plotting import choropleth_map
+
+__all__ = ["choropleth_map"]

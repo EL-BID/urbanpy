@@ -13,7 +13,8 @@ Public API stability
 UrbanPy follows semantic versioning. Supported public APIs are documented and
 exported from package modules. Deprecations normally emit warnings for at least
 one minor release and are listed in the changelog. Prereleases may make breaking
-corrections with migration notes.
+corrections with migration notes. See :doc:`api-stability` for the exact public
+surface and boundary conventions.
 
 Security
 --------
