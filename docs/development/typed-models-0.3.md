@@ -6,9 +6,10 @@ Use Pydantic v2 and static annotations to make configuration, external service
 payloads, and intentionally stable public results explicit and safe while
 preserving native geospatial objects for computation.
 
-Pydantic is currently present only as one of many pinned packages in
-`requirements.txt`; UrbanPy does not use it. If UrbanPy imports Pydantic directly,
-it becomes a declared direct dependency with a tested version range.
+Pydantic v2 is a declared direct dependency. The initial model slice is implemented
+for coordinates, bounding boxes, profiles, Geofabrik catalog records, OSRM
+configuration/manifests/status, and route/table results. New migrations continue
+to follow the boundary-first policy below.
 
 ## Boundary-first policy
 
@@ -241,4 +242,3 @@ module X” is not sufficiently defined.
 - Pydantic mypy plugin:
   <https://docs.pydantic.dev/latest/integrations/mypy/>
 - PEP 561 typed packages: <https://peps.python.org/pep-0561/>
-
