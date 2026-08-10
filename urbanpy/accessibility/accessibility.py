@@ -1,11 +1,11 @@
 import geopandas as gpd
-import pandas as pd
 import numpy as np
-from osmnx import project_gdf
+import pandas as pd
+from osmnx.projection import project_gdf
 from tqdm.auto import tqdm
+
 from urbanpy.routing import osrm_route
-from urbanpy.utils import nn_search, create_duration_labels
-from rich.progress import Progress
+from urbanpy.utils import create_duration_labels, nn_search
 
 __all__ = [
     "pressure_map",

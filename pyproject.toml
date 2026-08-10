@@ -1,0 +1,148 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "urbanpy"
+version = "0.3.0a0"
+description = "Download, process, route, and visualize high-resolution urban geospatial data."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Andres Regal" },
+  { name = "Claudio Ortega" },
+  { name = "Antonio Vazquez Brust" },
+]
+maintainers = [
+  { name = "Claudio Ortega" },
+]
+keywords = [
+  "accessibility",
+  "geospatial",
+  "openstreetmap",
+  "routing",
+  "urban-planning",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Scientific/Engineering :: GIS",
+]
+dependencies = [
+  "geopandas>=1.0",
+  "googlemaps>=4.10",
+  "h3>=4.1",
+  "hdx-python-api>=6.3",
+  "networkx>=3.2",
+  "numpy>=1.26",
+  "osmnx>=2.0",
+  "pandas>=2.2",
+  "plotly>=5.23",
+  "pydantic>=2.8,<3",
+  "requests>=2.32",
+  "rich>=13.7",
+  "scikit-learn>=1.5",
+  "shapely>=2.0",
+  "tqdm>=4.66",
+  "urllib3>=2.2",
+]
+
+[project.urls]
+Documentation = "https://el-bid.github.io/urbanpy/"
+Issues = "https://github.com/EL-BID/urbanpy/issues"
+Repository = "https://github.com/EL-BID/urbanpy"
+
+[dependency-groups]
+test = [
+  "hypothesis>=6.100",
+  "pytest>=8.3",
+  "pytest-cov>=5",
+  "pytest-mock>=3.14",
+  "pytest-socket>=0.7",
+  "responses>=0.25",
+]
+lint = [
+  "mypy>=1.11",
+  "pandas-stubs>=2.2",
+  "ruff>=0.9",
+  "types-requests>=2.32",
+]
+docs = [
+  "numpydoc>=1.8",
+  "sphinx>=8",
+  "sphinx-rtd-theme>=3",
+]
+release = [
+  "build>=1.2",
+  "check-wheel-contents>=0.6",
+  "twine>=6",
+]
+security = [
+  "pip-audit>=2.7",
+]
+dev = [
+  { include-group = "test" },
+  { include-group = "lint" },
+]
+
+[tool.uv]
+default-groups = ["dev"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/CODE_OF_CONDUCT.md",
+  "/CONTRIBUTING.md",
+  "/LICENSE",
+  "/README.md",
+  "/docs",
+  "/pyproject.toml",
+  "/tests",
+  "/urbanpy",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["urbanpy"]
+
+[tool.pytest.ini_options]
+addopts = "--strict-config --strict-markers"
+python_files = ["test_*.py", "check_*.py", "example_*.py", "*_test.py", "*_tests.py"]
+testpaths = ["tests"]
+markers = [
+  "contract: deterministic contract tests against captured provider data",
+  "docker: tests requiring a Docker daemon",
+  "integration: tests crossing multiple UrbanPy components",
+  "live: tests calling a live external service",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["urbanpy"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+[tool.coverage.xml]
+output = "coverage.xml"
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.mypy]
+python_version = "3.11"
+plugins = ["pydantic.mypy"]
+show_error_codes = true
+warn_unused_configs = true
+

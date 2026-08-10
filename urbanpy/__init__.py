@@ -1,6 +1,11 @@
-# from .urbanpy import *
+from importlib.metadata import PackageNotFoundError, version
 
-from . import download, geom, plotting, routing, utils, accessibility
+from . import accessibility, download, geom, plotting, routing, utils
+
+try:
+    __version__ = version("urbanpy")
+except PackageNotFoundError:  # pragma: no cover - source tree without installation
+    __version__ = "0.3.0a0"
 
 #
 # __all__ = []
@@ -10,3 +15,13 @@ from . import download, geom, plotting, routing, utils, accessibility
 # __all__.extend(plotting.__all__)
 # __all__.extend(routing.__all__)
 # __all__.extend(utils.__all__)
+
+__all__ = [
+    "__version__",
+    "accessibility",
+    "download",
+    "geom",
+    "plotting",
+    "routing",
+    "utils",
+]
