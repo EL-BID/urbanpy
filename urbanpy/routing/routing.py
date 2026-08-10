@@ -1,7 +1,4 @@
-import time
-import subprocess
-import sys
-import pathlib
+import warnings
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
@@ -15,6 +12,11 @@ from shapely.geometry import Point, MultiPoint
 from typing import Union, Tuple
 from rich.progress import Progress
 
+from urbanpy.geofabrik import GeofabrikCatalog
+from urbanpy.models import Coordinate, OSRMConfig, TravelProfile
+from urbanpy.routing.osrm import OSRMManager
+from urbanpy.routing.osrm_client import OSRMClient, OSRMClientError
+
 __all__ = [
     "start_osrm_server",
     "stop_osrm_server",
@@ -27,9 +29,6 @@ __all__ = [
     "isochrone_from_api",
     "isochrone_from_graph",
 ]
-
-ROUTING_MODUEL_DIR = pathlib.Path(__file__).parent.resolve()
-CONTAINER_NAME = "osrm_routing_server"
 
 
 def _build_session() -> requests.Session:
@@ -48,32 +47,6 @@ def _build_session() -> requests.Session:
 
 
 _SESSION = _build_session()
-
-
-def check_container_is_running(container_name: str) -> bool:
-    """
-    Checks if a container is running
-
-    Parameters
-    ----------
-
-    container_name: str
-        Name of container to check
-
-    Returns
-    -------
-
-    container_running: bool
-        True if container is running, False otherwise.
-
-    """
-    completed_process = subprocess.run(
-        ["docker", "ps"], capture_output=True, check=True
-    )
-    stdout_str = completed_process.stdout.decode("utf-8")
-    container_running = container_name in stdout_str
-
-    return container_running
 
 
 def start_osrm_server(country: str, continent: str, profile: str) -> None:
@@ -101,70 +74,21 @@ def start_osrm_server(country: str, continent: str, profile: str) -> None:
 
     """
 
-    container_name = f"{CONTAINER_NAME}_{continent}_{country}_{profile}"
-
-    container_running = check_container_is_running(container_name)
-
-    # Check platform
-    if sys.platform in ["darwin", "linux"]:
-        container_check = ["docker", "inspect", container_name]
-        container_start = ["docker", "start", container_name]
-        download_command = [
-            "bash",
-            str(pathlib.PosixPath(ROUTING_MODUEL_DIR, "unix_download.sh")),
-            CONTAINER_NAME,
-            country,
-            continent,
-            profile,
-        ]
-    else:
-        container_check = ["powershell.exe", "docker", "inspect", container_name]
-        container_start = ["powershell.exe", "docker", "start", container_name]
-        download_command = [
-            "powershell.exe",
-            str(pathlib.WindowsPath(ROUTING_MODUEL_DIR, "windows_download.ps1")),
-            CONTAINER_NAME,
-            country,
-            continent,
-            profile,
-        ]
-
-    # Check if container exists:
-    if subprocess.run(container_check, capture_output=True).returncode == 0:
-        if container_running:
-            print("Server is already running.")
-        else:
-            try:
-                print("Starting server ...")
-                subprocess.run(container_start, check=True)
-                time.sleep(5)  # Wait server to be prepared to receive requests
-                print("Server was started succesfully")
-            except subprocess.CalledProcessError as error:
-                print(
-                    "Something went wrong. Please check if port 5000 is being used or check your docker installation."
-                )
-                print(f"Error: {error}")
-    else:
-        try:
-            print(
-                f"This is the first time you initialized a server for {country} on {profile}."
-            )
-            print("Initializing server setup. This may take several minutes ...")
-            print("To view the detailed logs run the following command from terminal:")
-            print(
-                f"$ watch -n 5 tail -20 ~/data/osrm/{continent}/{country}/logs/{profile}.txt"
-            )
-
-            subprocess.run(download_command, check=True)
-            time.sleep(5)  # Wait server to be prepared to receive requests
-
-            print("Server was started succesfully")
-
-        except subprocess.CalledProcessError as error:
-            print(
-                "Something went wrong. Please check if port 5000 is being used or your docker installation."
-            )
-            print(f"Error: {error}")
+    warnings.warn(
+        "start_osrm_server(country, continent, profile) is deprecated; use "
+        "OSRMManager(OSRMConfig(region_id=...)).start().",
+        FutureWarning,
+        stacklevel=2,
+    )
+    catalog = GeofabrikCatalog.fetch(session=_SESSION)
+    region = catalog.resolve(country)
+    if region.parent != continent:
+        raise ValueError(
+            f"Legacy continent {continent!r} does not match catalog parent "
+            f"{region.parent!r} for {region.id!r}."
+        )
+    config = OSRMConfig(region_id=region.id, profile=_legacy_profile(profile))
+    OSRMManager(config, catalog=catalog, session=_SESSION).start()
 
 
 def stop_osrm_server(country: str, continent: str, profile: str) -> None:
@@ -191,32 +115,38 @@ def stop_osrm_server(country: str, continent: str, profile: str) -> None:
 
     """
 
-    container_name = f"{CONTAINER_NAME}_{continent}_{country}_{profile}"
+    warnings.warn(
+        "stop_osrm_server(country, continent, profile) is deprecated; use "
+        "OSRMManager(OSRMConfig(region_id=...)).stop().",
+        FutureWarning,
+        stacklevel=2,
+    )
+    catalog = GeofabrikCatalog.fetch(session=_SESSION)
+    region = catalog.resolve(country)
+    if region.parent != continent:
+        raise ValueError(
+            f"Legacy continent {continent!r} does not match catalog parent "
+            f"{region.parent!r} for {region.id!r}."
+        )
+    config = OSRMConfig(region_id=region.id, profile=_legacy_profile(profile))
+    OSRMManager(config, catalog=catalog, session=_SESSION).stop()
 
-    # Check platform
-    if sys.platform in ["darwin", "linux"]:
-        docker_top = ["docker", "top", container_name]
-        docker_stop = ["docker", "stop", container_name]
-    else:
-        docker_top = ["powershell.exe", "docker", "top", container_name]
-        docker_stop = ["powershell.exe", "docker", "stop", container_name]
 
-    # Check if container exists:
-    if subprocess.run(docker_top, capture_output=True).returncode == 0:
-        if check_container_is_running(container_name) == True:
-            try:
-                subprocess.run(docker_stop, capture_output=True, check=True)
-                # subprocess.run(['docker', 'container', 'rm', 'osrm_routing_server'])
-                print("Server was stoped succesfully")
-            except subprocess.CalledProcessError as error:
-                print(
-                    f"Something went wrong. Please check your docker installation.\nError: {error}"
-                )
-        else:
-            print("Server is not running.")
-
-    else:
-        print("Server does not exist.")
+def _legacy_profile(profile: str) -> TravelProfile:
+    aliases = {
+        "bicycle": TravelProfile.CYCLING,
+        "car": TravelProfile.DRIVING,
+        "cycling": TravelProfile.CYCLING,
+        "driving": TravelProfile.DRIVING,
+        "foot": TravelProfile.WALKING,
+        "walking": TravelProfile.WALKING,
+    }
+    try:
+        return aliases[profile.casefold()]
+    except KeyError as error:
+        raise ValueError(
+            "profile must be one of car, bicycle, foot, driving, cycling, walking"
+        ) from error
 
 
 def osrm_route(
@@ -246,26 +176,16 @@ def osrm_route(
     distance: float
               Total travel distance from origin to destination in meters
     duration: float
-              Total travel time in minutes
+              Total travel time in seconds (the native OSRM API unit)
 
     """
-    orig = f"{origin.x},{origin.y}"
-    dest = f"{destination.x},{destination.y}"
-    # If "profile" is passed in the url the default profile is used by the local osrm server
-    url = f"http://localhost:5000/route/v1/profile/{orig};{dest}"
-
     try:
-        response = _SESSION.get(url, params={"overview": "false"})
-    except requests.exceptions.ConnectionError:
-        print("Waiting for server to be ready ...")
-        time.sleep(5)
-        response = _SESSION.get(url, params={"overview": "false"})
-
-    try:
-        data = response.json()["routes"][0]
-        distance, duration = data["distance"], data["duration"]
-        return distance, duration
-    except Exception:
+        result = OSRMClient("http://127.0.0.1:5000", session=_SESSION).route(
+            Coordinate(longitude=float(origin.x), latitude=float(origin.y)),
+            Coordinate(longitude=float(destination.x), latitude=float(destination.y)),
+        )
+        return result.distance_m, result.duration_s
+    except (OSRMClientError, ValueError):
         return np.nan, np.nan
 
 
@@ -468,24 +388,21 @@ def compute_osrm_dist_matrix(origins, destinations):
     n_orig, n_dest = origins.shape[0], destinations.shape[0]
     orig_points = list(origins.geometry)
     dest_points = list(destinations.geometry)
-    coords = ";".join(f"{p.x},{p.y}" for p in orig_points + dest_points)
-    sources = ";".join(str(i) for i in range(n_orig))
-    destinations_idx = ";".join(str(i + n_orig) for i in range(n_dest))
-
-    url = f"http://localhost:5000/table/v1/profile/{coords}"
+    client = OSRMClient("http://127.0.0.1:5000", session=_SESSION)
     try:
-        response = _SESSION.get(
-            url,
-            params={
-                "sources": sources,
-                "destinations": destinations_idx,
-                "annotations": "distance,duration",
-            },
+        table = client.table(
+            [
+                Coordinate(longitude=float(point.x), latitude=float(point.y))
+                for point in orig_points
+            ],
+            [
+                Coordinate(longitude=float(point.x), latitude=float(point.y))
+                for point in dest_points
+            ],
         )
-        data = response.json()
-        dist_matrix = np.array(data["distances"], dtype=float)
-        dur_matrix = np.array(data["durations"], dtype=float)
-    except Exception:
+        dist_matrix = np.array(table.distances_m, dtype=float)
+        dur_matrix = np.array(table.durations_s, dtype=float)
+    except (OSRMClientError, ValueError):
         # Fall back to per-pair /route if /table is unavailable (older OSRM builds)
         dist_matrix = np.full((n_orig, n_dest), np.nan)
         dur_matrix = np.full((n_orig, n_dest), np.nan)

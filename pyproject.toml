@@ -37,6 +37,7 @@ classifiers = [
   "Topic :: Scientific/Engineering :: GIS",
 ]
 dependencies = [
+  "filelock>=3.16",
   "geopandas>=1.0",
   "googlemaps>=4.10",
   "h3>=4.1",
@@ -156,5 +157,9 @@ module = [
   "urbanpy.errors",
   "urbanpy.geofabrik",
   "urbanpy.models.*",
+  "urbanpy.routing._docker",
+  "urbanpy.routing._download",
+  "urbanpy.routing.osrm",
+  "urbanpy.routing.osrm_client",
 ]
 strict = true
