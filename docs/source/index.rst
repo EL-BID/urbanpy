@@ -156,6 +156,7 @@ Indices and tables
    usage/installation
    usage/quickstart
    usage/geofabrik
+   usage/osrm
    urbanpy
    license
    contributing

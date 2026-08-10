@@ -38,12 +38,6 @@ lint:
         - CODE_OF_CONDUCT.md
         - README.md
         - docs/development/**
-    - linters: [shellcheck, shfmt]
-      paths:
-        # These legacy scripts are deleted by the OSRM lifecycle PR. Trunk is
-        # not used to preserve unsafe orchestration logic.
-        - notebooks/executables/*.sh
-        - urbanpy/routing/*.sh
 actions:
   disabled:
     - trunk-announce
